@@ -1,0 +1,252 @@
+#! /bin/sh
+#############################################################################
+#
+# Generate the vendor/product menu entries for the top level config
+#
+# davidm@snapgear.com
+#
+#############################################################################
+
+fix_name()
+{
+	echo $1 | tr '[\-\.\/\+a-z]' '[____A-Z]'
+}
+
+#############################################################################
+#
+# the header of the config
+#
+
+echo "mainmenu_name 'LKTOS Embedded Linux Configuration'"
+
+#############################################################################
+#
+# Figure out the vendor/products dynamically, allows people to add there
+# own without messin with the config.in file
+#
+
+echo "mainmenu_option next_comment"
+echo "comment 'Select the Product you wish to target'"
+
+echo "choice 'Manufacturer' \\"
+echo "\"\\"
+find vendors -maxdepth 1 -mindepth 1 -type d -print | grep -v -e ".svn" -e "config" | \
+       sed -e 's?^vendors/??' -e 's?/[^/]*$??' -e 's?/? ?g' | \
+       (sort; echo "END END") | while read v p 
+
+do
+   [ "$v" = "internal" ] && continue
+   [ "$v" = "template" ] && continue
+   [ "$v" = END ] && break
+	CFG="CONFIG_MANUFACTURER_$v"
+	DEF="$v"
+	echo "                           $v ${CFG}\\"
+done
+echo "                         \""
+
+echo "if [ \$CONFIG_MANUFACTURER_Athros = \"y\" ]; then"
+echo "choice   'Athros Chip' \\"
+echo "\"\\"
+find vendors/Athros -maxdepth 1 -mindepth 1 -type d -print | grep -v .svn | \
+       sed -e 's?^vendors/Athros/??' -e 's?/[^/]*$??' -e 's?/? ?g' | \
+       (sort; echo "END END") | while read v p 
+
+do
+   [ "$v" = "internal" ] && continue
+   [ "$v" = "template" ] && continue
+   [ "$v" = END ] && break
+	CFG="CONFIG_DEFAULTS_ATHROS_$v"
+	DEF="$v"
+	echo "           $v ${CFG}\\"
+done
+echo "	  \"" 
+echo "elif [ \$CONFIG_MANUFACTURER_Broadcom = \"y\" ]; then"
+echo "choice   'Broadcom Chip' \\"
+echo "\"\\"
+find vendors/Broadcom -maxdepth 1 -mindepth 1 -type d -print | grep -v .svn | \
+       sed -e 's?^vendors/Broadcom/??' -e 's?/[^/]*$??' -e 's?/? ?g' | \
+       (sort; echo "END END") | while read v p 
+
+do
+   [ "$v" = "internal" ] && continue
+   [ "$v" = "template" ] && continue
+   [ "$v" = END ] && break
+	CFG="CONFIG_DEFAULTS_BROADCOM_$v"
+	DEF="$v"
+	echo "           $v ${CFG}\\"
+done
+echo "	  \"" 
+echo "elif [ \$CONFIG_MANUFACTURER_Ralink = \"y\" ]; then"
+echo "choice   'Ralink Chip' \\"
+echo "\"\\"
+find vendors/Ralink -maxdepth 1 -mindepth 1 -type d -print | grep -v .svn | \
+       sed -e 's?^vendors/Ralink/??' -e 's?/[^/]*$??' -e 's?/? ?g' | \
+       (sort; echo "END END") | while read v p 
+
+do
+   [ "$v" = "internal" ] && continue
+   [ "$v" = "template" ] && continue
+   [ "$v" = END ] && break
+	CFG="CONFIG_DEFAULTS_RALINK_$v"
+	DEF="$v"
+	echo "           $v ${CFG}\\"
+done
+echo "	  \"" 
+echo "elif [ \$CONFIG_MANUFACTURER_Realtek = \"y\" ]; then"
+echo "choice   'Realtek Chip' \\"
+echo "\"\\"
+find vendors/Realtek -maxdepth 1 -mindepth 1 -type d -print | grep -v .svn | \
+       sed -e 's?^vendors/Realtek/??' -e 's?/[^/]*$??' -e 's?/? ?g' | \
+       (sort; echo "END END") | while read v p 
+
+do
+   [ "$v" = "internal" ] && continue
+   [ "$v" = "template" ] && continue
+   [ "$v" = END ] && break
+	CFG="CONFIG_DEFAULTS_REALTEK_$v"
+	DEF="$v"
+	echo "           $v ${CFG}\\"
+done
+echo "	  \"" 
+echo "else" # Ralink chip
+echo "choice   'Ralink Chip' \\"
+echo "\"\\"
+find vendors/Ralink -maxdepth 1 -mindepth 1 -type d -print | grep -v .svn | \
+       sed -e 's?^vendors/Ralink/??' -e 's?/[^/]*$??' -e 's?/? ?g' | \
+       (sort; echo "END END") | while read v p 
+
+do
+   [ "$v" = "internal" ] && continue
+   [ "$v" = "template" ] && continue
+   [ "$v" = END ] && break
+	CFG="CONFIG_DEFAULTS_RALINK_$v"
+	DEF="$v"
+	echo "           $v ${CFG}\\"
+done
+echo "	  \"" 
+echo "fi"
+
+echo "if [ \$CONFIG_DEFAULTS_RALINK_RT2880 = \"y\" ]; then"
+echo "choice   'Default Configuration File'\\"
+echo "         \"2M/16M   CONFIG_DEFSETTING_2M16M\\"
+echo "           4M/16M   CONFIG_DEFSETTING_4M16M"
+echo "	  \"" 
+echo "elif [ \$CONFIG_DEFAULTS_RALINK_RT3883 = \"y\" ]; then"
+echo "choice   'Default Configuration File'\\"
+echo "         \"4M/32M(AP+NAS)	  CONFIG_DEFSETTING_4M32M\\"
+echo "           8M/64M(AP+STA)	  CONFIG_DEFSETTING_8M64M"
+echo "	  \"" 
+echo "elif [ \$CONFIG_DEFAULTS_RALINK_RT3352 = \"y\" ]; then"
+echo "choice   'Default Configuration File'\\"
+echo "         \"2M/16M(AP)	  CONFIG_DEFSETTING_2M16M\\"
+echo "           4M/32M(AP+NAS)	  CONFIG_DEFSETTING_4M32M"
+echo "	  \"" 
+echo "elif [ \$CONFIG_DEFAULTS_RALINK_RT5350 = \"y\" ]; then"
+echo "choice   'Default Configuration File' \\"
+echo "\"\\"
+find vendors/Ralink/RT5350/config -maxdepth 1 -mindepth 1 -type d -print | grep -v .svn | \
+       sed -e 's?^vendors/Ralink/RT5350/config/??' -e 's?/[^/]*$??' -e 's?/? ?g' | \
+       (sort; echo "END END") | while read v p 
+
+do
+   [ "$v" = "internal" ] && continue
+   [ "$v" = "template" ] && continue
+   [ "$v" = END ] && break
+	CFG="CONFIG_DEFSETTING_$v"
+	DEF="$v"
+	echo "           $v ${CFG}\\"
+done
+echo "	  \""
+echo "elif [ \$CONFIG_DEFAULTS_ATHROS_AR9331 = \"y\" ]; then"
+echo "choice   'Default Configuration File A' \\"
+echo "\"\\"
+find vendors/Athros/AR9331/config -maxdepth 1 -mindepth 1 -type d -print | grep -v .svn | \
+       sed -e 's?^vendors/Athros/AR9331/config/??' -e 's?/[^/]*$??' -e 's?/? ?g' | \
+       (sort; echo "END END") | while read v p 
+
+do
+   [ "$v" = "internal" ] && continue
+   [ "$v" = "template" ] && continue
+   [ "$v" = END ] && break
+	CFG="CONFIG_DEFSETTING_$v"
+	DEF="$v"
+	echo "           $v ${CFG}\\"
+done
+echo "	  \""  
+echo "elif [ \$CONFIG_DEFAULTS_RALINK_RT6855A = \"y\" ]; then"
+echo "choice   'Default Configuration File'\\"
+echo "         \"(4M/32M)RT6856+AP	CONFIG_DEFSETTING_4M32M\\"
+echo "           (8M/32M)RT6855+NAS	CONFIG_DEFSETTING_8M32M\\"
+echo "           (8M/64M)RT6856+FULL	CONFIG_DEFSETTING_8M64M"
+echo "	  \"" 
+echo "elif [ \$CONFIG_DEFAULTS_RALINK_MT7620 = \"y\" ]; then"
+echo "choice   'Default Configuration File' \\"
+echo "\"\\"
+find vendors/Ralink/MT7620/config -maxdepth 1 -mindepth 1 -type d -print | grep -v .svn | \
+       sed -e 's?^vendors/Ralink/MT7620/config/??' -e 's?/[^/]*$??' -e 's?/? ?g' | \
+       (sort; echo "END END") | while read v p 
+
+do
+   [ "$v" = "internal" ] && continue
+   [ "$v" = "template" ] && continue
+   [ "$v" = END ] && break
+	CFG="CONFIG_DEFSETTING_$v"
+	DEF="$v"
+	echo "           $v ${CFG}\\"
+done
+echo "	  \"" 
+echo "else" # RT3052
+echo "choice   'Default Configuration File'\\"
+echo "         \"2M/16M(AP)	  CONFIG_DEFSETTING_2M16M\\"
+echo "           4M/32M(AP+NAS)   CONFIG_DEFSETTING_4M32M"
+echo "	  \"" 
+echo "fi"
+
+echo "endmenu"
+
+#############################################################################
+
+echo "mainmenu_option next_comment"
+echo "comment 'Kernel/Library/Defaults Selection'"
+
+echo "if [ \$CONFIG_DEFAULTS_RALINK_RT2880 = \"y\" ]; then"
+echo " define_bool CONFIG_DEFAULTS_KERNEL_2_4 y"
+echo "elif [ \$CONFIG_DEFAULTS_RALINK_RT6855A = \"y\" ]; then"
+echo " define_bool CONFIG_DEFAULTS_KERNEL_2_6_36MT y" 
+echo "elif [ \$CONFIG_DEFAULTS_RALINK_MT7620 = \"y\" ]; then"
+echo " define_bool CONFIG_DEFAULTS_KERNEL_2_6_36 y"
+echo "elif [ \$CONFIG_DEFAULTS_ATHROS_AR9331 = \"y\" ]; then"
+echo " define_bool CONFIG_DEFAULTS_KERNEL_2_6_31 y" 
+echo " string 'Cross Compiler Path' 			CONFIG_CROSS_COMPILER_PATH /opt/gcc-4.3.3/build_mips/staging_dir/usr/bin"
+echo "else"
+echo " define_bool CONFIG_DEFAULTS_KERNEL_2_6_21 y"
+echo " string 'Cross Compiler Path' 			CONFIG_CROSS_COMPILER_PATH /opt/buildroot-gcc342/bin"
+
+echo "fi"
+
+#############################################################################
+#
+# the rest of the config
+#
+
+# echo "mainmenu_option next_comment"
+# echo "comment 'Configuration Overrides'"
+
+cat <<!EOF
+#string 'Cross Compiler Path' 			CONFIG_CROSS_COMPILER_PATH /opt/buildroot-gcc342/bin
+comment ' '
+bool 'Default all settings (lose changes)'	CONFIG_DEFAULTS_OVERRIDE
+bool 'Customize Kernel Settings'		CONFIG_DEFAULTS_KERNEL
+!EOF
+[ -d modules ] &&
+	echo "bool 'Customize Module Settings'	CONFIG_DEFAULTS_MODULES"
+cat <<!EOF
+bool 'Customize Vendor/User Settings'		CONFIG_DEFAULTS_VENDOR
+bool 'Customize Busybox Settings'               CONFIG_DEFAULTS_BUSYBOX
+bool 'Customize uClibc Settings'                CONFIG_DEFAULTS_UCLIBC
+bool 'Customize uClibc++ Settings'              CONFIG_DEFAULTS_UCLIBC_PLUS_PLUS
+bool 'Update Default Vendor Settings'		CONFIG_DEFAULTS_VENDOR_UPDATE
+endmenu
+!EOF
+
+############################################################################
