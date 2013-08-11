@@ -59,7 +59,7 @@ CFLAGS	+= -I$(ROOTDIR)/lib/libnvram
 CFLAGS += -I$(ROOTDIR)/$(LINUXDIR)/drivers/char/pcm
 CFLAGS += -I$(ROOTDIR)/$(LINUXDIR)/drivers/net/rt_rdm -I$(ROOTDIR)/$(LINUXDIR)/include
 
-EXEC_1 = 3gdial check_usb
+EXEC_1 = 3gdial
 SRCS_1 = 3gdial.o gpio.o
 
 all: clean_inet $(EXEC_1) loopt checkat cmcc cmcc_link netcmd netcall wanflow netwan get_mac check_usb #wphone
@@ -125,5 +125,5 @@ romfs:
 	$(ROMFSINST) /bin/check_usb
 
 clean:
-	-rm -f $(EXEC_1) loopt *.o
+	-rm -f $(EXEC_1) loopt check_usb *.o
 
