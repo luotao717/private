@@ -1,0 +1,12 @@
+#!/bin/sh
+#. /etc/ppp/ppp.opts
+export TELEPHONE ACCOUNT PASSWORD MDM_INIT MDM_TIMEOUT
+#killall -9 udhcpd
+exec pppd file /var/options.ttySx
+#sleep 10
+#udhcpd /var/config/udhcpd_default.conf
+#DIALER_SCRIPT=/etc/ppp/ppp-on-dialer
+
+# Initiate the connection
+# 
+#exec /usr/sbin/pppd connect $DIALER_SCRIPT
