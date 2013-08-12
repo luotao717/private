@@ -913,7 +913,15 @@ int Mount_Usb_Module()
 		{
 			//eval("usb_modeswitch","-v","0x12d1","-p","0x1446","-V","0x12d1","-P","0x1001","-M","55534243000000000000000000000011060000000000000000000000000000","-s","5");
 			//eval("usb_modeswitch","-v","0x12d1","-p","0x1446","-V","0x12d1","-P","0x1001","-M","55534243000000000000000000000011060000000000000000000000000000");
+			printf("start ndis 3g modeswitch\r\n");
 			eval("usb_modeswitch","-v","0x12d1","-p","0x1446","-V","0x12d1","-P","0x14ac","-M","55534243123456780000000000000011060000000000000000000000000000");
+			sleep(8);
+			Modem_usbtype = USB0_TYPE;
+			//goto done;			
+		}
+		else if(strncmp(g_str_product,"1f01",4)==0)
+		{
+			eval("usb_modeswitch","-v","0x12d1","-p","0x1f01","-V","0x12d1","-P","0x14db","-M","55534243123456780000000000000a11062000000000000100000000000000");
 			sleep(8);
 			Modem_usbtype = USB0_TYPE;
 			//goto done;			
@@ -2218,7 +2226,20 @@ void InitDeviceInfo()
 	
 	//nvram_init(RT2860_NVRAM);
  	ret = CheckUSB();
-		
+	printf("\r\n in after checkusb()--%s--%s\r\n",g_str_vendor,g_str_product);
+	if(!strncmp(g_str_vendor,"12d1",4)&&!strncmp(g_str_product,"14db",4))
+	{
+		printf("is e3131 use rndis driver");
+		eval("insmod","usbnet.ko");
+		eval("insmod","cdc_ether.ko");
+		sleep(2);
+		eval("ifconfig","eth0","192.168.2.100","up");
+		eval("killall","udhcpc");
+		eval("udhcpc","-i","eth0","-s","/sbin/3gudhcpc.sh","-p","/var/run/udhcpc.pid","&");
+		eval("udhcpc","-i","eth0","-s","/sbin/3gudhcpc.sh","-p","/var/run/udhcpc.pid","&");
+		//eval("udhcpc","-i","eth0","-p","/var/run/udhcpc.pid","&");
+		//eval("udhcpc","-i","eth0","-p","/var/run/udhcpc.pid","&");
+	}
 	if(ret==-1)
 	{
 		return ;

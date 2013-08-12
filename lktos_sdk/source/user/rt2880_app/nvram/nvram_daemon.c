@@ -85,14 +85,14 @@ static void nvramIrqHandler(int signum)
 #endif
 	} else if (signum == SIGUSR2) {
 		printf("load default and reboot..\n");
-		loadDefault(2860);
+		//loadDefault(2860);
 #if defined (CONFIG_RTDEV) || \
     defined (CONFIG_RTDEV_PLC)
 		loadDefault(2880);
 #elif defined (CONFIG_RT2561_AP) || defined (CONFIG_RT2561_AP_MODULE)
 		loadDefault(2561);
 #endif
-		system("reboot");
+		//system("reboot");
 	}
 }
 
