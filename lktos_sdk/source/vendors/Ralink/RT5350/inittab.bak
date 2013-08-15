@@ -1,0 +1,4 @@
+::sysinit:/etc_ro/rcS
+ttyS1::respawn:/sbin/getty 57600 ttyS1
+#ttyS1::respawn:/bin/sh
+

@@ -1,0 +1,24 @@
+#!/bin/sh
+mount -a
+mkdir -p /var/run
+cat /etc_ro/motd
+nvram_daemon&
+#insmod usbcore.ko
+insmod ehci-hcd.ko
+insmod ohci-hcd.ko
+insmod usb-storage.ko
+
+#for usb
+tar xf /bin/apa.tar -C /tmp
+cp /bin/httpd /tmp/apache/bin/
+
+goahead&
+
+sleep 1
+mount -t usbfs none /proc/bus/usb
+#for telnet debugging
+telnetd
+
+cp /etc_ro/web/normal_ws.css /tmp/apache/htdocs/normal_ws.css
+#for syslogd
+mkdir -p /var/log
