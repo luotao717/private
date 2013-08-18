@@ -215,11 +215,11 @@ static void goaSigHandlerLoadDefault(int signum)
 
 	if (signum != SIGUSR2)
 		return;
-	//system("ralink_init clear 2860");
-	//system("ralink_init renew 2860 /etc_ro/Wireless/RT2860AP/RT2860_default_vlan");
+	system("ralink_init clear 2860");
+	system("ralink_init renew 2860 /etc_ro/Wireless/RT2860AP/RT2860_default_vlan");
 	printf("\r\ngo load default!\r\n");
-	//sleep(2);
-	//system("reboot");
+	sleep(2);
+	system("reboot");
 }
 
 

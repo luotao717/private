@@ -38,5 +38,5 @@ else
 fi
 
 
-#rmmod ehci-hcd.ko
+rmmod ehci-hcd.ko
 exit 0

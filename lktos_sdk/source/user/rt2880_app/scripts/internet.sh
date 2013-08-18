@@ -997,11 +997,11 @@ comwlanmac=00:0C:43:30:50:A0
 facmodeflag=`echo $wlanmac | grep -q $comwlanmac && echo 1 || echo 0`
 echo $facmodeflag 
 shkey=`nvram_get 2860 comcryptcheck`
-#if [ "$shkey" != "check=ok" ]; then
-#	if [ "$facmodeflag" == "0" ]; then
-#		ifconfig ra0 down
-#	fi
-#fi
+if [ "$shkey" != "check=ok" ]; then
+	if [ "$facmodeflag" == "0" ]; then
+		ifconfig ra0 down
+	fi
+fi
 #restart8021XDaemon(RT2860_NVRAM);
 #firewall_init();
 #management_init();

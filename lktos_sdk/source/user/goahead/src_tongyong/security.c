@@ -80,7 +80,7 @@ int websSecurityHandler(webs_t wp, char_t *urlPrefix, char_t *webDir, int arg,
 	if (accessLimit == NULL) {
 		return 0;
 	}
-	trace(0, T("webs: LOCALPATH%s\n"),path);
+//	trace(0, T("webs: LOCALPATH%s\n"),path);
 #if 1
 	if(!(flag & WEBS_POST_REQUEST) && !(flag & WEBS_CGI_REQUEST))
 	{
