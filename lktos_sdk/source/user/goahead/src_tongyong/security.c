@@ -60,9 +60,6 @@ int websSecurityHandler(webs_t wp, char_t *urlPrefix, char_t *webDir, int arg,
 	int				flags, nRet;
 	accessMeth_t	am;
 
-	websStatType	tempsbuf;
-	char_t			localpath[512]={0};
-
 	a_assert(websValid(wp));
 	a_assert(url && *url);
 	a_assert(path && *path);
@@ -80,26 +77,10 @@ int websSecurityHandler(webs_t wp, char_t *urlPrefix, char_t *webDir, int arg,
 	if (accessLimit == NULL) {
 		return 0;
 	}
-//	trace(0, T("webs: LOCALPATH%s\n"),path);
-#if 1
-	if(!(flag & WEBS_POST_REQUEST) && !(flag & WEBS_CGI_REQUEST))
-	{
-		sprintf(localpath,"/etc_ro/web%s",path);
-		//trace(0, T("webs: LOCALPATH%s\n"),localpath);
-		if (websPageStat(wp, localpath, path, &tempsbuf) < 0)
-		{
-   
-			websRedirect(wp, "/home.asp");
-			return 1;
-		}
-	}
-#endif
-	if(!strncmp(wp->path,"/",2))
-		return 0;
-	if(!strncmp(wp->path,"/home.asp",10))
-		return 0;
+
 	if (wp->path != NULL && strstr(wp->path, "/goform/App"))
 		return 0;
+		 
 /*
  *	Check to see if URL must be encrypted
  */

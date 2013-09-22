@@ -146,8 +146,11 @@ dir_y						+= check_ppp_ifr
 dir_$(CONFIG_USER_HELLO_WORLD)		    += hello_world
 #--
 
-dir_$(CONFIG_USER_3G)	 		    += hotplug
-dir_$(CONFIG_USER_3G)	 		    += 3g_dial
+#dir_$(CONFIG_USER_3G)	 		    += hotplug
+#dir_$(CONFIG_USER_3G)	 		    += 3g_dial
+
+dir_$(CONFIG_USER_3G)	 		    += musb
+dir_$(CONFIG_USER_3G)	 		    += new3gdaemon
 
 all: config
 	$(MAKE) -j$(HOST_NCPU) $(sort $(dir_y) $(dir_v) $(dir_p)) || exit $$?

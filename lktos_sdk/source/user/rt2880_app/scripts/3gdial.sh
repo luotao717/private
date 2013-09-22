@@ -2,9 +2,9 @@
 
 rm -rf /var/usbmodem
 rm -rf /var/config
-killall -q hotplugd
+killall -q musb
 killall -q check_usb
-killall -q 3gdial
+killall -q new3g
 #rmmod usbcore.ko 1>/dev/null 2>&1
 rmmod cdc-acm.ko 1>/dev/null 2>&1
 #rmmod ehci-hcd.ko 1>/dev/null 2>&1
@@ -16,7 +16,7 @@ umount /proc/bus/usb 1>/dev/null 2>&1
 
 mkdir -m 777 /var/usbmodem
 mkdir -m 777 -p /var/config/ppp/peers
-hotplugd&
+musb&
 sleep 2
 #insmod usbcore.ko 1>/dev/null 2>&1
 insmod cdc-acm.ko 1>/dev/null 2>&1
@@ -32,9 +32,9 @@ check_usb
 dial3gmode=`nvram_get 2860 dial3gchoicetype`
 
 if [ "$dial3gmode" != "MANUAL" ]; then
-	3gdial 0
+	new3g 0
 else
-	3gdial 1
+	new3g 1
 fi
 
 

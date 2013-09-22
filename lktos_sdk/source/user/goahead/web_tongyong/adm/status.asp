@@ -320,10 +320,12 @@ function Load_Setting()
   <td class="thead"><script>dw(MM_3g_dialStatus)</script>:</td>
   <td><span id="3Gdialstatus"> </span></td>
 </tr>
+<!--
 <tr>
   <td class="thead"><script>dw(MM_3g_signal)</script>:</td>
   <td><% getDial3gSignalLength(); %>%</td>
 </tr>
+-->
 <tr>
   <td class="thead"><script>dw(MM_3g_isp)</script>:</td>
   <td><% getDial3gISPProvider(); %></td>

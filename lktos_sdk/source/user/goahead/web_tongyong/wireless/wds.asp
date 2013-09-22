@@ -50,7 +50,8 @@ function WdsModeOnChange()
 	WdsSecurityOnChange(2);
 	WdsSecurityOnChange(3);
 
-	if (document.wds_form.wds_mode.options.selectedIndex >= 2) 
+	//if (document.wds_form.wds_mode.options.selectedIndex >= 2) 
+	if (document.wds_form.wds_mode.options.selectedIndex >= 1) 
 	{
 		document.getElementById("wds_mac_list_1").style.display = "";
 		document.getElementById("wds_mac_list_2").style.display = "";
@@ -67,12 +68,12 @@ function Load_Setting()
 	wdsMode = 1*wdsMode;
 	if (wdsMode == 0)
 		document.wds_form.wds_mode.options.selectedIndex = 0;
-	else if (wdsMode == 4)
-		document.wds_form.wds_mode.options.selectedIndex = 1;
-	else if (wdsMode == 2)
-		document.wds_form.wds_mode.options.selectedIndex = 2;
+	//else if (wdsMode == 4)
+		//document.wds_form.wds_mode.options.selectedIndex = 1;
+	//else if (wdsMode == 2)
+		//document.wds_form.wds_mode.options.selectedIndex = 2;
 	else if (wdsMode == 3)
-		document.wds_form.wds_mode.options.selectedIndex = 3;
+		document.wds_form.wds_mode.options.selectedIndex = 1;
 
 	if (wdsPhyMode.indexOf("CCK") >= 0 || wdsPhyMode.indexOf("cck") >= 0)
 		document.wds_form.wds_phy_mode.options.selectedIndex = 0;
@@ -187,7 +188,8 @@ function formCheck()
 		return false;
 
 	all_wds_list = '';
-	if (document.wds_form.wds_mode.options.selectedIndex >= 2)
+	//if (document.wds_form.wds_mode.options.selectedIndex >= 2)
+	if (document.wds_form.wds_mode.options.selectedIndex >= 1)
 	{
 		for (i = 1; i <= 4; i++)
 		{
@@ -258,8 +260,10 @@ function opera()
     <td class="thead"><script>dw(MM_wds_mode)</script>:</td>
     <td><select name="wds_mode" onChange="WdsModeOnChange()">
 	<option value=0><script>dw(MM_disable)</script></option>
+	<!--
 	<option value=4><script>dw(MM_lazy_mode)</script></option>
 	<option value=2><script>dw(MM_bridge_mode)</script></option>
+	-->
 	<option value=3><script>dw(MM_repeater_mode)</script></option>
       </select></td>
   </tr>
