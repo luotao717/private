@@ -1010,9 +1010,10 @@ apachectl start
 wlancryptluotaott=`nvram_get 2860 wlancryptluotao`
 echo $wlancryptluotaott > /tmp/wlancryptfile
 echo "--------------------------------"
-config-powersave.sh ethernet 1  1
-config-powersave.sh ethernet 1  2
-config-powersave.sh ethernet 1  3
-config-powersave.sh ethernet 1  0
+#config-powersave.sh ethernet 1  1
+#config-powersave.sh ethernet 1  2
+#config-powersave.sh ethernet 1  3
+#config-powersave.sh ethernet 1  4
+#config-powersave.sh ethernet 1  0
 config-powersave.sh sdr 1
 echo "++++++++++++++++++++++++++++++++"

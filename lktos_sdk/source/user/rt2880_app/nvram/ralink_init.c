@@ -255,7 +255,9 @@ int ra_nv_get(int argc, char *argv[])
    			unsigned char andorkey[8]={0};
    			unsigned char realKey[9]={0};
 			char cmdbuf[50]={0};
+			unsigned char tmpRfBuf[0x1000]={0};
    			int i;
+			int resultFlag=-1;
  			if(get_APMac6("ra0", mac_char) != -1)
  			{
 	 			crc16=CRC16(mac_char,6,&crcKeyFir,&crcKeySec);
@@ -277,9 +279,18 @@ int ra_nv_get(int argc, char *argv[])
 					realKey[i]=asclooktable[andorkey[i]];
  					//printf("%c\r\n",asclooktable[andorkey[i]]);
 				}
-				sprintf(cmdbuf,"nvram_set wlancryptluotao %s",realKey);
-				system(cmdbuf);
-				printf("write OK\n");
+				flash_read_size_eeprom_rf(tmpRfBuf,0x1000);
+				for(i=0;i<9;i++)
+				{
+					tmpRfBuf[i]=realKey[i];
+				}
+				resultFlag=flash_write_passkey_ralink(tmpRfBuf);
+				//sprintf(cmdbuf,"nvram_set wlancryptluotao %s",realKey);
+				//system(cmdbuf);
+				if(resultFlag != -1)
+					printf("write OK\n");
+				else
+					printf("write error\n");
 				return 0;
 			}
 			else
@@ -297,6 +308,7 @@ int ra_nv_get(int argc, char *argv[])
    			unsigned char andorkey[8]={0};
    			unsigned char realKey[9]={0};
 			char cmdbuf[50]={0};
+			unsigned char eepromKey[9]={0};
    			int i;
  			if(get_APMac6("ra0", mac_char) != -1)
  			{
@@ -324,8 +336,8 @@ int ra_nv_get(int argc, char *argv[])
 					return get_usage(argv[0]);
 				}
 				nvram_init(index);
-				char *bufcrypt=nvram_bufget(index, "wlancryptluotao");
-				if(!strncmp(realKey,bufcrypt,8))
+				flash_read_sharekey(eepromKey);
+				if(!strncmp(realKey,eepromKey,8))
 				{
 					printf("check=ok\n");
 				}

@@ -48,6 +48,53 @@ int mtd_open(const char *name, int flags)
 	return -1;
 }
 
+int flash_read_sharekey(char *buf) //by luotao for read wlan mac from flash
+{
+	int fd, ret;
+	unsigned char bufftemp[200]={0};
+	unsigned int tempi=0;
+	if (!buf)
+		return -1;
+	fd = mtd_open("Factory", O_RDONLY);
+	if (fd < 0) {
+		fprintf(stderr, "Could not open mtd device\n");
+		return -1;
+	}
+	lseek(fd, 0x5000, SEEK_SET);
+	ret = read(fd, buf, 8);
+	close(fd);
+	return ret;
+}
+
+int flash_read_size_eeprom_rf(char *buf,int size) 
+{
+	int fd, ret;
+	unsigned char bufftemp[200]={0};
+	unsigned int tempi=0;
+	if (!buf)
+		return -1;
+	fd = mtd_open("Factory", O_RDONLY);
+	if (fd < 0) {
+		fprintf(stderr, "Could not open mtd device\n");
+		return -1;
+	}
+	lseek(fd, 0x5000, SEEK_SET);
+	ret = read(fd, buf, size);
+	close(fd);
+	return ret;
+}
+
+int flash_write_passkey_ralink(char *buf) 
+{
+	int fd, ret;
+	unsigned char bufftemp[200]={0};
+	unsigned int tempi=0;
+	int result = -1;
+	result=flash_write_ralink_eeprom( buf, 0x5000, 0x1000);
+	return result;
+}
+
+
 int flash_read_mac(char *buf)
 {
 	int fd, ret;
@@ -246,4 +293,106 @@ int flash_write(char *buf, off_t to, size_t len)
 	close(fd);
 	return ret;
 }
+
+int flash_write_ralink_eeprom(char *buf, off_t to, size_t len)
+{
+	int fd, ret = 0;
+	char *bak = NULL;
+	struct mtd_info_user info;
+	struct erase_info_user ei;
+
+	fd = mtd_open("Factory", O_RDWR | O_SYNC);
+	if (fd < 0) {
+		fprintf(stderr, "Could not open mtd device\n");
+		return -1;
+	}
+
+	if (ioctl(fd, MEMGETINFO, &info)) {
+		fprintf(stderr, "Could not get mtd device info\n");
+		close(fd);
+		return -1;
+	}
+	if (len > info.size) {
+		fprintf(stderr, "Too many bytes: %d > %d bytes\n", len, info.erasesize);
+		close(fd);
+		return -1;
+	}
+
+	while (len > 0) {
+		if ((len & (info.erasesize-1)) || (len < info.erasesize)) {
+			int piece_size;
+			unsigned int piece, bakaddr;
+
+			bak = (char *)malloc(info.erasesize);
+			if (bak == NULL) {
+				fprintf(stderr, "Not enough memory\n");
+				close(fd);
+				return -1;
+			}
+
+			bakaddr = to & ~(info.erasesize - 1);
+			lseek(fd, bakaddr, SEEK_SET);
+
+			ret = read(fd, bak, info.erasesize);
+			if (ret == -1) {
+				fprintf(stderr, "Reading from mtd failed\n");
+				close(fd);
+				free(bak);
+				return -1;
+			}
+
+			piece = to & (info.erasesize - 1);
+			piece_size = min(len, info.erasesize - piece);
+			memcpy(bak + piece, buf, piece_size);
+
+			ei.start = bakaddr;
+			ei.length = info.erasesize;
+			if (ioctl(fd, MEMERASE, &ei) < 0) {
+				fprintf(stderr, "Erasing mtd failed\n");
+				close(fd);
+				free(bak);
+				return -1;
+			}
+
+			lseek(fd, bakaddr, SEEK_SET);
+			ret = write(fd, bak, info.erasesize);
+			if (ret == -1) {
+				fprintf(stderr, "Writing to mtd failed\n");
+				close(fd);
+				free(bak);
+				return -1;
+			}
+
+			free(bak);
+			buf += piece_size;
+			to += piece_size;
+			len -= piece_size;
+		}
+		else {
+			ei.start = to;
+			ei.length = info.erasesize;
+			if (ioctl(fd, MEMERASE, &ei) < 0) {
+				fprintf(stderr, "Erasing mtd failed\n");
+				close(fd);
+				return -1;
+			}
+
+			ret = write(fd, buf, info.erasesize);
+			if (ret == -1) {
+				fprintf(stderr, "Writing to mtd failed\n");
+				close(fd);
+				free(bak);
+				return -1;
+			}
+
+			buf += info.erasesize;
+			to += info.erasesize;
+			len -= info.erasesize;
+		}
+	}
+
+	close(fd);
+	return ret;
+}
+
 
