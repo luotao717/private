@@ -12,7 +12,6 @@ nvram_daemon&
 #tar xf /bin/apa.tar -C /tmp
 #cp /bin/httpd /tmp/apache/bin/
 
-gpio l 9 6 6 4000 1 1
 goahead&
 
 sleep 1

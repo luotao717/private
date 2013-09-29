@@ -1005,7 +1005,7 @@ fi
 #restart8021XDaemon(RT2860_NVRAM);
 #firewall_init();
 #management_init();
-apachectl start
+#apachectl start
 #3gdial.sh
 wlancryptluotaott=`nvram_get 2860 wlancryptluotao`
 echo $wlancryptluotaott > /tmp/wlancryptfile

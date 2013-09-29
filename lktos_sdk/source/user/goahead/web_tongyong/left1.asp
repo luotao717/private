@@ -52,6 +52,7 @@ function Echange(nowthis,v_num){
     <tr>
         <td valign="top">
 			<div class="column"><a href="adm/wizard.asp" target="mainFrame"><script>dw(MM_easywizard)</script></a></div>
+			<div class="column"><a href="wireless/opmode.asp" target="mainFrame"><script>dw(MM_opmode)</script></a></div>
 			<div class="column"><a href="internet/wan.asp" target="mainFrame" onClick="Echange(this,0)"><script>dw(MM_network)</script></a></div>
           <div class="xiala" id="sj" style="display:none">
               <ul>
@@ -83,20 +84,8 @@ function Echange(nowthis,v_num){
 				
               </ul>
           </div>
-          <div class="column"><a href="usb/storage_user_admin.asp" target="mainFrame" onClick="Echange(this,3)"><script>dw(MM_storage)</script></a></div>
-          <div class="xiala" id="sj" style="display:none">
-              <ul>
- 				<li><a href="usb/storage_user_admin.asp" target="mainFrame"><script>dw(MM_user)</script></a></li>
-				<li><a href="usb/storage_disk_admin.asp" target="mainFrame"><script>dw(MM_disk)</script></a></li>
-				<!--
-				<li><a href="usb/ftp_srv.asp" target="mainFrame"><script>dw(MM_ftp)</script></a></li>
-				-->
-				<li><a href="usb/smb_srv.asp" target="mainFrame"><script>dw(MM_samba)</script></a></li>
-				<li><a href="usb/minidlna.asp" target="mainFrame"><script>dw(MM_minidlna_settings)</script></a></li>   
-				 
-              </ul>
-          </div>
-          <div class="column"><a href="firewall/dmz.asp" target="mainFrame" onClick="Echange(this,4)"><script>dw(MM_service_settings)</script></a></div>
+        
+          <div class="column"><a href="firewall/dmz.asp" target="mainFrame" onClick="Echange(this,3)"><script>dw(MM_service_settings)</script></a></div>
           <div class="xiala" id="sj" style="display:none">
               <ul>
 			  	<li><a href="firewall/dmz.asp" target="mainFrame"><script>dw(MM_dmz_settings)</script></a></li>
@@ -107,10 +96,12 @@ function Echange(nowthis,v_num){
 				<li><a href="firewall/remote.asp" target="mainFrame"><script>dw(MM_remote)</script></a></li>                   
               </ul>
           </div>
-          <div class="column"><a href="adm/statistic.asp" target="mainFrame" onClick="Echange(this,5)"><script>dw(MM_management)</script></a></div>
+          <div class="column"><a href="adm/statistic.asp" target="mainFrame" onClick="Echange(this,4)"><script>dw(MM_management)</script></a></div>
           <div class="xiala" id="sj" style="display:none">
               <ul>
+			  <!--
                 <li><a href="wireless/opmode.asp" target="mainFrame"><script>dw(MM_bridge_settings)</script></a></li>
+				-->
                 <li><a href="adm/statistic.asp" target="mainFrame"><script>dw(MM_statistics)</script></a></li>
                 <li><a href="adm/syslog.asp" target="mainFrame"><script>dw(MM_syslog)</script></a></li>
                 <li><a href="adm/upload_firmware.asp" target="mainFrame"><script>dw(MM_firmware)</script></a></li>

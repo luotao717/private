@@ -456,7 +456,7 @@ Content-type: text/html\n",
 #endif
 
 	if (!strcmp(getLangType(), "cn"))
-   		printf("<blockquote>\n\<br><b><script>dw(JS_Update)</script></b></blockquote>");
+   		printf("<blockquote>\n\<br><b><script>升级成功正在重启中请稍候</script></b></blockquote>");
     else if (!strcmp(getLangType(), "pt"))
 		printf("<blockquote>\n\<br><b>Atualizado com sucesso! Reiniciando....</b></blockquote>");
 	else

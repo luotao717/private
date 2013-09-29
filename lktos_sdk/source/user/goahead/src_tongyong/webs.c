@@ -816,10 +816,10 @@ static int websParseFirst(webs_t wp, char_t *text)
 		if(gstrstr(url, CGI_UPLOAD) != NULL){
 			wp->flags |= WEBS_CGI_UPLOAD;
 			printf("\r\nupload fireware");
-			system("brctl delif br0 ra0");
-			char tmparpbuf[64]={0};
-			sprintf(tmparpbuf,"arping -A -I br0 -c 3 -s %s %s",websIpaddrUrl,websIpaddrUrl);
-			system(tmparpbuf);
+			//system("brctl delif br0 ra0");
+			//char tmparpbuf[64]={0};
+			//sprintf(tmparpbuf,"arping -A -I br0 -c 3 -s %s %s",websIpaddrUrl,websIpaddrUrl);
+			//system(tmparpbuf);
 		}
 	}
 #endif
