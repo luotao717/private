@@ -81,7 +81,7 @@ int websSecurityHandler(webs_t wp, char_t *urlPrefix, char_t *webDir, int arg,
 		return 0;
 	}
 //	trace(0, T("webs: LOCALPATH%s\n"),path);
-#if 1
+#if 0
 	if(!(flag & WEBS_POST_REQUEST) && !(flag & WEBS_CGI_REQUEST))
 	{
 		sprintf(localpath,"/etc_ro/web%s",path);
@@ -94,10 +94,10 @@ int websSecurityHandler(webs_t wp, char_t *urlPrefix, char_t *webDir, int arg,
 		}
 	}
 #endif
-	if(!strncmp(wp->path,"/",2))
-		return 0;
-	if(!strncmp(wp->path,"/home.asp",10))
-		return 0;
+//	if(!strncmp(wp->path,"/",2))
+//		return 0;
+//	if(!strncmp(wp->path,"/home.asp",10))
+//		return 0;
 	if (wp->path != NULL && strstr(wp->path, "/goform/App"))
 		return 0;
 /*
