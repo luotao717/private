@@ -95,6 +95,48 @@ int flash_write_passkey_ralink(char *buf)
 }
 
 
+int flash_write_wlan_mac(char *buf)
+{
+	int  ret;
+
+	if (!buf)
+		return -1;
+	ret =flash_write_ralink_eeprom(buf,0x04,6);
+	if (ret == -1) {
+		fprintf(stderr, "write wlan mac failed\n");
+		return -1;
+	}
+	return ret;
+}
+
+int flash_write_lan_mac(char *buf)
+{
+	int  ret;
+
+	if (!buf)
+		return -1;
+	ret =flash_write_ralink_eeprom(buf,0x28,6);
+	if (ret == -1) {
+		fprintf(stderr, "write lan mac failed\n");
+		return -1;
+	}
+	return ret;
+}
+
+int flash_write_wan_mac(char *buf)
+{
+	int  ret;
+
+	if (!buf)
+		return -1;
+	ret =flash_write_ralink_eeprom(buf,0x2e,6);
+	if (ret == -1) {
+		fprintf(stderr, "write wan mac failed\n");
+		return -1;
+	}
+	return ret;
+}
+
 int flash_read_mac(char *buf)
 {
 	int fd, ret;

@@ -1007,8 +1007,8 @@ fi
 #management_init();
 #apachectl start
 #3gdial.sh
-wlancryptluotaott=`nvram_get 2860 wlancryptluotao`
-echo $wlancryptluotaott > /tmp/wlancryptfile
+#wlancryptluotaott=`nvram_get 2860 wlancryptluotao`
+#echo $wlancryptluotaott > /tmp/wlancryptfile
 echo "--------------------------------"
 #config-powersave.sh ethernet 1  1
 #config-powersave.sh ethernet 1  2
