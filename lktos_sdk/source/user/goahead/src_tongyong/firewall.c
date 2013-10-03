@@ -2807,6 +2807,24 @@ static int getSuperDMZBuilt(int eid, webs_t wp, int argc, char_t **argv)
 #endif
 }
 
+static int ShowLeftItem(int eid, webs_t wp, int argc, char_t **argv)
+{
+	char *strptr=NULL; 
+	strptr=nvram_bufget(RT2860_NVRAM, "OperationMode");
+	printf("\r\nddddd=%s----%c--%c",strptr,strptr[0],*strptr );
+	if( !strcmp(strptr,"0"))
+	{
+		websWrite(wp, T("left2.asp"));	
+	}
+	else
+	{
+		websWrite(wp, T("left1.asp"));	
+	}
+
+	return 0;
+}
+
+
 void formDefineFirewall(void)
 {
 	websAspDefine(T("getDefaultFirewallPolicyASP"), getDefaultFirewallPolicyASP);
@@ -2822,6 +2840,7 @@ void formDefineFirewall(void)
 	websAspDefine(T("getSuperDMZBuilt"), getSuperDMZBuilt);
 	websFormDefine(T("DMZ"), DMZ);
 
+	websAspDefine(T("ShowLeftItem"), ShowLeftItem);//by luotao
 	websAspDefine(T("getWebURLEnableASP"), getWebURLEnableASP);
 	websAspDefine(T("getPortForwardEnableASP"), getPortForwardEnableASP);
 	websAspDefine(T("showPortForwardRulesASP"), showPortForwardRulesASP);

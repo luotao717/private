@@ -36,7 +36,7 @@ static int ShowPartition(int eid, webs_t wp, int argc, char_t **argv);
 static int ShowAllDir(int eid, webs_t wp, int argc, char_t **argv);
 static int ShowPartitionLuo(int eid, webs_t wp, int argc, char_t **argv); //by luotao
 static int ShowPartitionLuoSingle(int eid, webs_t wp, int argc, char_t **argv); //by luotao
-static int ShowLeftItem(int eid, webs_t wp, int argc, char_t **argv); //by luotao
+//static int ShowLeftItem(int eid, webs_t wp, int argc, char_t **argv); //by luotao
 
 static int ShowAllDirFile1(int eid, webs_t wp, int argc, char_t **argv);
 static int ShowAllDirFile2(int eid, webs_t wp, int argc, char_t **argv); //by luotao
@@ -2496,23 +2496,6 @@ static int ShowPartitionLuoSingle(int eid, webs_t wp, int argc, char_t **argv)
 	}
 
 	
-	return 0;
-}
-
-static int ShowLeftItem(int eid, webs_t wp, int argc, char_t **argv)
-{
-	char *strptr=NULL; 
-	strptr=nvram_bufget(RT2860_NVRAM, "OperationMode");
-	printf("\r\nddddd=%s----%c--%c",strptr,strptr[0],*strptr );
-	if( !strcmp(strptr,"0"))
-	{
-		websWrite(wp, T("left2.asp"));	
-	}
-	else
-	{
-		websWrite(wp, T("left1.asp"));	
-	}
-
 	return 0;
 }
 
