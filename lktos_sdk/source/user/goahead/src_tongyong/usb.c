@@ -1418,6 +1418,7 @@ static void setFirstPart(void)
 	FILE *pp = popen("cat /proc/mounts | grep media", "r");
 	char dir[13];
 	int getPartitionFlag=0;
+	char tmpdirBuf[128]={0};
 
 	memset(first_part, 0, sizeof(first_part));
 	while(EOF != fscanf(pp, "%*s %s %*s %*s %*s %*s\n", dir))
@@ -1434,6 +1435,9 @@ static void setFirstPart(void)
 	pclose(pp);
 	if(getPartitionFlag)
 	{
+		system("rm -f /tmp/apache/htdocs/WiDisk");
+		sprintf(tmpdirBuf,"ln -sf %s /tmp/apache/htdocs/WiDisk",first_part);
+		system(tmpdirBuf);
 	//#ifdef CONFIG_LKTOS_PRIVATE_OEM_NAME_CDRKING
 		//system("gpio c 13 0");
 	//#else

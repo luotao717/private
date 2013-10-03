@@ -79,7 +79,9 @@ function Echange(nowthis,v_num){
 				<li><a href="usb/ftp_srv.asp" target="mainFrame"><script>dw(MM_ftp)</script></a></li>
 				-->
 				<li><a href="usb/smb_srv.asp" target="mainFrame"><script>dw(MM_samba)</script></a></li> 
-				<li><a href="usb/minidlna.asp" target="mainFrame"><script>dw(MM_minidlna_settings)</script></a></li>   
+				<!--
+				<li><a href="usb/minidlna.asp" target="mainFrame"><script>dw(MM_minidlna_settings)</script></a></li> 
+				-->  
               </ul>
           </div>
           <div class="column"><a href="adm/ntp.asp" target="mainFrame" onClick="Echange(this,3)"><script>dw(MM_service_settings)</script></a></div>
