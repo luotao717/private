@@ -63,7 +63,9 @@ fi
 hostname $host
 echo "127.0.0.1 localhost.localdomain localhost" > /etc/hosts
 echo "$ip $host.luotao.com $host" >> /etc/hosts
-echo "$ip u.u luo" >> /etc/hosts
+echo "$ip u.com luo" >> /etc/hosts
+#echo "$ip pwww.cc luo" >> /etc/hosts
+#echo "$ip pwww.co luo" >> /etc/hosts
 
 # dhcp server
 dhcp=`nvram_get 2860 dhcpEnabled`
