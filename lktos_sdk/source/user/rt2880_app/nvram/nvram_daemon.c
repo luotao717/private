@@ -20,6 +20,7 @@
 int ramad_start(void);
 #endif
 static char *saved_pidfile;
+static int currentGpio22Status=0;
 
 void loadDefault(int chip_id)
 {
@@ -61,6 +62,16 @@ void loadDefault(int chip_id)
 static void nvramIrqHandler(int signum)
 {
 	if (signum == SIGUSR1) {
+		if(currentGpio22Status)
+		{
+			system("gpio c 22 0");
+			currentGpio22Status=0;
+		}
+		else
+		{
+			system("gpio c  22 1");
+			currentGpio22Status=1;
+		}
 #ifdef CONFIG_RALINK_RT2880
 		int gopid;
 		FILE *fp = fopen("/var/run/goahead.pid", "r");
