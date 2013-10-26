@@ -815,6 +815,7 @@ void gpio_set_gpio_led_control(int argc, char *argv[])
 		close(fd);
 		return -1;
 	}
+	printf("\r\nbefore=%0x",rData);
 	ledon = atoi(argv[3]);
 	if(ledon)
 	{
@@ -826,6 +827,7 @@ void gpio_set_gpio_led_control(int argc, char *argv[])
 		rData=rData & (~(1<<gpioId));
 	
 	}
+	printf("\r\nafter=%0x\r\n",rData);
 	if (ioctl(fd, RALINK_GPIO_WRITE, rData) < 0) {
 		perror("ioctl");
 		close(fd);

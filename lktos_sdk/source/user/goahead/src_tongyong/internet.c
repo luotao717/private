@@ -1949,11 +1949,11 @@ int initInternet(void)
 	}
 #endif
 
-#if !defined(CONFIG_RALINK_RT2880) && !defined(CONFIG_RALINK_MT7620)
-	if (!strcmp(auth_mode, "Disable") || !strcmp(auth_mode, "OPEN"))
-		ledAlways(13, LED_OFF); //turn off security LED (gpio 13)
-	else
-		ledAlways(13, LED_ON); //turn on security LED (gpio 13)
+#if !defined(CONFIG_RALINK_RT2880) && !defined(CONFIG_RALINK_MT7620) //force gpio 13 to other so mast it
+	//if (!strcmp(auth_mode, "Disable") || !strcmp(auth_mode, "OPEN"))
+		//ledAlways(13, LED_OFF); //turn off security LED (gpio 13)
+	//else
+		//ledAlways(13, LED_ON); //turn on security LED (gpio 13)
 #endif
 
 #if defined (RT2860_WAPI_SUPPORT) || defined (RTDEV_WAPI_SUPPORT)

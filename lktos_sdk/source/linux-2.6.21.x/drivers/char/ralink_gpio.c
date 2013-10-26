@@ -2131,8 +2131,11 @@ int __init ralink_gpio_init(void)
 #if defined (CONFIG_RALINK_MT7620)
 	gpiomode &= ~0x2000;  //clear bit[13] WLAN_LED
 #endif
+	printk("\r\nbefore mofe=%0x");
+	gpiomode &= ~0x2000;
 	gpiomode |= RALINK_GPIOMODE_DFT;
 	gpiomode |= (1 << 14);
+	printk("\r\nafter mofe=%0x");
 	*(volatile u32 *)(RALINK_REG_GPIOMODE) = cpu_to_le32(gpiomode);
 
 	//enable gpio interrupt
