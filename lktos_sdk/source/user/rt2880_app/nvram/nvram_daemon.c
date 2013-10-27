@@ -64,12 +64,16 @@ static void nvramIrqHandler(int signum)
 	if (signum == SIGUSR1) {
 		if(currentGpio22Status)
 		{
-			system("gpio c 22 0");
+			system("gpio k 14 0");
+			system("gpio k 12 1");
+			system("gpio k 13 0");
 			currentGpio22Status=0;
 		}
 		else
 		{
-			system("gpio c  22 1");
+			system("gpio k  14 1");
+			system("gpio k  12 0");
+			system("gpio k  13 1");
 			currentGpio22Status=1;
 		}
 #ifdef CONFIG_RALINK_RT2880
@@ -289,6 +293,8 @@ int main(int argc,char **argv)
 
 	fd = pidfile_acquire("/var/run/nvramd.pid");
 	pidfile_write_release(fd);
+	system("gpio l 7 6 6 4000 1 1");
+	system("gpio k 12 1");
 
 #ifdef CONFIG_RT2880_L2_MANAGE
 	//start the management daemon (blocking)
