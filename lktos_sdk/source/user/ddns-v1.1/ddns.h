@@ -30,6 +30,12 @@
 #define QDNS_STAT_REQUEST "/dyndns/update"
 #define QDNS_MAX_INTERVAL (25*24*3600)
 
+#define ORANGELINK_NAME "orange"
+#define ORANGELINK_DEFAULT_SERVER "www.orangelink.cn"
+#define ORANGELINK_DEFAULT_PORT 80
+#define ORANGELINK_REQUEST "/devservice/reg_device.asp"
+#define ORANGELINK_MAX_INTERVAL (25*24*3600)
+
 #define ORAY_NAME "oray"
 #define ORAY_DEFAULT_SERVER "ph002.oray.net"
 #define ORAY_DEFAULT_PORT 6060

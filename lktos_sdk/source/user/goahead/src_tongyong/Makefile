@@ -129,6 +129,7 @@ endif
 ifeq ("$(CONFIG_RALINKAPP_SWQOS)", "y")
 DEPEND_FILES += qos.o
 endif
+DEPEND_FILES += appinterface.o
 ifeq ("$(CONFIG_USER_APPINTERFACE)", "y")
 DEPEND_FILES += appinterface.o
 endif

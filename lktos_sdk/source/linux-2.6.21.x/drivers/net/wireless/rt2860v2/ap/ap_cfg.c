@@ -8742,7 +8742,6 @@ int RTMPIoctlApcliConnStatus(IN	PRTMP_ADAPTER	pAd,PSTRING msg)
  
  
  	DBGPRINT(RT_DEBUG_TRACE, ("==>RTMPIoctlApcliConnStatus\n"));
- 
  	if (pObj->ioctl_if_type != INT_APCLI)
  		return bConnect;
  
@@ -8831,13 +8830,13 @@ VOID RTMPIoctlStatistics(
 #ifdef RALINK_ATE
 	if(ATE_ON(pAd))
 	{
-	    sprintf(msg+strlen(msg), "Tx success                    = %ld\n", (ULONG)pAd->ate.TxDoneCount);
+	    sprintf(msg+strlen(msg), "Tx success111                    = %ld\n", (ULONG)pAd->ate.TxDoneCount);
 	    /*sprintf(msg+strlen(msg), "Tx success without retry        = %ld\n", (ULONG)pAd->ate.TxDoneCount); */
 	}
 	else
 #endif /* RALINK_ATE */
 	{
-    sprintf(msg+strlen(msg), "Tx success                        = %ld\n", (ULONG)pAd->WlanCounters.TransmittedFragmentCount.u.LowPart);
+    sprintf(msg+strlen(msg), "Tx success222                        = %ld\n", (ULONG)pAd->WlanCounters.TransmittedFragmentCount.u.LowPart);
     /*sprintf(msg+strlen(msg), "Tx success without retry        = %ld\n", (ULONG)pAd->WlanCounters.TransmittedFragmentCount.u.LowPart - (ULONG)pAd->WlanCounters.RetryCount.u.LowPart); */
 	}
     sprintf(msg+strlen(msg), "Tx retry count                  = %ld\n", (ULONG)pAd->WlanCounters.RetryCount.u.LowPart);
@@ -8871,7 +8870,8 @@ VOID RTMPIoctlStatistics(
 	{
     	sprintf(msg+strlen(msg), "RSSI-A                          = %ld\n", (LONG)(pAd->ApCfg.RssiSample.LastRssi0 - pAd->BbpRssiToDbmDelta));
 		sprintf(msg+strlen(msg), "RSSI-B (if available)           = %ld\n", (LONG)(pAd->ApCfg.RssiSample.LastRssi1 - pAd->BbpRssiToDbmDelta));
-		sprintf(msg+strlen(msg), "RSSI-C (if available)           = %ld\n\n", (LONG)(pAd->ApCfg.RssiSample.LastRssi2 - pAd->BbpRssiToDbmDelta));
+		sprintf(msg+strlen(msg), "RSSI-C22 (if available)           = %ld\n\n", (LONG)(pAd->ApCfg.RssiSample.LastRssi2 - pAd->BbpRssiToDbmDelta));
+		RTMPIoctlApcliConnStatus(pAd, msg);
 	}
 
 #ifdef WSC_AP_SUPPORT

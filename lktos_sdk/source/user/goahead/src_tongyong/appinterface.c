@@ -69,6 +69,21 @@ static void AppReturnNOK(webs_t wp, char *err_buf)
 	websDone(wp, 200);	
 }
 
+static void AppReturnCode(webs_t wp, char *err_buf,int returnFlag)	
+{	
+	AppReturnHeader(wp);
+	websWrite(wp, T("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"));		
+	websWrite(wp, T("<response>"));	
+	websWrite(wp, T("<retcode>"));	
+	websWrite(wp, T("%d"),returnFlag);
+	websWrite(wp, T("</retcode>"));	
+	websWrite(wp, T("<retdesc>"));	
+	websWrite(wp, T("%s"), err_buf);
+	websWrite(wp, T("</retdesc>"));	
+	websWrite(wp, T("</response>"));	
+	websDone(wp, 200);	
+}
+
 static void AppLogin(webs_t wp, char_t *path, char_t *query)
 {	
 	char *us = websGetVar(wp, T("username"), T("0"));
@@ -106,7 +121,461 @@ static void AppLogin(webs_t wp, char_t *path, char_t *query)
 	AppReturnOK(wp);	
 
 }
+static void Appregusername(webs_t wp, char_t *path, char_t *query)
+{	
+	char *us = websGetVar(wp, T("authname"), T("0"));
+	char *pd = websGetVar(wp, T("authpwd"), T("0"));
+	char *pf = websGetVar(wp, T("regusername"), T("0"));
+	char macbuf[7]={0};
+	char tmpbuf[64]={0};
+	
+	APP_TRACE("us is %s, pd is %s, pf is %s, cv is\n", us, pd, pf);
 
+	const char *username = nvram_bufget(RT2860_NVRAM, "Login"); 
+	const char *password= nvram_bufget(RT2860_NVRAM, "Password"); 
+
+	if (!strcmp(us, "0") || !strcmp(pd, "0") || !strcmp(pf, "0"))
+	{
+		AppReturnNOK(wp, T("parameter error"));
+		return;	
+	}
+	
+	if (!strcmp(us, username) && !strcmp(pd, password))
+		printf("check username and password ok\n");
+	else
+	{
+		AppReturnNOK(wp, T("check username or password error"));
+		return;
+	}
+	nvram_bufset(RT2860_NVRAM, "BandUserEmail", pf);
+	nvram_commit(RT2860_NVRAM);
+	flash_read_wlan_mac(macbuf);
+	sprintf(tmpbuf,"%02X%02X%02X%02X%02X%02X\n",(macbuf[0] & 0377),(macbuf[1] & 0377),(macbuf[2] & 0377),(macbuf[3] & 0377),(macbuf[4] & 0377),(macbuf[5] & 0377));
+	AppReturnHeader(wp);
+	websWrite(wp, T("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"));		
+	websWrite(wp, T("<response>"));	
+	websWrite(wp, T("<retcode>"));	
+	websWrite(wp, T("0"));
+	websWrite(wp, T("</retcode>"));	
+	websWrite(wp, T("<retdesc>"));	
+	websWrite(wp, T("success"));
+	websWrite(wp, T("</retdesc>"));
+	websWrite(wp, T("<data>"));
+	websWrite(wp, T("<sn>orangeswpower%s"),tmpbuf);
+	websWrite(wp, T("</sn>"));
+	websWrite(wp, T("<mac>%s"),tmpbuf);
+	websWrite(wp, T("</mac>"));
+	websWrite(wp, T("</data>"));
+	websWrite(wp, T("</response>"));	
+	websDone(wp, 200);		
+
+}
+
+static void Appwifipara(webs_t wp, char_t *path, char_t *query)
+{	
+	char *us = websGetVar(wp, T("authname"), T("0"));
+	char *pd = websGetVar(wp, T("authpwd"), T("0"));
+	char *pf = websGetVar(wp, T("username"), T("0"));
+	char *routessid = websGetVar(wp, T("routessid"), T("0"));
+	char *routepwd = websGetVar(wp, T("wifipwd"), T("0"));
+	char macbuf[7]={0};
+	char tmpbuf[256]={0};
+	FILE *fp=NULL;
+	int  findhead=0;
+	char *findPtr=NULL;
+	char *findPtrHead=NULL;
+	char *tmpPtr=NULL;
+	char channel[4]={0}, ssid[186]={0}, bssid[20]={0}, security[28]={0};
+	char signal[9], mode[7], ext_ch[7], net_type[3];
+	char iwprivBuf[4096]={0};
+	
+	APP_TRACE("us is %s, pd is %s, pf is %s, cv is\n", us, pd, pf);
+
+	const char *username = nvram_bufget(RT2860_NVRAM, "Login"); 
+	const char *password= nvram_bufget(RT2860_NVRAM, "Password"); 
+
+	if (!strcmp(us, "0") || !strcmp(pd, "0") || !strcmp(pf, "0") || !strcmp(routessid, "0") || !strcmp(pf, "routepwd"))
+	{
+		AppReturnNOK(wp, T("parameter error"));
+		return;	
+	}
+	
+	if (!strcmp(us, username) && !strcmp(pd, password))
+		printf("check username and password ok\n");
+	else
+	{
+		AppReturnNOK(wp, T("check username or password error"));
+		return;
+	}
+	nvram_bufset(RT2860_NVRAM, "clientssid", routessid);
+	nvram_bufset(RT2860_NVRAM, "clientpwd", routepwd);
+	//nvram_commit(RT2860_NVRAM);
+	
+	doSystem("iwpriv ra0 set SiteSurvey=1");
+	if(!(fp = popen("iwpriv ra0 get_site_survey", "r"))) 
+	{
+		AppReturnCode(wp, T("scan ap statiom error"), 3);
+		return ;
+	}
+	fgets(iwprivBuf,sizeof(iwprivBuf),fp);
+	//printf("\r\n-----%s\r\n",iwprivBuf);
+	fgets(iwprivBuf,sizeof(iwprivBuf),fp);
+	//printf("\r\n-----%s\r\n",iwprivBuf);
+	fgets(iwprivBuf,sizeof(iwprivBuf),fp);
+	if(*iwprivBuf == 0)
+	{
+		AppReturnCode(wp, T("scan ap statiom find error"), 3);
+		return ;
+	}
+	//printf("\r\n-----%s\r\n",iwprivBuf);
+	tmpPtr=strstr(iwprivBuf,routessid);
+	if(tmpPtr==NULL)
+	{
+		AppReturnCode(wp, T("ssid not find"), 3);
+		return ;
+	}
+	//printf("\r\n-----%s\r\n",tmpPtr);
+	//printf("\r\n---%c----",*(tmpPtr+strlen(routessid)));
+	while(1)
+	{
+		if(*(tmpPtr+strlen(routessid))==';')
+		{
+			break;
+		}
+		tmpPtr=strstr(tmpPtr+strlen(routessid),routessid);
+		if(tmpPtr == NULL)
+		{
+			break;
+		}
+		//printf("\r\ndsfsdfsdf\r\n");
+		
+	}
+	if(tmpPtr-&iwprivBuf[0]<5)
+	{
+		findhead=1;
+	}
+	if(findhead)
+	{
+		findPtrHead=iwprivBuf;
+		findPtr=strchr(findPtrHead,';');
+		if(findPtr)
+		{
+			*findPtr='\0';
+			strcpy(channel,findPtrHead);
+			//printf("\r\nchannel=%s",channel);
+		}
+		else
+		{
+			AppReturnCode(wp, T("split str for channel error"), 3);
+			return ;
+		}
+
+		findPtrHead=findPtr+1;
+		findPtr=strchr(findPtrHead,';');
+		if(findPtr)
+		{
+			*findPtr='\0';
+			strcpy(ssid,findPtrHead);
+			//printf("\r\nssid=%s",ssid);
+		}
+		else
+		{
+			AppReturnCode(wp, T("split str for ssid error"), 3);
+			return ;
+		}
+
+		findPtrHead=findPtr+1;
+		findPtr=strchr(findPtrHead,';');
+		if(findPtr)
+		{
+			*findPtr='\0';
+			strcpy(bssid,findPtrHead);
+			//printf("\r\nbssid=%s",ssid);
+		}
+		else
+		{
+			AppReturnCode(wp, T("split str for bssid error"), 3);
+			return ;
+		}
+
+		findPtrHead=findPtr+1;
+		findPtr=strchr(findPtrHead,';');
+		if(findPtr)
+		{
+			*findPtr=='\0';
+			strcpy(security,findPtrHead);
+			//printf("\r\nsecurity=%s",security);
+		}
+		else
+		{
+			AppReturnCode(wp, T("split str for security error"), 3);
+			return ;
+		}
+	}
+	else
+	{
+		if(*(tmpPtr-3)=='#')
+		{
+			findPtrHead=tmpPtr-2;
+			//printf("\r\nchanenel is single \r\n");
+		}
+		else if(*(tmpPtr-4)=='#')
+		{
+			findPtrHead=tmpPtr-3;
+			//printf("\r\nchanenel is double \r\n");
+		}
+		else
+		{
+			AppReturnCode(wp, T("split str for find chanel in double"), 3);
+			return ;
+		}
+		//printf("\r\n %s \r\n",findPtrHead);
+		findPtr=strchr(findPtrHead,';');
+		if(findPtr)
+		{
+			*findPtr='\0';
+			strcpy(channel,findPtrHead);
+			//printf("\r\nduble channel=%s",channel);
+		}
+		else
+		{
+			AppReturnCode(wp, T("double split str for channel error"), 3);
+			return ;
+		}
+
+		findPtrHead=findPtr+1;
+		findPtr=strchr(findPtrHead,';');
+		if(findPtr)
+		{
+			*findPtr='\0';
+			strcpy(ssid,findPtrHead);
+			//printf("\r\ndouble ssid=%s",ssid);
+		}
+		else
+		{
+			AppReturnCode(wp, T("double split str for ssid error"), 3);
+			return ;
+		}
+
+		findPtrHead=findPtr+1;
+		findPtr=strchr(findPtrHead,';');
+		if(findPtr)
+		{
+			*findPtr='\0';
+			strcpy(bssid,findPtrHead);
+			//printf("\r\ndouble bssid111=%s",bssid);
+		}
+		else
+		{
+			AppReturnCode(wp, T("double split str for bssid error"), 3);
+			return ;
+		}
+
+		findPtrHead=findPtr+1;
+		findPtr=strchr(findPtrHead,';');
+		if(findPtr)
+		{
+			*findPtr='\0';
+			strcpy(security,findPtrHead);
+			//printf("\r\ndouble security=%s",security);
+		}
+		else
+		{
+			AppReturnCode(wp, T("doublesplit str for security error"), 3);
+			return ;
+		}
+		//printf("\r\ndouble333 security=%s\r\n",security);
+	}
+	//printf("\r\n333sdfsdf-%s-%s\r\n",channel,security);
+	nvram_bufset(RT2860_NVRAM, "Channel",channel);
+	nvram_bufset(RT2860_NVRAM, "ApCliSsid",ssid);
+	nvram_bufset(RT2860_NVRAM, "ApCliBssid","");
+	sprintf(tmpbuf,"iwpriv ra0 set Channel=%s",channel);
+	system(tmpbuf);
+	//printf("\r\nsdfsdf-%s-%s\r\n",channel,security);
+	if(!strncmp(security,"NONE",5))
+	{
+		nvram_bufset(RT2860_NVRAM, "ApCliAuthMode","OPEN");
+		nvram_bufset(RT2860_NVRAM, "ApCliEncrypType","NONE");
+		nvram_commit(RT2860_NVRAM);
+		/*
+		system("iwpriv apcli0 set ApCliEnable 0");
+		system("iwpriv apcli0 set ApCliAuthMode OPEN");
+		system("iwpriv apcli0 set ApCliEncrypType NONE");
+		sprintf(tmpbuf,"iwpriv apcli0 set ApCliSsid %s",ssid);
+		system(tmpbuf);
+		system("iwpriv apcli0 set ApCliEnable 1");
+		*/
+	}
+	else if(!strncmp(security,"WPA2PSK/AES",11))
+	{
+		nvram_bufset(RT2860_NVRAM, "ApCliAuthMode","WPA2PSK");
+		nvram_bufset(RT2860_NVRAM, "ApCliEncrypType","AES");
+		nvram_bufset(RT2860_NVRAM, "ApCliWPAPSK",routepwd);
+		nvram_commit(RT2860_NVRAM);
+		/*
+		printf("\r\n5555sdfsdf-%s-%s\r\n",channel,security);
+		system("iwpriv apcli0 set ApCliEnable 0");
+		system("iwpriv apcli0 set ApCliAuthMode WPA2PSK");
+		system("iwpriv apcli0 set ApCliEncrypType AES");
+		sprintf(tmpbuf,"iwpriv apcli0 set ApCliSsid %s",ssid);
+		system(tmpbuf);
+		sprintf(tmpbuf,"iwpriv apcli0 set ApCliWPAPSK %s",routepwd);
+		system(tmpbuf);
+		system("iwpriv apcli0 set ApCliEnable 1");
+		*/
+	}
+	else if(!strncmp(security,"WPA1PSKWPA2PSK/AES",18))
+	{
+		nvram_bufset(RT2860_NVRAM, "ApCliAuthMode","WPA2PSK");
+		nvram_bufset(RT2860_NVRAM, "ApCliEncrypType","AES");
+		nvram_bufset(RT2860_NVRAM, "ApCliWPAPSK",routepwd);
+		nvram_commit(RT2860_NVRAM);
+		/*
+		system("iwpriv apcli0 set ApCliEnable 0");
+		system("iwpriv apcli0 set ApCliAuthMode WPA2PSK");
+		system("iwpriv apcli0 set ApCliEncrypType AES");
+		sprintf(tmpbuf,"iwpriv apcli0 set ApCliSsid %s",ssid);
+		system(tmpbuf);
+		sprintf(tmpbuf,"iwpriv apcli0 set ApCliWPAPSK %s",routepwd);
+		system(tmpbuf);
+		system("iwpriv apcli0 set ApCliEnable 1");
+		*/
+	}
+	else if(!strncmp(security,"WPA1PSK/AES",11))
+	{
+		nvram_bufset(RT2860_NVRAM, "ApCliAuthMode","WPAPSK");
+		nvram_bufset(RT2860_NVRAM, "ApCliEncrypType","AES");
+		nvram_bufset(RT2860_NVRAM, "ApCliWPAPSK",routepwd);
+		nvram_commit(RT2860_NVRAM);
+		/*
+		system("iwpriv apcli0 set ApCliEnable 0");
+		system("iwpriv apcli0 set ApCliAuthMode WPAPSK");
+		system("iwpriv apcli0 set ApCliEncrypType AES");
+		sprintf(tmpbuf,"iwpriv apcli0 set ApCliSsid %s",ssid);
+		system(tmpbuf);
+		sprintf(tmpbuf,"iwpriv apcli0 set ApCliWPAPSK %s",routepwd);
+		system(tmpbuf);
+		system("iwpriv apcli0 set ApCliEnable 1");
+		*/
+	}
+	else if(!strncmp(security,"WPA1PSK/TKIP",12))
+	{
+		nvram_bufset(RT2860_NVRAM, "ApCliAuthMode","WPAPSK");
+		nvram_bufset(RT2860_NVRAM, "ApCliEncrypType","TKIP");
+		nvram_bufset(RT2860_NVRAM, "ApCliWPAPSK",routepwd);
+		nvram_commit(RT2860_NVRAM);
+		/*
+		system("iwpriv apcli0 set ApCliEnable 0");
+		system("iwpriv apcli0 set ApCliAuthMode WPAPSK");
+		system("iwpriv apcli0 set ApCliEncrypType AES");
+		sprintf(tmpbuf,"iwpriv apcli0 set ApCliSsid %s",ssid);
+		system(tmpbuf);
+		sprintf(tmpbuf,"iwpriv apcli0 set ApCliWPAPSK %s",routepwd);
+		system(tmpbuf);
+		system("iwpriv apcli0 set ApCliEnable 1");
+		*/
+	}
+	else if(!strncmp(security,"WPA2PSK/TKIP",12))
+	{
+		nvram_bufset(RT2860_NVRAM, "ApCliAuthMode","WPA2PSK");
+		nvram_bufset(RT2860_NVRAM, "ApCliEncrypType","TKIP");
+		nvram_bufset(RT2860_NVRAM, "ApCliWPAPSK",routepwd);
+		nvram_commit(RT2860_NVRAM);
+		/*
+		system("iwpriv apcli0 set ApCliEnable 0");
+		system("iwpriv apcli0 set ApCliAuthMode WPAPSK");
+		system("iwpriv apcli0 set ApCliEncrypType TKIP");
+		sprintf(tmpbuf,"iwpriv apcli0 set ApCliSsid %s",ssid);
+		system(tmpbuf);
+		sprintf(tmpbuf,"iwpriv apcli0 set ApCliWPAPSK %s",routepwd);
+		system(tmpbuf);
+		system("iwpriv apcli0 set ApCliEnable 1");
+		*/
+	}
+	else if(!strncmp(security,"WPA1PSKWPA2PSK/TKIPAES",22))
+	{
+		nvram_bufset(RT2860_NVRAM, "ApCliAuthMode","WPA2PSK");
+		nvram_bufset(RT2860_NVRAM, "ApCliEncrypType","AES");
+		nvram_bufset(RT2860_NVRAM, "ApCliWPAPSK",routepwd);
+		nvram_commit(RT2860_NVRAM);
+		/*
+		system("iwpriv apcli0 set ApCliEnable 0");
+		system("iwpriv apcli0 set ApCliAuthMode WPA2PSK");
+		system("iwpriv apcli0 set ApCliEncrypType AES");
+		sprintf(tmpbuf,"iwpriv apcli0 set ApCliSsid %s",ssid);
+		system(tmpbuf);
+		sprintf(tmpbuf,"iwpriv apcli0 set ApCliWPAPSK %s",routepwd);
+		system(tmpbuf);
+		system("iwpriv apcli0 set ApCliEnable 1");
+		*/
+	}
+	else
+	{
+		AppReturnCode(wp, T("wifi sec type error"), 4);
+		return ;
+	}
+	doSystem("internet.sh");
+	AppReturnHeader(wp);
+	websWrite(wp, T("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"));		
+	websWrite(wp, T("<response>"));	
+	websWrite(wp, T("<retcode>"));	
+	websWrite(wp, T("0"));
+	websWrite(wp, T("</retcode>"));	
+	websWrite(wp, T("<retdesc>"));	
+	websWrite(wp, T("success"));
+	websWrite(wp, T("</retdesc>"));
+	websWrite(wp, T("</response>"));	
+	websDone(wp, 200);		
+
+}
+
+static void Appconnecask(webs_t wp, char_t *path, char_t *query)
+{	
+	char *us = websGetVar(wp, T("authname"), T("0"));
+	char *pd = websGetVar(wp, T("authpwd"), T("0"));
+	char *pf = websGetVar(wp, T("username"), T("0"));
+	char macbuf[7]={0};
+	char tmpbuf[64]={0};
+	
+	APP_TRACE("us is %s, pd is %s, pf is %s, cv is\n", us, pd, pf);
+
+	const char *username = nvram_bufget(RT2860_NVRAM, "Login"); 
+	const char *password= nvram_bufget(RT2860_NVRAM, "Password"); 
+
+	if (!strcmp(us, "0") || !strcmp(pd, "0") || !strcmp(pf, "0"))
+	{
+		AppReturnNOK(wp, T("parameter error"));
+		return;	
+	}
+	
+	if (!strcmp(us, username) && !strcmp(pd, password))
+		printf("check username and password ok\n");
+	else
+	{
+		AppReturnNOK(wp, T("check username or password error"));
+		return;
+	}
+	
+	AppReturnHeader(wp);
+	websWrite(wp, T("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"));		
+	websWrite(wp, T("<response>"));	
+	websWrite(wp, T("<retcode>"));	
+	websWrite(wp, T("3"));
+	websWrite(wp, T("</retcode>"));	
+	websWrite(wp, T("<retdesc>"));	
+	websWrite(wp, T("success"));
+	websWrite(wp, T("</retdesc>"));
+	websWrite(wp, T("<data>"));
+	websWrite(wp, T("<sn>orangeswpower%s"),tmpbuf);
+	websWrite(wp, T("</sn>"));
+	websWrite(wp, T("<mac>%s"),tmpbuf);
+	websWrite(wp, T("</mac>"));
+	websWrite(wp, T("</data>"));
+	websWrite(wp, T("</response>"));	
+	websDone(wp, 200);		
+
+}
 static void AppLogout(webs_t wp, char_t *path, char_t *query)
 {
 	AppReturnOK(wp);
@@ -1444,6 +1913,9 @@ static void AppDevReset(webs_t wp, char_t *path, char_t *query)
 void formDefineAppInterface(void)
 {
 	websFormDefine(T("AppLogin"), AppLogin);
+	websFormDefine(T("Appregusername"), Appregusername);
+	websFormDefine(T("Appwifipara"), Appwifipara);
+	websFormDefine(T("Appconnecask"), Appconnecask);
 	websFormDefine(T("AppLogout"), AppLogout);
 	websFormDefine(T("AppSetWifi"), AppSetWifi);
 	websFormDefine(T("AppSetWan"), AppSetWan);
@@ -1454,6 +1926,7 @@ void formDefineAppInterface(void)
 	websFormDefine(T("AppGetNetworkStatus"), AppGetNetworkStatus);
 	websFormDefine(T("AppDevReboot"), AppDevReboot);
 	websFormDefine(T("AppDevReset"), AppDevReset);
+	
 }
 
 
