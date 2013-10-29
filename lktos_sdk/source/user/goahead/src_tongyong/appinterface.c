@@ -128,6 +128,7 @@ static void Appregusername(webs_t wp, char_t *path, char_t *query)
 	char *pf = websGetVar(wp, T("regusername"), T("0"));
 	char macbuf[7]={0};
 	char tmpbuf[64]={0};
+	char tmpbuf2[64]={0};
 	
 	APP_TRACE("us is %s, pd is %s, pf is %s, cv is\n", us, pd, pf);
 
@@ -148,9 +149,12 @@ static void Appregusername(webs_t wp, char_t *path, char_t *query)
 		return;
 	}
 	nvram_bufset(RT2860_NVRAM, "BandUserEmail", pf);
-	nvram_commit(RT2860_NVRAM);
 	flash_read_wlan_mac(macbuf);
-	sprintf(tmpbuf,"%02X%02X%02X%02X%02X%02X\n",(macbuf[0] & 0377),(macbuf[1] & 0377),(macbuf[2] & 0377),(macbuf[3] & 0377),(macbuf[4] & 0377),(macbuf[5] & 0377));
+	sprintf(tmpbuf,"%02X%02X%02X%02X%02X%02X",(macbuf[0] & 0377),(macbuf[1] & 0377),(macbuf[2] & 0377),(macbuf[3] & 0377),(macbuf[4] & 0377),(macbuf[5] & 0377));
+	nvram_bufset(RT2860_NVRAM, "devmac", tmpbuf);
+	sprintf(tmpbuf2,"power%s",tmpbuf);
+	nvram_bufset(RT2860_NVRAM, "devsn", tmpbuf2);
+	nvram_commit(RT2860_NVRAM);
 	AppReturnHeader(wp);
 	websWrite(wp, T("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"));		
 	websWrite(wp, T("<response>"));	
@@ -161,7 +165,7 @@ static void Appregusername(webs_t wp, char_t *path, char_t *query)
 	websWrite(wp, T("success"));
 	websWrite(wp, T("</retdesc>"));
 	websWrite(wp, T("<data>"));
-	websWrite(wp, T("<sn>orangeswpower%s"),tmpbuf);
+	websWrite(wp, T("<sn>power%s"),tmpbuf);
 	websWrite(wp, T("</sn>"));
 	websWrite(wp, T("<mac>%s"),tmpbuf);
 	websWrite(wp, T("</mac>"));
@@ -442,7 +446,7 @@ static void Appwifipara(webs_t wp, char_t *path, char_t *query)
 		system("iwpriv apcli0 set ApCliEnable 1");
 		*/
 	}
-	else if(!strncmp(security,"WPA1PSK/AES",11))
+	else if(!strncmp(security,"WPAPSK/AES",11))
 	{
 		nvram_bufset(RT2860_NVRAM, "ApCliAuthMode","WPAPSK");
 		nvram_bufset(RT2860_NVRAM, "ApCliEncrypType","AES");
@@ -459,7 +463,7 @@ static void Appwifipara(webs_t wp, char_t *path, char_t *query)
 		system("iwpriv apcli0 set ApCliEnable 1");
 		*/
 	}
-	else if(!strncmp(security,"WPA1PSK/TKIP",12))
+	else if(!strncmp(security,"WPAPSK/TKIP",12))
 	{
 		nvram_bufset(RT2860_NVRAM, "ApCliAuthMode","WPAPSK");
 		nvram_bufset(RT2860_NVRAM, "ApCliEncrypType","TKIP");
@@ -537,6 +541,9 @@ static void Appconnecask(webs_t wp, char_t *path, char_t *query)
 	char *pf = websGetVar(wp, T("username"), T("0"));
 	char macbuf[7]={0};
 	char tmpbuf[64]={0};
+	char long_buf[512]={0};
+	char *p=NULL;
+	FILE *fp;
 	
 	APP_TRACE("us is %s, pd is %s, pf is %s, cv is\n", us, pd, pf);
 
@@ -556,24 +563,29 @@ static void Appconnecask(webs_t wp, char_t *path, char_t *query)
 		AppReturnNOK(wp, T("check username or password error"));
 		return;
 	}
-	
-	AppReturnHeader(wp);
-	websWrite(wp, T("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"));		
-	websWrite(wp, T("<response>"));	
-	websWrite(wp, T("<retcode>"));	
-	websWrite(wp, T("3"));
-	websWrite(wp, T("</retcode>"));	
-	websWrite(wp, T("<retdesc>"));	
-	websWrite(wp, T("success"));
-	websWrite(wp, T("</retdesc>"));
-	websWrite(wp, T("<data>"));
-	websWrite(wp, T("<sn>orangeswpower%s"),tmpbuf);
-	websWrite(wp, T("</sn>"));
-	websWrite(wp, T("<mac>%s"),tmpbuf);
-	websWrite(wp, T("</mac>"));
-	websWrite(wp, T("</data>"));
-	websWrite(wp, T("</response>"));	
-	websDone(wp, 200);		
+	system("iwpriv apcli0 stat > /tmp/apcliStatus");			
+	fp = fopen("/tmp/apcliStatus", "r");
+	if (!fp) 
+	{
+		AppReturnCode(wp, T("scan error"), 3);
+		return;
+	}
+
+	while(fgets(long_buf, 512, fp))
+	{ 
+		p = strstr(long_buf, "Disconnect");
+		if (p != NULL) break;
+	}
+	fclose(fp);
+	if (p!=NULL)
+	{
+		AppReturnCode(wp, T("connect error"), 3);	
+	}
+	else
+	{
+		AppReturnOK(wp);
+	}
+	return;
 
 }
 static void AppLogout(webs_t wp, char_t *path, char_t *query)

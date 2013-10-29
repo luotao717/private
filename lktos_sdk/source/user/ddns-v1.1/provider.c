@@ -538,27 +538,13 @@ int ORANGELINK_update_entry(struct userInfo_cxy *info)
 		goto error;
 	}
 	
-	len = sprintf(bp, "GET %s?authname=%s&authpwd=%s", info->service->default_request,info->usrname,info->usrpwd);
+	len = sprintf(bp, "GET %s?authname=%s&authpwd=%s&", info->service->default_request,info->usrname,info->usrpwd);
 	bp += len;
 	
-	len = sprintf(bp, "hostname=%s&", info->host);
+	len = sprintf(bp, "hostname=%s&devmac=%s&devsn=%s", info->host,info->mx,info->backmx);
 	bp += len;
 	
-	if(MY_IP)
-	{
-		len = sprintf(bp, "myip=%s&", MY_IP_STR);
-		bp += len;
-	}
 	
-	len = sprintf(bp, "wildcard=%s&", info->wildcard ? "ON" : "OFF");
-	bp += len;
- 	
-	if(*(info->mx) != '\0')
-	{
-		len = sprintf(bp, "mx=%s&", info->mx);
-		bp += len;
-	}
-
 	len = sprintf(bp,	" HTTP/1.0\r\n"
  						"Authorization: Basic %s\r\n"
  						"User-Agent: %s\r\n"
@@ -571,7 +557,7 @@ int ORANGELINK_update_entry(struct userInfo_cxy *info)
 	*bp = '\0';	
 	
 	output(fd, buf);
-	printf("\r\nsendmessage:\r\n%s",buf);
+	printf("\r\nsendmessage:\r\n%s\r\n",buf);
 	bp = buf;
 	bytes = 0;
 	btot = 0;
@@ -587,7 +573,6 @@ int ORANGELINK_update_entry(struct userInfo_cxy *info)
 	{
 		ret = -1;
 	}
-
 	switch(ret)
 	{
 	case -1:
@@ -596,67 +581,15 @@ int ORANGELINK_update_entry(struct userInfo_cxy *info)
 		break;
 
 	case 200:
-		if(strstr(buf, "\ngood ") != NULL)
+		if(strstr(buf, "\nregdevice=ok") != NULL)
 		{
 			retval = UPDATERES_OK;
 		}
 		else
 		{
-			if(strstr(buf, "\nnohost") != NULL)
-			{
-				printf("invalid hostname\n");
-				retval = UPDATERES_SHUTDOWN;
-			}
-			else if(strstr(buf, "\nnotfqdn") != NULL)
-			{
-				printf("malformed hostname\n");
-				retval = UPDATERES_SHUTDOWN;
-			}
-			else if(strstr(buf, "\n!yours") != NULL)
-			{
-				printf("host is not under your control\n");
-				retval = UPDATERES_SHUTDOWN;
-			}
-			else if(strstr(buf, "\nabuse") != NULL)
-			{
-				printf("host has been blocked for abuse\n");
-				retval = UPDATERES_SHUTDOWN;
-			}
-			else if(strstr(buf, "\nnochg") != NULL)
-			{
-				printf("your IP address has not changed since the last update\n");
-				retval = UPDATERES_OK;
-			}
-			else if(strstr(buf, "\nbadauth") != NULL)
-			{
-				printf("authentication failure\n");
-				retval = UPDATERES_SHUTDOWN;
-			}
-			else if(strstr(buf, "\nbadsys") != NULL)
-			{
-				printf("invalid system parameter\n");
-				retval = UPDATERES_SHUTDOWN;
-			}
-			else if(strstr(buf, "\nbadagent") != NULL)
-			{
-				printf("this useragent has been blocked\n");
-				retval = UPDATERES_SHUTDOWN;
-			}
-			else if(strstr(buf, "\nnumhost") != NULL)
-			{
-				printf("Too many or too few hosts found\n");
-				retval = UPDATERES_SHUTDOWN;
-			}
-			else if(strstr(buf, "\ndnserr") != NULL)
-			{
-				printf("dyndns internal error\n");
-				retval = UPDATERES_ERROR;
-			}
-			else
-			{
-				printf("error processing request\n");
-				retval = UPDATERES_ERROR;
-			}
+			
+			printf("error processing request\n");
+			retval = UPDATERES_ERROR;
 		}
 		break;
 

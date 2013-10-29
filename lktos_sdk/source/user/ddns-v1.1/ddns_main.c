@@ -32,12 +32,12 @@ int main(int argc,char *argv[])
 {
 	struct userInfo_cxy info;
 	int ret;
-	if(argc!=7 && argc!=11)	{
+	if(argc!=7 && argc!=11 && argc!=8)	{
 		usage();
 		return -1;
 	}
 
-	if(strcmp(argv[1],"-s") && strcmp(argv[1],"-m")) {
+	if(strcmp(argv[1],"-s") && strcmp(argv[1],"-m")&& strcmp(argv[1],"-o")) {
 		usage();
 		return -1;
 	}
@@ -46,16 +46,22 @@ int main(int argc,char *argv[])
 	strcpy(info.host, argv[3]);
 	strcpy(info.usrname, argv[4]);
 	strcpy(info.usrpwd, argv[5]);
-	info.ip=inet_addr(argv[6]);
-	SYS_wan_ip=inet_addr(argv[6]);
 	//printf("info.ip=%d\n", info.ip);
 	//printf("SYS_wan_ip=%d\n", SYS_wan_ip);
 
-	if(!strcmp(argv[1],"-s")) {
+	if(!strcmp(argv[1],"-s")) 
+	{
 		strcpy(info.mx, "0");
 		strcpy(info.backmx,"0");
 		info.updated_time=0;
 		info.trytime=0;
+		info.ip=inet_addr(argv[6]);
+		SYS_wan_ip=inet_addr(argv[6]);
+	}
+	else if(!strcmp(argv[1],"-o")) 
+	{
+		strcpy(info.mx, argv[6]);
+		strcpy(info.backmx, argv[7]);
 	}
 	else {
 		strcpy(info.mx, argv[7]);
@@ -74,9 +80,10 @@ int main(int argc,char *argv[])
 
 	ret = info.status = info.service->update_entry(&info);
 	if (!ret)
-		system("echo 1 >/var/ddns_ok");
-	else
-		system("rm -f /var/ddns_ok");
+	{
+		system("echo 1 >/var/regdevice_ok");
+		system("nvram_set 2860 regDevice yes");
+	}
 	return ret;
 }
 
