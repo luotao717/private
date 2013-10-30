@@ -64,17 +64,21 @@ static void nvramIrqHandler(int signum)
 	if (signum == SIGUSR1) {
 		if(currentGpio22Status)
 		{
+			system("killall getinternet");
 			system("gpio k 14 0");
 			system("gpio k 12 1");
 			system("gpio k 13 0");
 			currentGpio22Status=0;
+			system("renewdev -o orange 0 &");
 		}
 		else
 		{
+			system("killall getinternet");
 			system("gpio k  14 1");
 			system("gpio k  12 0");
 			system("gpio k  13 1");
 			currentGpio22Status=1;
+			system("renewdev -o orange 1 &");
 		}
 #ifdef CONFIG_RALINK_RT2880
 		int gopid;

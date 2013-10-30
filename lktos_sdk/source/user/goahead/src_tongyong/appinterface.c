@@ -152,7 +152,7 @@ static void Appregusername(webs_t wp, char_t *path, char_t *query)
 	flash_read_wlan_mac(macbuf);
 	sprintf(tmpbuf,"%02X%02X%02X%02X%02X%02X",(macbuf[0] & 0377),(macbuf[1] & 0377),(macbuf[2] & 0377),(macbuf[3] & 0377),(macbuf[4] & 0377),(macbuf[5] & 0377));
 	nvram_bufset(RT2860_NVRAM, "devmac", tmpbuf);
-	sprintf(tmpbuf2,"power%s",tmpbuf);
+	sprintf(tmpbuf2,"powerbeta1%s",tmpbuf);
 	nvram_bufset(RT2860_NVRAM, "devsn", tmpbuf2);
 	nvram_commit(RT2860_NVRAM);
 	AppReturnHeader(wp);
@@ -165,7 +165,7 @@ static void Appregusername(webs_t wp, char_t *path, char_t *query)
 	websWrite(wp, T("success"));
 	websWrite(wp, T("</retdesc>"));
 	websWrite(wp, T("<data>"));
-	websWrite(wp, T("<sn>power%s"),tmpbuf);
+	websWrite(wp, T("<sn>%s"),tmpbuf2);
 	websWrite(wp, T("</sn>"));
 	websWrite(wp, T("<mac>%s"),tmpbuf);
 	websWrite(wp, T("</mac>"));

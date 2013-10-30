@@ -541,7 +541,7 @@ int ORANGELINK_update_entry(struct userInfo_cxy *info)
 	len = sprintf(bp, "GET %s?authname=%s&authpwd=%s&", info->service->default_request,info->usrname,info->usrpwd);
 	bp += len;
 	
-	len = sprintf(bp, "hostname=%s&devmac=%s&devsn=%s", info->host,info->mx,info->backmx);
+	len = sprintf(bp, "hostname=%s&devsn=%s&devstatus=%s", info->host,info->backmx,info->mx);
 	bp += len;
 	
 	
@@ -581,7 +581,7 @@ int ORANGELINK_update_entry(struct userInfo_cxy *info)
 		break;
 
 	case 200:
-		if(strstr(buf, "\nregdevice=ok") != NULL)
+		if(strstr(buf, "\nsetdevicestatus=ok") != NULL)
 		{
 			retval = UPDATERES_OK;
 		}

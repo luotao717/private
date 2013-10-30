@@ -273,7 +273,8 @@ int main(int argc,char **argv)
 
 	if (!strcmp(nvram_bufget(RT2860_NVRAM, "regDevice"),"yes")) 
 	{
-		printf("\r\n reg device ok yet ,so exit it");
+		printf("\r\n reg device ok yet ,so exit it and excuitr getinger");
+		system("getinternet -o orange 0 &");
 		return 0;
 	}
 	
@@ -290,20 +291,21 @@ int main(int argc,char **argv)
 			FILE *fp = fopen("/var/regdevice_ok", "r");
 			if (NULL != fp) 
 			{
-				printf("\r\n reg ok so exit");
+				printf("\r\n reg ok so exit and excute get command");
+				system("getinternet -o orange 0 &");
 				return 0;
 			}
 			else
 			{
 				sprintf(cmdbuf,"yddns -o orange %s",nvram_bufget(RT2860_NVRAM, "BandUserEmail"));
-				printf("\r\n---tt-%s",cmdbuf);
+				//printf("\r\n---tt-%s",cmdbuf);
 				sprintf(cmdbuf,"%s %s",cmdbuf,"admin");
 				sprintf(cmdbuf,"%s %s",cmdbuf,"admin");
-				printf("\r\n---tt2-%s",cmdbuf);
+				//printf("\r\n---tt2-%s",cmdbuf);
 				sprintf(cmdbuf,"%s %s",cmdbuf,nvram_bufget(RT2860_NVRAM, "devmac"));
-				printf("\r\n---tt3-%s",cmdbuf);
+				//printf("\r\n---tt3-%s",cmdbuf);
 				sprintf(cmdbuf,"%s %s",cmdbuf,nvram_bufget(RT2860_NVRAM, "devsn"));
-				printf("\r\n---tt4-%s",cmdbuf);
+				//printf("\r\n---tt4-%s",cmdbuf);
 				system(cmdbuf);
 			}
 		}
