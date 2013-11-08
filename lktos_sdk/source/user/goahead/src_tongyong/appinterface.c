@@ -152,7 +152,7 @@ static void Appregusername(webs_t wp, char_t *path, char_t *query)
 	flash_read_wlan_mac(macbuf);
 	sprintf(tmpbuf,"%02X%02X%02X%02X%02X%02X",(macbuf[0] & 0377),(macbuf[1] & 0377),(macbuf[2] & 0377),(macbuf[3] & 0377),(macbuf[4] & 0377),(macbuf[5] & 0377));
 	nvram_bufset(RT2860_NVRAM, "devmac", tmpbuf);
-	sprintf(tmpbuf2,"powerbeta1%s",tmpbuf);
+	sprintf(tmpbuf2,"powerfeng1%s",tmpbuf);
 	nvram_bufset(RT2860_NVRAM, "devsn", tmpbuf2);
 	nvram_commit(RT2860_NVRAM);
 	AppReturnHeader(wp);
@@ -186,6 +186,7 @@ static void Appwifipara(webs_t wp, char_t *path, char_t *query)
 	char tmpbuf[256]={0};
 	FILE *fp=NULL;
 	int  findhead=0;
+	int pid;
 	char *findPtr=NULL;
 	char *findPtrHead=NULL;
 	char *tmpPtr=NULL;
@@ -519,7 +520,6 @@ static void Appwifipara(webs_t wp, char_t *path, char_t *query)
 		AppReturnCode(wp, T("wifi sec type error"), 4);
 		return ;
 	}
-	doSystem("internet.sh");
 	AppReturnHeader(wp);
 	websWrite(wp, T("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"));		
 	websWrite(wp, T("<response>"));	
@@ -530,7 +530,14 @@ static void Appwifipara(webs_t wp, char_t *path, char_t *query)
 	websWrite(wp, T("success"));
 	websWrite(wp, T("</retdesc>"));
 	websWrite(wp, T("</response>"));	
-	websDone(wp, 200);		
+	websDone(wp, 200);
+	pid=fork();
+	if(0 == pid)
+	{
+    		sleep(2);
+		doSystem("internet.sh");
+		exit(1);
+	}
 
 }
 
