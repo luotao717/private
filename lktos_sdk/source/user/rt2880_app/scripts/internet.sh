@@ -1002,6 +1002,10 @@ if [ "$shkey" != "check=ok" ]; then
 		ifconfig ra0 down
 	fi
 fi
+regdev=`nvram_get 2860 regDevice`
+if [ "$regdev" = "yes" ]; then
+	ifconfig ra0 down
+fi
 #restart8021XDaemon(RT2860_NVRAM);
 #firewall_init();
 #management_init();

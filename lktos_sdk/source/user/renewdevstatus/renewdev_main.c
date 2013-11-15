@@ -111,10 +111,12 @@ int main(int argc,char *argv[])
 			if(powerStatusrenew)
 			{
 				system("getinternet -o orange 1 &");
+				system("echo 1 > /var/serverStatus");
 			}
 			else
 			{
 				system("getinternet -o orange 0 &");
+				system("echo 0 > /var/serverStatus");
 			}
 			break;
 		}

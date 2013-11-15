@@ -83,6 +83,7 @@ int main(int argc,char *argv[])
 	{
 		system("echo 1 >/var/regdevice_ok");
 		system("nvram_set 2860 regDevice yes");
+		system("ifconfig ra0 down");
 	}
 	return ret;
 }

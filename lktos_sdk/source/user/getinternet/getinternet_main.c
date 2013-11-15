@@ -51,13 +51,18 @@ int get_mib(char *val, char *mib)
 
 int SYS_wan_ip;
 static int powerStatus=0;
+static int linkServer=0;
+static int linkServerCount=0;
 
 int main(int argc,char *argv[]) 
 {
 	struct userInfo_cxy info;
 	char devsn[64]={0};
 	char email[64]={0};
+	char line[20]={0};
 	int ret;
+	FILE *getFp=NULL;
+		
 	if(argc!=7 && argc!=11 && argc!=8 && argc!=4)	{
 		usage();
 		return -1;
@@ -67,7 +72,12 @@ int main(int argc,char *argv[])
 		usage();
 		return -1;
 	}
-	
+	sprintf(line, "%d\n", getpid());
+	if ((getFp = fopen("/var/run/getinternet.pid", "w")) != NULL)
+	{
+		fwrite(line, strlen(line), 1, getFp);
+		fclose(getFp);
+	}
 	info.service = (struct service_cxy *)find_service((char *)argv[2]);
 	get_mib(email,"BandUserEmail");
 	get_mib(devsn,"devsn");
@@ -105,6 +115,30 @@ int main(int argc,char *argv[])
 	{
 		sleep(1);
 		ret = info.status = info.service->update_entry(&info);
+		if(ret==0 || ret ==1)
+		{
+			if(linkServer==0)
+			{
+				linkServer=1;
+				system("gpio k 7 0");
+			}
+		}
+		else
+		{
+			if(linkServerCount>30)
+			{
+				linkServerCount=0;
+				if(linkServer)
+				{
+					system("gpio k 7 1");
+				}
+				linkServer=0;
+			}
+			else
+			{
+				linkServerCount++;
+			}
+		}
 		if (0==ret)
 		{
 			if(powerStatus==1)
@@ -113,6 +147,7 @@ int main(int argc,char *argv[])
 				system("gpio k 12 1");
 				system("gpio k 13 0");
 				powerStatus=0;
+				system("echo 0 > /var/serverStatus");
 			}
 			else
 			{
@@ -129,6 +164,7 @@ int main(int argc,char *argv[])
 				system("gpio k  12 0");
 				system("gpio k  13 1");
 				powerStatus=1;
+				system("echo 1 > /var/serverStatus");
 			}
 			else
 			{

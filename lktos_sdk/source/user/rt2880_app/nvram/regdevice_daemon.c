@@ -22,6 +22,28 @@ int ramad_start(void);
 static char *saved_pidfile;
 static int currentGpio22Status=0;
 
+static int get_mib(char *val, char *mib)
+{
+        FILE *fp;
+         char buf[32];
+
+        sprintf(buf, "nvram_get 2860 %s", mib);
+            fp = popen(buf, "r");
+        if (fp==NULL)
+                return -1;
+
+        if (NULL == fgets(buf, sizeof(buf),fp)) {
+                pclose(fp);
+                return -1;
+        }
+
+        //strcpy(val, strstr(buf, "\"")+1);
+        strcpy(val, buf);
+        val[strlen(val)-1] = '\0';
+        pclose(fp);
+        return 0;
+}
+
 void loadDefault(int chip_id)
 {
     switch(chip_id)
@@ -269,7 +291,11 @@ int main(int argc,char **argv)
 {
 	pid_t pid;
 	int fd;
+	struct stat filestat;
 	char cmdbuf[256]={0};
+	char devMac[36]={0};
+	char devSn[48]={0};
+	char devUserEmail[64]={0};
 
 	if (!strcmp(nvram_bufget(RT2860_NVRAM, "regDevice"),"yes")) 
 	{
@@ -281,7 +307,7 @@ int main(int argc,char **argv)
 	while (1) 
 	{
 		sleep(3);
-		if (!strcmp(nvram_bufget(RT2860_NVRAM, "BandUserEmail"),"")) 
+		if (!strcmp(nvram_bufget(RT2860_NVRAM, "BandUserEmail"),"") && (stat("/var/fpwifiok", &filestat) == -1)) 
 		{
 			printf("\r\n no user so continue!");
 			continue;
@@ -297,15 +323,18 @@ int main(int argc,char **argv)
 			}
 			else
 			{
-				sprintf(cmdbuf,"yddns -o orange %s",nvram_bufget(RT2860_NVRAM, "BandUserEmail"));
+				get_mib(devUserEmail, "BandUserEmail");
+				sprintf(cmdbuf,"yddns -o orange %s",devUserEmail);
 				//printf("\r\n---tt-%s",cmdbuf);
 				sprintf(cmdbuf,"%s %s",cmdbuf,"admin");
 				sprintf(cmdbuf,"%s %s",cmdbuf,"admin");
 				//printf("\r\n---tt2-%s",cmdbuf);
-				sprintf(cmdbuf,"%s %s",cmdbuf,nvram_bufget(RT2860_NVRAM, "devmac"));
+				get_mib(devMac, "devmac");
+				get_mib(devSn, "devsn");
+				sprintf(cmdbuf,"%s %s",cmdbuf,devMac);
 				//printf("\r\n---tt3-%s",cmdbuf);
-				sprintf(cmdbuf,"%s %s",cmdbuf,nvram_bufget(RT2860_NVRAM, "devsn"));
-				//printf("\r\n---tt4-%s",cmdbuf);
+				sprintf(cmdbuf,"%s %s",cmdbuf,devSn);
+				printf("\r\n---tt4-%s",cmdbuf);
 				system(cmdbuf);
 			}
 		}

@@ -184,6 +184,7 @@ static void Appwifipara(webs_t wp, char_t *path, char_t *query)
 	char *routepwd = websGetVar(wp, T("wifipwd"), T("0"));
 	char macbuf[7]={0};
 	char tmpbuf[256]={0};
+	char tmpbuf2[256]={0};
 	FILE *fp=NULL;
 	int  findhead=0;
 	int pid;
@@ -197,8 +198,7 @@ static void Appwifipara(webs_t wp, char_t *path, char_t *query)
 	APP_TRACE("us is %s, pd is %s, pf is %s, cv is\n", us, pd, pf);
 
 	const char *username = nvram_bufget(RT2860_NVRAM, "Login"); 
-	const char *password= nvram_bufget(RT2860_NVRAM, "Password"); 
-
+	const char *password= nvram_bufget(RT2860_NVRAM, "Password");
 	if (!strcmp(us, "0") || !strcmp(pd, "0") || !strcmp(pf, "0") || !strcmp(routessid, "0") || !strcmp(pf, "routepwd"))
 	{
 		AppReturnNOK(wp, T("parameter error"));
@@ -214,6 +214,12 @@ static void Appwifipara(webs_t wp, char_t *path, char_t *query)
 	}
 	nvram_bufset(RT2860_NVRAM, "clientssid", routessid);
 	nvram_bufset(RT2860_NVRAM, "clientpwd", routepwd);
+	nvram_bufset(RT2860_NVRAM, "BandUserEmail", pf);
+	flash_read_wlan_mac(macbuf);
+	sprintf(tmpbuf,"%02X%02X%02X%02X%02X%02X",(macbuf[0] & 0377),(macbuf[1] & 0377),(macbuf[2] & 0377),(macbuf[3] & 0377),(macbuf[4] & 0377),(macbuf[5] & 0377));
+	nvram_bufset(RT2860_NVRAM, "devmac", tmpbuf);
+	sprintf(tmpbuf2,"orpowerluo10%s",tmpbuf);
+	nvram_bufset(RT2860_NVRAM, "devsn", tmpbuf2);
 	//nvram_commit(RT2860_NVRAM);
 	
 	doSystem("iwpriv ra0 set SiteSurvey=1");
@@ -307,7 +313,7 @@ static void Appwifipara(webs_t wp, char_t *path, char_t *query)
 		findPtr=strchr(findPtrHead,';');
 		if(findPtr)
 		{
-			*findPtr=='\0';
+			*findPtr='\0';
 			strcpy(security,findPtrHead);
 			//printf("\r\nsecurity=%s",security);
 		}
@@ -531,6 +537,9 @@ static void Appwifipara(webs_t wp, char_t *path, char_t *query)
 	websWrite(wp, T("</retdesc>"));
 	websWrite(wp, T("</response>"));	
 	websDone(wp, 200);
+	system("echo 1 > /var/fpwifiok");
+	system("gpio l 7 1 1 1 1 1");
+	system("gpio k 7 1");
 	pid=fork();
 	if(0 == pid)
 	{

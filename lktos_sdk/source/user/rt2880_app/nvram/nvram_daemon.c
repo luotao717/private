@@ -21,6 +21,7 @@ int ramad_start(void);
 #endif
 static char *saved_pidfile;
 static int currentGpio22Status=0;
+static int processexcute=0;
 
 void loadDefault(int chip_id)
 {
@@ -62,24 +63,68 @@ void loadDefault(int chip_id)
 static void nvramIrqHandler(int signum)
 {
 	if (signum == SIGUSR1) {
+		int fromServerStatus=-1;
+		int getinternetPid=0;
+		char commandBufStr[20]={0};
+		if(processexcute)
+			return;
+		processexcute=1;
+		FILE *fpStatus = fopen("/var/serverStatus","r");
+		FILE *fpGetinternet = fopen("/var/run/getinternet.pid","r");
+		if(NULL != fpGetinternet)
+		{
+			fscanf(fpGetinternet, "%d", &getinternetPid);
+			fclose(fpGetinternet);
+			sprintf(commandBufStr,"kill -9 %d",getinternetPid);
+		}	
+		if(NULL != fpStatus)
+		{
+			fscanf(fpStatus, "%d", &fromServerStatus);
+			if(fromServerStatus ==0 || fromServerStatus ==1)
+			{
+				currentGpio22Status=fromServerStatus;
+			}
+			fclose(fpStatus);
+		}
 		if(currentGpio22Status)
 		{
-			system("killall getinternet");
+			if(!getinternetPid)
+				{
+				system("killall renewdev");
+				system("killall getinternet");
+				}
+			else
+				{
+				system("killall renewdev");
+				system(commandBufStr);
+				}
 			system("gpio k 14 0");
 			system("gpio k 12 1");
 			system("gpio k 13 0");
 			currentGpio22Status=0;
+			system("echo 0 > /var/serverStatus");
 			system("renewdev -o orange 0 &");
 		}
 		else
 		{
-			system("killall getinternet");
+			if(!getinternetPid)
+				{
+				system("killall renewdev");
+				system("killall getinternet");
+				}
+			else
+				{
+				system("killall renewdev");
+				system(commandBufStr);
+				}
 			system("gpio k  14 1");
 			system("gpio k  12 0");
 			system("gpio k  13 1");
 			currentGpio22Status=1;
+			system("echo 1 > /var/serverStatus");
 			system("renewdev -o orange 1 &");
 		}
+		processexcute=0;
 #ifdef CONFIG_RALINK_RT2880
 		int gopid;
 		FILE *fp = fopen("/var/run/goahead.pid", "r");
@@ -104,6 +149,7 @@ static void nvramIrqHandler(int signum)
 #endif
 	} else if (signum == SIGUSR2) {
 		printf("load default and reboot..\n");
+		system("gpio l 7 6 6 4000 1 1");
 		loadDefault(2860);
 #if defined (CONFIG_RTDEV) || \
     defined (CONFIG_RTDEV_PLC)
@@ -297,7 +343,15 @@ int main(int argc,char **argv)
 
 	fd = pidfile_acquire("/var/run/nvramd.pid");
 	pidfile_write_release(fd);
-	system("gpio l 7 6 6 4000 1 1");
+	if(strcmp(nvram_bufget(RT2860_NVRAM, "BandUserEmail"),""))
+	{
+		system("gpio l 7 1 1 1 1 1");
+		system("gpio k 7 1");
+	}
+	else
+	{
+		system("gpio l 7 6 6 4000 1 1");
+	}
 	system("gpio k 12 1");
 
 #ifdef CONFIG_RT2880_L2_MANAGE
