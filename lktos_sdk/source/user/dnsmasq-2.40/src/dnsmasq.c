@@ -89,7 +89,8 @@ static int init_dnsspoof_ipmac(void)
 	pDnsspoof_data->current_Num=0;
 	get_mib(lanipbuf,"lan_ipaddr");
 	inet_aton(lanipbuf,&lanipInt);
-	sublanipInt=lanipInt & 0xffffff00;
+//	lanipInt = htonl(lanipInt );
+	sublanipInt=lanipInt & 0x00ffffff;
 	pDnsspoof_data->lan_ip=lanipInt;
 	pDnsspoof_data->sub_ip=sublanipInt;
 	reinit_dnsspoof_ipmac();
@@ -97,6 +98,41 @@ static int init_dnsspoof_ipmac(void)
 }
 
 
+static int writeMyPid(void)
+{
+	FILE *fp;
+
+	fp = fopen("/var/run/dnsmasq.pid", "w+");
+	if (NULL == fp) 
+	{
+		printf("dnsmasq: cannot open pid file\r\n");
+		return (-1);
+	}
+	fprintf(fp, "%d", getpid());
+    	fclose(fp);
+	return 0;
+}
+
+void authIrqHandler(int signum)
+{
+	if (signum == SIGUSR1)
+	{
+		char clientIpBuf[64]={0};
+		char cmdBuf[128]={0};
+		unsigned long clientIp=0;
+		FILE *fp=fopen("/tmp/clientIp","r");
+		if(NULL == fp)
+		{
+			printf("\r\n no client ip\r\n");
+			return;
+		}
+		fscanf(fp, "%s", clientIpBuf);
+		fclose(fp);
+		inet_aton(clientIpBuf,&clientIp);
+	       my_syslog(LOG_INFO, _("clientip%s--%08x--"), clientIpBuf,clientIp);
+		pDnsspoof_data->lan_ipmac_entry_tbl[htonl(clientIp) & 0x000000ff].is_Auth_Ok=1;
+	}
+}
 
 int main (int argc, char **argv)
 {
@@ -109,7 +145,8 @@ int main (int argc, char **argv)
   struct passwd *ent_pw;
   long i, max_fd = sysconf(_SC_OPEN_MAX);
 
- 
+  writeMyPid();
+  signal(SIGUSR1, authIrqHandler);
 
 #ifndef NO_GETTEXT
   setlocale(LC_ALL, "");
@@ -120,7 +157,7 @@ int main (int argc, char **argv)
   sigact.sa_handler = sig_handler;
   sigact.sa_flags = 0;
   sigemptyset(&sigact.sa_mask);
-  sigaction(SIGUSR1, &sigact, NULL);
+  //sigaction(SIGUSR1, &sigact, NULL);
   sigaction(SIGUSR2, &sigact, NULL);
   sigaction(SIGHUP, &sigact, NULL);
   sigaction(SIGTERM, &sigact, NULL);
@@ -388,7 +425,7 @@ int main (int argc, char **argv)
     my_syslog(LOG_INFO, _("started, version %s cache disabled"), VERSION);
   
   my_syslog(LOG_INFO, _("compile time options: %s"), compile_opts);
-  my_syslog(LOG_INFO, _("init dnsspoof module work in mode=%d  ,%0x--%ul   %0x--%ul   $$$$$$$ %d"),pDnsspoof_data->is_Enable,pDnsspoof_data->lan_ip,pDnsspoof_data->lan_ip,pDnsspoof_data->sub_ip,pDnsspoof_data->sub_ip,((pDnsspoof_data->lan_ip)-(pDnsspoof_data->sub_ip)));
+  my_syslog(LOG_INFO, _("init dnsspoof module work in mode=%d  ,%08x--%ul   %08x--%ul   $$$$$$$ %d"),pDnsspoof_data->is_Enable,pDnsspoof_data->lan_ip,pDnsspoof_data->lan_ip,pDnsspoof_data->sub_ip,pDnsspoof_data->sub_ip,((pDnsspoof_data->lan_ip)-(pDnsspoof_data->sub_ip)));
   
 #ifdef HAVE_DBUS
   if (daemon->options & OPT_DBUS)

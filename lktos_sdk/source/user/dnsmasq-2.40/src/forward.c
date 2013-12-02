@@ -656,12 +656,32 @@ void receive_query(struct listener *listen, time_t now)
 
  if(pDnsspoof_data->is_Enable == 1)
 {
-	my_syslog(LOG_INFO, _("mode=1 no send"));
-	m = answer_request_dnsspoof (header, ((char *) header) + PACKETSZ, (size_t)n, dst_addr_4, netmask, now);
-	//if(!strcmp(daemon->namebuff,"www.apple.com"))
-		//return;
-	if(m >=1)
-		send_from(listen->fd, daemon->options & OPT_NOWILD, (char *)header, m , &source_addr, &dst_addr, if_index);
+	my_syslog(LOG_INFO, _("mode=111 no send--%08x--sub=%08x"),source_addr.in.sin_addr,((source_addr.in.sin_addr.s_addr) & 0x00ffffff));
+	if((((source_addr.in.sin_addr.s_addr) & 0x00ffffff) == pDnsspoof_data->sub_ip)  && pDnsspoof_data->lan_ipmac_entry_tbl[htonl(source_addr.in.sin_addr.s_addr) & 0x000000ff].is_Auth_Ok == 0)
+	{
+		my_syslog(LOG_INFO, _("mode=1 no send--issubip--%08x"),source_addr.in.sin_addr);
+		m = answer_request_dnsspoof (header, ((char *) header) + PACKETSZ, (size_t)n, dst_addr_4, netmask, now);
+		//if(!strcmp(daemon->namebuff,"www.apple.com"))
+			//return;
+		if(m >=1)
+			send_from(listen->fd, daemon->options & OPT_NOWILD, (char *)header, m , &source_addr, &dst_addr, if_index);
+	}
+	else
+	{
+		  m = answer_request (header, ((char *) header) + PACKETSZ, (size_t)n, dst_addr_4, netmask, now);
+		  if (m >= 1)
+		  {
+		     my_syslog(LOG_INFO, _("mode=1 recieve111 %s--%s--%s"), inet_ntoa(dst_addr_4),inet_ntoa(source_addr.in.sin_addr),(char *)header);
+		    send_from(listen->fd, daemon->options & OPT_NOWILD, (char *)header, m, &source_addr, &dst_addr, if_index);
+		  }
+		  else
+		  {
+		  	my_syslog(LOG_INFO, _("mode=1 no send"));
+			//send_from(listen->fd, daemon->options & OPT_NOWILD, (char *)header, 36, &source_addr, &dst_addr, if_index);
+		   	 forward_query(listen->fd, &source_addr, &dst_addr, if_index,header, (size_t)n, now, NULL);
+		  }
+	}
+	
 }
 else if(pDnsspoof_data->is_Enable == 2)
 {

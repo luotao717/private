@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <sys/socket.h>
 #include <sys/ioctl.h>
+#include <signal.h>
 #include <arpa/inet.h>
 #include <asm/types.h>
 #include <linux/if.h>
@@ -491,6 +492,67 @@ static void DDNS(webs_t wp, char_t *path, char_t *query)
 	websRedirect(wp, submitUrl);          
 }
 #endif
+
+
+/*
+ * goform/DDNS
+ */
+static void clientAuth(webs_t wp, char_t *path, char_t *query)
+{
+	char_t  *submitUrl = websGetVar(wp, T("submit-url"), T(""));
+
+	char_t cmdBuf[128]={0};
+	int dnsmasqpid;
+	FILE *fp = fopen("/var/run/dnsmasq.pid", "r");
+	if (NULL == fp) 
+	{
+		goto setErrAuth;
+	}
+	fscanf(fp, "%d", &dnsmasqpid);
+	if (dnsmasqpid < 2) 
+	{
+		goto setErrAuth;
+	}
+	fclose(fp);
+	sprintf(cmdBuf,"echo %s > /tmp/clientIp",wp->ipaddr);
+	system(cmdBuf);
+	kill(dnsmasqpid, SIGUSR1);
+	websWrite(wp, T("HTTP/1.0 200 OK\n"));
+	websWrite(wp, T("Server: %s\r\n"), WEBS_NAME);
+	websWrite(wp, T("Pragma: no-cache\n"));
+	websWrite(wp, T("Cache-control: no-cache\n"));
+	websWrite(wp, T("Content-Type: text/html\n"));
+	websWrite(wp, T("\n"));
+	websWrite(wp, T("<html>\n<head>\n"));
+	websWrite(wp, T("<title>My Title</title>"));
+	websWrite(wp, T("<meta http-equiv=\"content-type\" content=\"text/html;\
+				charset=gb2312\">"));
+	websWrite(wp, T("</head>\n<body>\n"));
+	websWrite(wp, T("<h2>认证成功</h2><br>\n"));
+	websWrite(wp, T("请关闭浏览器后重新打开进行上网<br>\n"));
+	websFooter(wp);
+	websDone(wp, 200);
+	return;
+setErrAuth:
+	websWrite(wp, T("HTTP/1.0 200 OK\n"));
+	websWrite(wp, T("Server: %s\r\n"), WEBS_NAME);
+	websWrite(wp, T("Pragma: no-cache\n"));
+	websWrite(wp, T("Cache-control: no-cache\n"));
+	websWrite(wp, T("Content-Type: text/html\n"));
+	websWrite(wp, T("\n"));
+	websWrite(wp, T("<html>\n<head>\n"));
+	websWrite(wp, T("<title>My Title</title>"));
+	websWrite(wp, T("<meta http-equiv=\"content-type\" content=\"text/html;\
+				charset=gb2312\">"));
+	websWrite(wp, T("</head>\n<body>\n"));
+	websWrite(wp, T("<h2>认证错误</h2><br>\n"));
+	websWrite(wp, T("认证错误<br>\n"));
+	websFooter(wp);
+	websDone(wp, 200);;
+	return;
+	
+}
+
 
 #ifdef CONFIG_USER_SNORT
 /*
@@ -1290,6 +1352,7 @@ void formDefineManagement(void)
 	websFormDefine(T("DDNS"), DDNS);
 	websAspDefine(T("getDdnsCombox"), getDdnsCombox);
 #endif
+	websFormDefine(T("clientAuth"), clientAuth);
 #ifdef CONFIG_USER_SNORT
 	websFormDefine(T("Snort"), Snort);
 #endif

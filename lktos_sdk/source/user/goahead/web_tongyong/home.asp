@@ -1,33 +1,52 @@
 <html>
 <head>
-<title>WIDISK</title>
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="-1">
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+<script language="javascript">
+function formCheck()
+{
+	
+	return true;
+}
+
+
+function resetForm()
+{
+	location=location; 
+}
+</script>
 </head>
-<body bgcolor="#FFFFFF" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
-<!-- ImageReady Slices (第一层1024X768.JPG) -->
-<table id="__01" width="1024" height="768" border="0" cellpadding="0" cellspacing="0" align="center">
-	<tr>
-		<td colspan="5">
-			<img src="images/luotao_01.jpg" width="1024" height="290" alt=""></td>
-	</tr>
-	<tr>
-		<td rowspan="2">
-			<img src="images/luotao_02.jpg" width="127" height="478" alt=""></td>
-			<% ShowPartitionLuoSingle(); %>
-		<td rowspan="2">
-			<img src="images/luotao_04.jpg" width="213" height="478" alt=""></td>
-		<td>
-			<a href="setup.asp" target="_self"><img src="images/luotao_05.gif" width="273" height="408" border="0" alt=""></a></td>
-		<td rowspan="2">
-			<img src="images/luotao_06.jpg" width="136" height="478" alt=""></td>
-	</tr>
-	<tr>
-		<td>
-			<img src="images/luotao_07.jpg" width="275" height="70" alt=""></td>
-		<td>
-			<img src="images/luotao_08.jpg" width="273" height="70" alt=""></td>
-	</tr>
+<body onLoad="Load_Setting()" class="mainbody">
+<blockquote>
+<table width=700><tr><td>
+<table width=100% border=0 cellpadding=3 cellspacing=1> 
+<tr><td class="title">自动认证</td></tr>
+<tr><td>请填入手机号后点击按钮</td></tr>
+<tr><td><hr></td></tr>
 </table>
-<!-- End ImageReady Slices -->
-</body>
-</html>
+
+<form method="post" name="DDNS" action="/goform/clientAuth">
+<input type="hidden" name="submit-url" value="/home.asp">
+<table width=100% border=0 cellpadding=3 cellspacing=1> 
+
+<tr>
+  <td class="thead">手机号:</td>
+  <td><input type="text" name="Account" value=""> </td>
+</tr>
+</table>
+
+<br>
+<table width=100% border=0 cellpadding=3 cellspacing=1> 
+  <tr>
+    <td>
+      <input type=submit class=button value="提交" onClick="return formCheck()"> &nbsp; &nbsp;
+      <input type=button class=button value="重置" onClick="resetForm();">
+    </td>
+  </tr>
+</table>
+</form>
+
+</td></tr></table>
+</blockquote>
+</body></html>
