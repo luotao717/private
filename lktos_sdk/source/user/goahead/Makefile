@@ -40,6 +40,7 @@ endif
 
 romfs:
 	$(ROMFSINST) $(ROOT_DIRECTORY)
+	cp -rf ./system $(ROMFSDIR)
 ifeq ("$(CONFIG_USER_PPPOECD)", "y")
 	mv $(ROMFSDIR)$(ROOT_DIRECTORY)/internet/wan_simple.asp $(ROMFSDIR)$(ROOT_DIRECTORY)/internet/wan.asp
 else

@@ -322,6 +322,8 @@ image:
 	[ -d $(IMAGEDIR) ] || mkdir $(IMAGEDIR)
 	$(MAKEARCH) -C vendors image
 	cp $(IMAGEDIR)/$(USER)_uImage $(TFTPDIR)
+	cp $(IMAGEDIR)/$(USER)_uImage $(IMAGEDIR)/../genimage/$(USER)_uImage
+	cp $(IMAGEDIR)/ramdisk $(IMAGEDIR)/../genimage/ramdisk
 
 .PHONY: release
 release:

@@ -102,7 +102,6 @@ void formDefineUSB(void) {
 	websAspDefine(T("ShowAllDir"), ShowAllDir);
 	websAspDefine(T("ShowPartitionLuo"), ShowPartitionLuo);//by luotao
 	websAspDefine(T("ShowPartitionLuoSingle"), ShowPartitionLuoSingle);//by luotao
-	websAspDefine(T("ShowLeftItem"), ShowLeftItem);//by luotao
 	websAspDefine(T("ShowAllDirFile1"), ShowAllDirFile1);
 	websAspDefine(T("ShowAllDirFile2"), ShowAllDirFile2); //by luotao
 	websAspDefine(T("ShowDirFile1"), ShowDirFile1);
