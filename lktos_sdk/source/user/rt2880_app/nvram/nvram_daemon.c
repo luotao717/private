@@ -350,7 +350,8 @@ int main(int argc,char **argv)
 	}
 	else
 	{
-		system("gpio l 7 6 6 4000 1 1");
+		//system("gpio l 7 6 6 4000 1 1");
+              system("gpio l 7 1 1 4000 1 1");
 	}
 	system("gpio k 12 1");
 

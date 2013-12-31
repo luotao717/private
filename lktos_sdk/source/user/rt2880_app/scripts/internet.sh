@@ -1003,9 +1003,9 @@ if [ "$shkey" != "check=ok" ]; then
 	fi
 fi
 regdev=`nvram_get 2860 regDevice`
-if [ "$regdev" = "yes" ]; then
-	ifconfig ra0 down
-fi
+#if [ "$regdev" = "yes" ]; then
+#	ifconfig ra0 down
+#fi
 #restart8021XDaemon(RT2860_NVRAM);
 #firewall_init();
 #management_init();
@@ -1014,10 +1014,10 @@ fi
 #wlancryptluotaott=`nvram_get 2860 wlancryptluotao`
 #echo $wlancryptluotaott > /tmp/wlancryptfile
 echo "--------------------------------"
-#config-powersave.sh ethernet 1  1
-#config-powersave.sh ethernet 1  2
-#config-powersave.sh ethernet 1  3
-#config-powersave.sh ethernet 1  4
-#config-powersave.sh ethernet 1  0
+config-powersave.sh ethernet 1  1
+config-powersave.sh ethernet 1  2
+config-powersave.sh ethernet 1  3
+config-powersave.sh ethernet 1  4
+config-powersave.sh ethernet 1  0
 config-powersave.sh sdr 1
 echo "++++++++++++++++++++++++++++++++"
