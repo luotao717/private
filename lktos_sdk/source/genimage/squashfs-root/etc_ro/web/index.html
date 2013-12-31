@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="pragma" content="no-cache" />
+<meta http-equiv="no-cache">
+<meta http-equiv="Expires" content="-1">
+<meta http-equiv="Cache-Control" content="no-cache">
+<title>welcome</title>
+<meta name="viewport"
+	content="width=device-width, height=device-height, initial-scale=1, user-scalable=no" />
+<link rel="stylesheet" href="css/themes/default/jquery.mobile-1.3.1.min.css" />
+<style type="text/css">
+.statusTitle {
+	display: block;
+	width: 40%;
+	float: left;
+}
+
+.statusValue {
+	text-align: center;
+	display: block;
+	width: 60%;
+	float: left;
+}
+.TimeBegin {
+	text-align: left;
+	display:block;
+	width: 50%;
+	float: left;
+}
+
+.TimeEnd {
+	text-align: right;
+	display:block;
+	width: 50%;
+	float: left;
+}
+</style>
+
+<script src="js/jquery.js"></script>
+<script src="js/jquery.mobile-1.3.1.min.js"></script>
+<script src="script/i18n.js"></script>
+<script src="script/event.js"></script>
+<script src="script/ajax.js"></script>
+<script src="script/main.js"></script>
+</head>
+<body>
+
+	<div id="wifipage" data-role="page" class="systemPage">
+		<div data-role="header" data-theme="d">
+		    <h1 lang.key="login.message">&nbsp;</h1>
+		    <a href="#statusPage" data-transition="slide" data-icon="gear" ><span lang.key="login.signout">&nbsp;</span></a>
+		    <!--<a href="#RemotePage" data-transition="slide" class="RemoteLink" data-icon="bars" ><span lang.key="remote.control">&nbsp;</span></a>-->
+		</div>
+		<div id="networkTitleDiv">
+		<ul>
+		<span id="networkState" lang.key="network.connect.state" >&nbsp;</span>
+		<span id="networkState_ssid">&nbsp;</span>
+		<span id="networkState_change">&nbsp;</span>
+		
+		</ul>
+		</div>
+		<div class="ui-corner-all" id="popupDialog_wifi" style="max-width: 400px" data-role="popup" data-overlay-theme="a" data-theme="c" data-dismissible="false">
+	    <div class="ui-corner-top" data-role="header" data-theme="a">
+	        <h1 id="title_alert" lang.key="pop.dliage">&nbsp;</h1>
+	    </div>
+	    <div class="ui-corner-bottom ui-content" data-role="content" data-theme="b" align="center">
+	        <h3 class="ui-title" lang.key="wifi.connect.info">&nbsp;</h3>
+	        <input id=wiFiPwd type=password size=width:50px height:24px;font-size:16px>
+	        <a href="#" data-role="button" data-rel="back" data-theme="c" data-inline="true"><span lang.key="pop.canel">Cannel</span></a>
+	        <a href="#" data-role="button" data-transition="flow" data-rel="back" data-theme="b" data-inline="true" id="wiFiBtn"><span lang.key="network.connect">Connect</span></a>
+	    </div>
+		</div>
+		<div class="ui-corner-all" id="popupDialog_wifi_alert" style="max-width: 400px" data-role="popup" data-overlay-theme="a" data-theme="c">
+	   	<a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Close</a>
+	    <div class="ui-corner-bottom ui-content" data-role="content" data-theme="d" align="center">
+	        <h3 class="ui-title" id="alert_wifi">&nbsp;</h3>
+	        <a href="#" data-role="button" data-rel="back" data-theme="c" data-inline="true"><span lang.key="pop.ok">Ok</span></a>
+	    </div>
+		</div>
+		<div data-role="content" class="content">
+		<ul id="networkContentDiv"  data-role="listview" data-inset="true" data-filter="false">
+		<li data-theme="b" ><span data-inline="true" id="networkMessage" lang.key="network.selectinfo">&nbsp;</span><span data-inline="true"  id="Refreshwifi" data-role="button" data-icon="refresh" data-iconpos="notext">&nbsp;</span></li>
+		<li id="wifi_pa1" style="display:none;"><a id="wifi1" href="#"><span id="wifi_sign1" style="margin-right:10px; display: inline-block; background-image: url(style/image/wifilist.png); background-position: -180px 0px ;width: 45px; height: 37px; vertical-align: middle;"></span>
+         <span id="wifi_ssid1">&nbsp;</span></a></li>
+		<li id="wifi_pa2" style="display:none;"><a id="wifi2" href="#"><span id="wifi_sign2" style="margin-right:10px; display: inline-block; background-image: url(style/image/wifilist.png); background-position: -180px 0px ;width: 45px; height: 37px; vertical-align: middle;"></span>
+         <span id="wifi_ssid2">&nbsp;</span></a></li>
+		<li id="wifi_pa3" style="display:none;"><a id="wifi3" href="#"><span id="wifi_sign3" style="margin-right:10px; display: inline-block; background-image: url(style/image/wifilist.png); background-position: -180px 0px ;width: 45px; height: 37px; vertical-align: middle;"></span>
+         <span id="wifi_ssid3">&nbsp;</span></a></li>
+         <li id="wifi_pa4" style="display:none;"><a id="wifi4" href="#"><span id="wifi_sign4" style="margin-right:10px; display: inline-block; background-image: url(style/image/wifilist.png); background-position: -180px 0px ;width: 45px; height: 37px; vertical-align: middle;"></span>
+         <span id="wifi_ssid4">&nbsp;</span></a></li>
+         <li id="wifi_pa5" style="display:none;"><a id="wifi5" href="#"><span id="wifi_sign5" style="margin-right:10px; display: inline-block; background-image: url(style/image/wifilist.png); background-position: -180px 0px ;width: 45px; height: 37px; vertical-align: middle;"></span>
+         <span id="wifi_ssid5">&nbsp;</span></a></li>
+         <li id="wifi_pa6" style="display:none;"><a id="wifi6" href="#"><span id="wifi_sign6" style="margin-right:10px; display: inline-block; background-image: url(style/image/wifilist.png); background-position: -180px 0px ;width: 45px; height: 37px; vertical-align: middle;"></span>
+         <span id="wifi_ssid6">&nbsp;</span></a></li>
+         <li id="wifi_pa7" style="display:none;"><a id="wifi7" href="#"><span id="wifi_sign7" style="margin-right:10px; display: inline-block; background-image: url(style/image/wifilist.png); background-position: -180px 0px ;width: 45px; height: 37px; vertical-align: middle;"></span>
+         <span id="wifi_ssid7">&nbsp;</span></a></li>
+         <li id="wifi_pa8" style="display:none;"><a id="wifi8" href="#"><span id="wifi_sign8" style="margin-right:10px; display: inline-block; background-image: url(style/image/wifilist.png); background-position: -180px 0px ;width: 45px; height: 37px; vertical-align: middle;"></span>
+         <span id="wifi_ssid8">&nbsp;</span></a></li>
+         <li id="wifi_pa9" style="display:none;"><a id="wifi9" href="#"><span id="wifi_sign9" style="margin-right:10px; display: inline-block; background-image: url(style/image/wifilist.png); background-position: -180px 0px ;width: 45px; height: 37px; vertical-align: middle;"></span>
+         <span id="wifi_ssid9">&nbsp;</span></a></li>
+         <li id="wifi_pa10" style="display:none;"><a id="wifi10" href="#"><span id="wifi_sign10" style="margin-right:10px; display: inline-block; background-image: url(style/image/wifilist.png); background-position: -180px 0px ;width: 45px; height: 37px; vertical-align: middle;"></span>
+         <span id="wifi_ssid10">&nbsp;</span></a></li>
+         <li id="wifi_pa11" style="display:none;"><a id="wifi11" href="#"><span id="wifi_sign11" style="margin-right:10px; display: inline-block; background-image: url(style/image/wifilist.png); background-position: -180px 0px ;width: 45px; height: 37px; vertical-align: middle;"></span>
+         <span id="wifi_ssid11">&nbsp;</span></a></li>
+         <li id="wifi_pa12" style="display:none;"><a id="wifi12" href="#"><span id="wifi_sign12" style="margin-right:10px; display: inline-block; background-image: url(style/image/wifilist.png); background-position: -180px 0px ;width: 45px; height: 37px; vertical-align: middle;"></span>
+         <span id="wifi_ssid12">&nbsp;</span></a></li>
+         <li id="wifi_pa13" style="display:none;"><a id="wifi13" href="#"><span id="wifi_sign13" style="margin-right:10px; display: inline-block; background-image: url(style/image/wifilist.png); background-position: -180px 0px ;width: 45px; height: 37px; vertical-align: middle;"></span>
+         <span id="wifi_ssid13">&nbsp;</span></a></li>
+         <li id="wifi_pa14" style="display:none;"><a id="wifi14" href="#"><span id="wifi_sign14" style="margin-right:10px; display: inline-block; background-image: url(style/image/wifilist.png); background-position: -180px 0px ;width: 45px; height: 37px; vertical-align: middle;"></span>
+         <span id="wifi_ssid14">&nbsp;</span></a></li>
+         <li id="wifi_pa15" style="display:none;"><a id="wifi15" href="#"><span id="wifi_sign15" style="margin-right:10px; display: inline-block; background-image: url(style/image/wifilist.png); background-position: -180px 0px ;width: 45px; height: 37px; vertical-align: middle;"></span>
+         <span id="wifi_ssid15">&nbsp;</span></a></li>
+		</ul>
+		</div>
+	</div>
+		
+	<div id="statusPage" data-role="page" class="statusPage">
+		<div data-role="header" data-theme="d">
+			 <a href="#wifipage" data-transition="slide" data-icon="home"><span lang.key="home.button">&nbsp;</span></a>
+			<h1 lang.key="common.status">&nbsp;</h1>
+			<div data-role="navbar">
+	        <ul>
+	            <li><a href="#systemPage" class="systemLink" data-theme="b"><span lang.key="common.system">&nbsp;</span></a></li>
+	            <li><a href="#networkPage" class="networkLink" data-theme="b"><span lang.key="common.network">&nbsp;</span></a></li>
+	            <li id="liuartPageLink" class="liuartPageLink"><a href="#uartPage" class="uartLink" data-theme="b" onclick="onUartLoad()"><span lang.key="common.uart">&nbsp;</span></a></li>
+	            <!--<li><a href="#videoPage"  class="videoLink" data-theme="b"><span lang.key="common.video">&nbsp;</span></a></li>
+	            <li><a href="#RemotePage"class="RemoteLink" data-theme="b"><span lang.key="remote.control">&nbsp;</span></a></li>-->
+	        </ul>
+	        </div>
+		</div>
+		<div data-role="collapsible-set" data-theme="c" data-content-theme="d">
+			<div data-role="collapsible" data-collapsed="false">
+				<h3 lang.key="system.version">&nbsp;</h3>
+			  <ul data-role="listview">
+				<li style="display:none"><span class="statusTitle" id="deviceNameProperty" index="0" lang.key="status.devicename">Device Name:</span> <span
+					class="statusValue" id="deviceNameValue" index="0">&nbsp;</span>
+					<div style="clear: both;"></div></li>
+				<li><span class="statusTitle" id="languageProperty" index="0" lang.key="status.language">Language:</span> <span
+					class="statusValue" id="languageValue" index="0">&nbsp;</span>
+					<div style="clear: both;"></div></li>
+				<li style="display:none;"><span class="statusTitle" index="0" lang.key="status.passprotect">Password Protection:</span> <span
+					class="statusValue" id="passwordProtectValue" index="0">&nbsp;</span>
+					<div style="clear: both;"></div></li>
+				<li><span class="statusTitle" index="0" lang.key="status.firmver">Firmware Version:</span> <span
+					class="statusValue" id="firmVersionValue" index="0">&nbsp;</span>
+					<div style="clear: both;"></div></li>
+				<li><span class="statusTitle" index="0" lang.key="status.uuid">Firmware Version:</span> <span
+					class="statusValue" id="UUIDValue" index="0">&nbsp;</span>
+					<div style="clear: both;"></div></li>
+				<li><span class="statusTitle" index="0" lang.key="status.apcli0">Apcli0 IP:</span> <span
+					class="statusValue" id="Apcli0Value" index="0">&nbsp;</span>
+					<div style="clear: both;"></div></li>
+				<li><span class="statusTitle" index="0" lang.key="status.eth2">Eth2 IP:</span> <span
+					class="statusValue" id="Eth2Value" index="0">&nbsp;</span>
+					<div style="clear: both;"></div></li>
+			  </ul>
+			</div>
+		</div>
+		<div data-role="collapsible-set" data-theme="c" data-content-theme="d" style="display:none">
+			<div data-role="collapsible" data-collapsed="false">
+				<h3 lang.key="common.network">&nbsp;</h3>
+				<ul data-role="listview">
+				<li><span class="statusTitle" id="virtualApBridgeProperty" index="4">Virtual AP Bridge:</span> <span
+					class="statusValue" id="virtualApBridgeValue" index="4">&nbsp;</span>
+					<div style="clear: both;"></div></li>
+				<li><span class="statusTitle" id="wirelessSecurityProperty" index="0">Wireless Security:</span> <span
+					class="statusValue" id="wirelessSecurityValue" index="0">&nbsp;</span>
+					<div style="clear: both;"></div></li>
+				<li><span class="statusTitle" id="connectedLanProperty" index="2">Wireless SSID:</span> <span
+					class="statusValue" id="connectedLanValue" index="2">&nbsp;</span>
+					<div style="clear: both;"></div></li>
+				</ul>
+			</div>
+		</div>
+		<div data-role="collapsible-set" data-theme="c" data-content-theme="d" style="display:none">
+			<div data-role="collapsible" data-collapsed="false">
+				<h3 lang.key="common.video">&nbsp;</h3>
+				<ul data-role="listview">
+				<li style="display:none;"><span class="statusTitle" id="aspectRatioProperty" index="0">Aspect Ratio:</span> <span
+					class="statusValue" index="0" id="aspectRatioValue">&nbsp;</span>
+					<div style="clear: both;"></div></li>
+				<li ><span class="statusTitle" id="tvSystemProperty" index="1">TV System:</span> <span
+					class="statusValue" index="1" id="tvSystemValue">&nbsp;</span>
+					<div style="clear: both;"></div></li>
+				<li ><span class="statusTitle" id="scaleVideoProperty" index="2">Scale Output to 90%:</span>
+					<span class="statusValue" index="2" id="scaleVideoValue">&nbsp;</span>
+					<div style="clear: both;"></div></li>
+				<li ><span class="statusTitle" id="videoFullProperty" index="3">Video Full Screen:</span> <span
+					class="statusValue" index="3" id="videoFullValue">&nbsp;</span>
+					<div style="clear: both;"></div></li>
+				<li style="display:none;"><span class="statusTitle" id="vgaResProperty" index="4">1080P 24Hz:</span> <span
+					class="statusValue" index="4" id="vgaResValue">&nbsp;</span>
+					<div style="clear: both;"></div></li>
+			</ul>
+			</div>
+		</div>
+	</div>
+
+	<div id="systemPage" data-role="page" class="systemPage">
+	  <div data-role="header" data-theme="d">
+		 <a href="#wifipage" data-transition="slide" data-icon="home"><span lang.key="home.button">&nbsp;</span></a>
+	  	 <!--<a href="#" data-icon="delete" id="system_reset" ><span lang.key="common.reset">&nbsp;</span></a>-->
+			 <h1 lang.key="common.system">&nbsp;</h1>
+	  	 <a href="#" data-icon="check" id="system_save" ><span lang.key="common.save" >&nbsp;</span></a>
+		 	<div data-role="navbar" >
+	        <ul>
+	            <li><a href="#statusPage" class="statusLink" data-theme="b"><span lang.key="common.status">&nbsp;</span></a></li>
+	            <li><a href="#networkPage" class="networkLink" data-theme="b"><span lang.key="common.network">&nbsp;</span></a></li>
+	            <li id="liuartPageLink" class="liuartPageLink"><a href="#uartPage" class="uartLink" data-theme="b" onclick="onUartLoad()"><span lang.key="common.uart">&nbsp;</span></a></li>
+	            <!--<li><a href="#videoPage"  class="videoLink" data-theme="b"><span lang.key="common.video">&nbsp;</span></a></li>
+	            <li><a href="#RemotePage" class="RemoteLink" data-theme="b"><span lang.key="remote.control">&nbsp;</span></a></li>-->
+	        </ul>
+	        </div><!-- /navbar -->
+	  </div>
+	  <div data-role="collapsible-set" data-theme="c" data-content-theme="b">
+	   <div data-role="collapsible">
+	   	<h3 lang.key="system.language">&nbsp;</h3>
+			<ul data-role="listview" data-theme="d">
+				<li style="display:none">
+					<span style="display:inline-block;width:30%">
+						<label for="deviceNameInput" id="deviceNameSpan">&nbsp;</label>
+					</span>
+					<span> 
+						<input id="deviceNameInput" index="0" disabled="disabled" style="display:inline; width:65%; text-align: center" /> 
+					</span>
+				</li>
+				<li>
+					<span style="display:inline-block;width:100%">
+						<label for="languageSelect" id="languageSpan" lang.key="system.language">&nbsp;</label>
+					</span> 
+					<span> 
+						<select id="languageSelect" index="0" data-native-menu="true" onchange="onChangeLanguage()">
+							  <option value ="en_us" lang.key="system.lang_en">English</option>
+							  <option value ="zh_cn" lang.key="system.lang_cn">Chinese</option>							
+						</select> 
+					</span>
+				</li>
+			</ul>
+		</div>
+		<div data-role="collapsible">
+			<h3 lang.key="system.opeation">&nbsp;</h3>
+			<ul data-role="listview" data-theme="d"> 
+	        <h3 lang.key="restore.factory.description">&nbsp;</h3>
+				<li>
+				 <a href="#popupDialog_restore" data-position-to="window" data-transition="pop" data-rel="popup" ><input type="button" special.key= "button" lang.key="status.restore" value="Restore Factory Settings"></a>
+				</li>
+			</ul>
+		</div>
+		
+				
+		<div class="ui-corner-all" id="popupDialog_restore" style="max-width: 400px" data-role="popup" data-overlay-theme="a" data-theme="c" data-dismissible="false">
+	    <div class="ui-corner-top" data-role="header" data-theme="a">
+	        <h1 id="title_alert" lang.key="pop.dliage">test</h1>
+	    </div>
+	    <div class="ui-corner-bottom ui-content" data-role="content" data-theme="d" align="center">
+	        <h3 class="ui-title" lang.key="system_restore.factory">&nbsp;</h3>
+	        <a href="#" data-role="button" data-rel="back" data-theme="c" data-inline="true" lang.key="pop.canel">Cancel</a>
+	        <a href="#" data-role="button" data-transition="flow" data-rel="back" data-theme="b" data-inline="true" id="status_restore" lang.key="pop.ok">OK</a>
+	    </div>
+		</div>
+		<div class="ui-corner-all" id="popupDialog_nofile" style="max-width: 400px" data-role="popup" data-overlay-theme="a" data-theme="c" data-dismissible="false">
+	    <div class="ui-corner-top" data-role="header" data-theme="a">
+	        <h1 id="title_alert" lang.key="pop.dliage">test</h1>
+	    </div>
+	    <div class="ui-corner-bottom ui-content" data-role="content" data-theme="d" align="center">
+	        <h3 class="ui-title" lang.key="online_update_alert.file">&nbsp;</h3>
+	        <a href="#" data-role="button" data-transition="flow" data-rel="back" data-theme="b" data-inline="true" lang.key="pop.ok">OK</a>
+	    </div>
+		</div>
+		
+		<div class="ui-corner-all" id="popupDialog_burningFirmware" style="max-width: 400px" data-role="popup" data-overlay-theme="a" data-theme="c" data-dismissible="false">
+		    <div class="ui-corner-top" data-role="header" data-theme="a">
+		        <h1 id="title_alert" lang.key="pop.dliage">test</h1>
+		    </div>
+		    <div class="ui-corner-bottom ui-content" data-role="content" data-theme="d" align="center">
+		        <h3 class="ui-title" id="popupDialog_burningFirmware_text" lang.key="online_update_alert.burning">&nbsp;</h3>
+		    </div>
+		</div>
+
+		<div class="ui-corner-all" id="popupDialog_restoreFactoryResult" style="max-width: 400px" data-role="popup" data-overlay-theme="a" data-theme="c" data-dismissible="false">
+		    <div class="ui-corner-top" data-role="header" data-theme="a">
+		        <h1 id="title_alert" lang.key="pop.dliage">test</h1>
+		    </div>
+		    <div class="ui-corner-bottom ui-content" data-role="content" data-theme="d" align="center">
+		        <h3 class="ui-title" id="popupDialog_restoreFactoryResult_text">&nbsp;</h3>
+		    </div>
+		</div>
+		
+				
+		<div class="ui-corner-all" id="popupDialog_finish" style="max-width: 400px" data-role="popup" data-overlay-theme="a" data-theme="c" data-dismissible="false">
+	    <div class="ui-corner-top" data-role="header" data-theme="a">
+	        <h1 id="title_alert" lang.key="pop.dliage">test</h1>
+	    </div>
+	    <div class="ui-corner-bottom ui-content" data-role="content" data-theme="d" align="center">
+	        <h3 class="ui-title" lang.key="online_update_alert.firmfinish">&nbsp;</h3>
+	        <a href="#" data-role="button" data-transition="flow" data-rel="back" data-theme="b" data-inline="true" lang.key="pop.ok">OK</a>
+	    </div>
+		</div>
+		<div data-role="collapsible" data-collapsed="false">
+				<h3 lang.key="system.update">&nbsp;</h3>
+					<ul data-role="listview" >
+				<li data-theme="d"><span id="firmware_update" lang.key="status.upgrade">&nbsp;</span></li>
+				<div>
+					<!--
+					<form id="onlineup_upform" action="/cgi-bin/web.cgi" target="uploadFrame" method="post" enctype="multipart/form-data">
+						<input id="firmFile" type="file" name="firmFile"  />
+					</form>
+					-->
+					<form name="UploadFirmware" id="onlineup_upform" action="/cgi-bin/upload.cgi" target="uploadFrame" method="post" enctype="multipart/form-data">
+						<!-- <input id="firmFile" type="file" name="firmFile"  /> -->
+						<input name="filename" size="20" maxlength="256" type="file" id="onlineup_upform_inputbox"/>
+						<input value="Apply" special.key= "button" lang.key="common.apply" id="uploadFWApply" name="UploadFirmwareSubmit" type="button" onClick="return wiimu_uploadFirmwareCheck();"/>
+					</form>
+				</div>
+				<div style="display:none">
+					<iframe id="uploadFrame" name="uploadFrame"></iframe>
+				</div>
+				<!--
+				<div style="text-align: center;">
+					<p><span>	
+				    <input type="button" special.key= "button" id="onlineup_cancel" lang.key="onlineup.canel" value="cancel">
+					  </span>
+					    <span>
+				        <input type="button" special.key= "button" id="onlineup_upgrade" lang.key="onlineup.upgrade" value="upgrade">
+				  </span></p>
+				</div>
+				-->
+				<div id="firmware_update_process" style="text-align: center; visibility:hidden">
+				<span id= "firmware_upload_percent">0%</span>
+				<table id="firm_update_show_bar" width="0" bgcolor="#999999" border="0">
+				  <td >&nbsp;</td>
+				</table>
+				<br/>
+				</div>
+		    	<li data-theme="d"><span id="firmware_update_online" lang.key="status.upgrade.online">&nbsp;</span></li>
+				<p>
+				 <div id="div_check_online_update">
+				  <input type="button" special.key= "button" id="check_online_update" lang.key="online.checkupgrade" value="Check Online update">
+				 </div>
+				 <div id="div_online_update">
+ 				  <input type="button" special.key= "button" id="online_update" lang.key="online.upgrade" value="Online update">
+    			 </div>
+				</p>
+				<div style="text-align: center;">
+					<span id= "firmware_update_status">&nbsp;</span>
+				</div>
+				</li>
+			</ul>
+		</div>
+	</div>
+	</div>
+
+	<div id="networkPage" data-role="page" class="networkPage">
+	   <div data-role="header" data-theme="d">
+			 <a href="#wifipage" data-transition="slide" data-icon="home"><span lang.key="home.button">&nbsp;</span></a>
+	  	 <!--<a href="#" data-icon="delete" id="network_reset" ><span lang.key="common.reset" >&nbsp;</span></a>-->
+			 <h1 lang.key="common.network">&nbsp;</h1>
+		<a href="#" data-icon="check" id="network_save"><span lang.key="common.save" >&nbsp;</span></a>
+ 	   <div data-role="navbar" >
+	        <ul>
+	            <li><a href="#statusPage"  class="statusLink" data-theme="b"><span lang.key="common.status">&nbsp;</span></a></li>
+	            <li><a href="#systemPage" class="systemLink" data-theme="b"><span lang.key="common.system">&nbsp;</span></a></li>
+	            <li id="liuartPageLink" class="liuartPageLink"><a href="#uartPage" class="uartLink" data-theme="b" onclick="onUartLoad()"><span lang.key="common.uart">&nbsp;</span></a></li>
+	            <!--<li><a href="#videoPage" class="videoLink" data-theme="b"><span lang.key="common.video">&nbsp;</span></a></li>
+	            <li><a href="#RemotePage"  class="RemoteLink" data-theme="b"><span lang.key="remote.control">&nbsp;</span></a></li>-->
+	        </ul>
+	        </div><!-- /navbar -->
+		</div>
+		<div class="ui-corner-all" id="popupDialog_network" style="max-width: 400px" data-role="popup" data-overlay-theme="a" data-theme="c" data-dismissible="false">
+		    <div class="ui-corner-top" data-role="header" data-theme="a">
+		        <h1 id="title_alert" lang.key="pop.dliage">test</h1>
+		    </div>
+	
+		    <div class="ui-corner-bottom ui-content" data-role="content" data-theme="d" align="center">
+		        <h3 class="ui-title" id="alert_network">&nbsp;</h3>
+		        <a href="#" data-role="button" data-transition="flow" data-rel="back" data-theme="b" data-inline="true" lang.key="pop.ok">Delete</a>
+		    </div>
+		</div>
+
+		<div class="ui-corner-all" id="popupDialog_changessid_ok" style="max-width: 400px" data-role="popup" data-overlay-theme="a" data-theme="c" data-dismissible="false">
+		    <div class="ui-corner-top" data-role="header" data-theme="a">
+		        <h1 id="title_alert" lang.key="pop.dliage">test</h1>
+		    </div>
+		    <div class="ui-corner-bottom ui-content" data-role="content" data-theme="d" align="center">
+		        <h3 class="ui-title" id="alert_network_changessid_ok">&nbsp;</h3>
+		    </div>
+		</div>
+
+		<div class="ui-corner-all" id="popupDialog_changessid" style="max-width: 400px" data-role="popup" data-overlay-theme="a" data-theme="c" data-dismissible="false">
+		    <div class="ui-corner-top" data-role="header" data-theme="a">
+		        <h1 id="title_alert" lang.key="pop.dliage">test</h1>
+		    </div>
+		    <div class="ui-corner-bottom ui-content" data-role="content" data-theme="d" align="center">
+		        <h3 class="ui-title" lang.key="status.changessid">&nbsp;</h3>
+		        <input id="textNewSSID"></input>
+		        <a href="#" data-role="button" data-rel="back" data-theme="c" data-inline="true" lang.key="pop.canel">Cancel</a>
+		        <a href="#" data-role="button" data-transition="flow" data-rel="back" data-theme="b" data-inline="true" id="status_changessid" lang.key="pop.ok" onclick="onSetNewSSID()">OK</a>
+		    </div>
+		</div>
+
+		<div data-role="content" class="content">
+			<ul data-role="listview" data-theme="d">
+				<li>
+					<span style="display:inline-block;width:100%">
+						<label for="wirelessSecuritySelect" id="wirelessSecuritySpan" lang.key="network.wirelessSecuritySelect">WirelessSecuritySelect&nbsp;</label>
+					</span> 
+					<span> 
+						<select data-theme="b" id="wirelessSecuritySelect" index="0" data-native-menu="true" onclick="onChangeSecuritySelect()" onchange="onChangeSecuritySelect()">
+							  <option value ="open">Open</option>
+							  <option value ="wpapsk">WPA PSK</option>
+						</select> 
+					</span>
+				</li>
+				<li id="divwirelessPasswordInput">
+					<span style="display:inline-block;width:50%">
+						<label for="wirelessPasswordInput" id="wirelessPasswordSpan" lang.key="network.wirelessSecurityPassword">&nbsp;</label>
+					</span>
+					<span> 
+						<input id="wirelessPasswordInputInput" type="password" style="display:inline; width:100%; text-align: center" /> 
+					</span>
+				</li>
+
+				<li>
+			 		<a href="#popupDialog_changessid" data-position-to="window" data-transition="pop" data-rel="popup">
+			 			<input data-theme="b" type="button" special.key= "button" lang.key="status.changessid" value="Change SSID"></a>
+				</li>
+				
+				<li style="display:none">
+					<span style="display:inline-block;width:100%">
+						<label for="network.regionSel">Region:</label>
+					</span> 
+					<span> 
+						<select id="network.regionSel" data-native-menu="true">
+						</select> 
+					</span>
+				</li>
+				<li style="display:none">
+					<span style="display:inline-block;width:100%">
+						<label for="virtualApBridgeSelect" id="virtualApBridgeSpan">&nbsp;</label>
+					</span> 
+					<span> 
+						<select data-theme="b" id="virtualApBridgeSelect" index="4" data-native-menu="true">
+						</select> 
+					</span>
+				</li>
+			</ul>
+		</div>
+	</div>
+
+	<div id="videoPage" data-role="page" class="videoPage">
+	    <div data-role="header" data-theme="d">
+	  	     <a href="#" data-icon="delete" id="video_reset"><span lang.key="common.reset" >&nbsp;</span></a>
+			 <h1 lang.key="common.video">&nbsp;</h1>
+	  	     <a href="#" data-icon="check" id="video_save"><span lang.key="common.save" >&nbsp;</span></a>
+		 	<div data-role="navbar">
+	        <ul>
+	            <li><a href="#statusPage"  class="statusLink" data-theme="b"><span lang.key="common.status">&nbsp;</span></a></li>
+	            <li><a href="#systemPage" class="systemLink" data-theme="b"><span lang.key="common.system">&nbsp;</span></a></li>
+	            <li><a href="#networkPage"  class="networkLink" data-theme="b"><span lang.key="common.network">&nbsp;</span></a></li>
+	            <li><a href="#RemotePage" class="RemoteLink" data-theme="b"><span lang.key="remote.control">&nbsp;</span></a></li>
+	        </ul>
+	        </div>
+        </div>
+		<div data-role="content" class="content">
+			<ul data-role="listview" data-theme="d">
+				<li style="display:none">
+					<span style="display:inline-block;width:100%">
+						<label for="aspactRatioSelect"  id="aspactRatioSpan">&nbsp;</label>
+					</span> 
+					<span> 
+						<select id="aspactRatioSelect" index="0" data-native-menu="true">
+						</select> 
+					</span>
+				</li>
+				
+				<li>
+					<span style="display:inline-block;width:100%">
+						<label for="tvSystemSelect" id="tvSystemSpan">&nbsp;</label>
+					</span> 
+					<span> 
+						<select data-theme="b" id="tvSystemSelect" index="1" data-native-menu="true">
+						</select> 
+					</span>
+				</li>
+				
+				<li>
+					<span style="display:inline-block;width:100%">
+						<label for="scaleVideoSelect" id="scaleVideoSpan">&nbsp;</label>
+					</span> 
+					<span> 
+						<select data-theme="b" id="scaleVideoSelect" index="2" data-native-menu="true">
+						</select> 
+					</span>
+				</li>
+				
+				<li>
+					<span style="display:inline-block;width:100%">
+						<label for="videoFullSelect" id="videoFullSpan">&nbsp;</label>
+					</span> 
+					<span> 
+						<select data-theme="b" id="videoFullSelect" index="3" data-native-menu="true">
+						</select> 
+					</span>
+				</li>
+				
+				<li style="display:none">
+					<span style="display:inline-block;width:100%">
+						<label for="1080P24HzSelect" id="1080P24HzSpan">1080P 24Hz:</label>
+					</span> 
+					<span> 
+						<select  id="1080P24HzSelect" index="4" data-native-menu="true">
+						</select> 
+					</span>
+				</li>
+				
+				<li style="display:none">
+					<span style="display:inline-block;width:100%">
+						<label for="vgaResSelect" id="vgaResSpan">VGA Resolution:</label>
+					</span> 
+					<span> 
+						<select id="vgaResSelect" index="5" data-native-menu="true">
+						</select> 
+					</span>
+				 </li>
+			</ul>
+		</div>
+	</div>
+
+	<div id="uartPage" data-role="page" class="uartPage">
+		<div data-role="header" data-theme="d">
+			 <a href="#wifipage" data-transition="slide" data-icon="home"><span lang.key="home.button">&nbsp;</span></a>
+			<h1 lang.key="common.uart">&nbsp;</h1>
+		  	<a href="#" data-icon="check" data-transition="slide" id="uart_save" onclick="onSetUartConfig()"><span lang.key="common.save">&nbsp;</span></a>
+			<div data-role="navbar">
+	        <ul>
+	            <li><a href="#statusPage" class="statusLink" data-theme="b"><span lang.key="common.status">&nbsp;</span></a></li>
+	            <li><a href="#networkPage" class="networkLink" data-theme="b"><span lang.key="common.network">&nbsp;</span></a></li>
+	            <li><a href="#systemPage" class="systemLink" data-theme="b"><span lang.key="common.system">&nbsp;</span></a></li>
+	            <!--<li><a href="#videoPage"  class="videoLink" data-theme="b"><span lang.key="common.video">&nbsp;</span></a></li>
+	            <li><a href="#RemotePage"class="RemoteLink" data-theme="b"><span lang.key="remote.control">&nbsp;</span></a></li>-->
+	        </ul>
+	        </div>
+		</div>
+		<div data-role="collapsible-set" data-theme="c" data-content-theme="d">
+			<div data-role="collapsible" data-collapsed="false">
+				<h3 lang.key="common.uart">&nbsp;</h3>
+			  <ul data-role="listview">
+				<li>
+					<span style="display:inline-block;width:100%">
+						<label for="forbaudrateSelect" id="baudrateSpan" lang.key="uart.baudrate">&nbsp;</label>
+					</span> 
+					<span> 
+						<select id="baudrateSelect" index="0" data-theme="b" data-native-menu="true">
+							  <option value ="300">300</option>
+							  <option value ="600">600</option>
+							  <option value ="1200">1200</option>
+							  <option value ="1800">1800</option>
+							  <option value ="2400">2400</option>
+							  <option value ="4800">4800</option>
+							  <option selected="selected" value ="9600">9600</option>
+							  <option value ="19200">19200</option>
+							  <option value ="38400">38400</option>
+						</select> 
+					</span>
+				</li>
+
+				<li>
+					<span style="display:inline-block;width:100%">
+						<label for="fordatabitsSelect" id="databitsSpan" lang.key="uart.databits">&nbsp;</label>
+					</span> 
+					<span> 
+						<select id="databitsSelect" index="0" data-theme="b" data-native-menu="true">
+							  <option value ="7">7</option>
+							  <option value ="8">8</option>
+						</select> 
+					</span>
+				</li>
+
+				<li>
+					<span style="display:inline-block;width:100%">
+						<label for="forparitySelect" id="paritySpan" lang.key="uart.parity">&nbsp;</label>
+					</span> 
+					<span> 
+						<select id="paritySelect" index="0" data-theme="b" data-native-menu="true">
+							  <option value ="N">None</option>
+							  <option value ="O">Odd</option>
+							  <option value ="E">Even</option>
+						</select> 
+					</span>
+				</li>
+
+				<li>
+					<span style="display:inline-block;width:100%">
+						<label for="forstopbitsSelect" id="stopbitsSpan" lang.key="uart.stopbits">&nbsp;</label>
+					</span> 
+					<span> 
+						<select id="stopbitsSelect" index="0" data-theme="b" data-native-menu="true">
+							  <option value ="1">1</option>
+							  <option value ="2">2</option>
+						</select> 
+					</span>
+				</li>
+
+			  </ul>
+			</div>
+		</div>
+
+	</div>
+
+
+	
+	<div id="RemotePage" data-role="page" class="RemotePage">
+		<div data-role="header" data-theme="d">
+		<a href="#wifipage" data-transition="slide" data-icon="home"><span lang.key="home.button">&nbsp;</span></a>
+			 <h1 lang.key="remote.control">&nbsp;</h1>
+		 	<div data-role="navbar">
+	        <ul>
+	            <li><a href="#statusPage" class="statusLink" data-theme="b"><span lang.key="common.status">&nbsp;</span></a></li>
+	            <li><a href="#systemPage" class="systemLink" data-theme="b"><span lang.key="common.system">&nbsp;</span></a></li>
+	            <li><a href="#networkPage"  class="networkLink" data-theme="b"><span lang.key="common.network">&nbsp;</span></a></li>
+	            <li><a href="#videoPage"class="videoLink" data-theme="b"><span lang.key="common.video">&nbsp;</span></a></li>
+	        </ul>
+	        </div>
+        </div>
+		<div data-role="content" class="content">
+	    <ul data-role="listview" >
+	    <li style="height: 16px;"><span id="current_seconds" class="TimeBegin" >00:00:00</span><span id="total_seconds" class="TimeEnd" >00:00:00</span></li>
+	    <li>
+		  <input type="range" value="0" min="0" max= "100" id="player-slider" data-highlight="true"/>
+	    </li>
+		<li><span lang.key="remote.player">Player</span></li>
+		<div align="center" data-role="controlgroup" data-type="horizontal">
+	    <a href="#" data-role="button" onclick="sendCommandRemoveControl('play')" data-iconpos="notext" style="background-image: url(style/image/play.png);width: 48px; height: 48px;">Play</a>
+	    <a data-role="button" data-iconpos="notext" style="background-image: url(style/image/space.png);width: 48px; height: 48px;"></a>
+	    <a href="#" data-role="button" onclick="sendCommandRemoveControl('pause')" data-iconpos="notext" style="background-image: url(style/image/pause.png);width: 48px; height: 48px;">Pause</a>
+	    <a data-role="button" data-iconpos="notext" style="background-image: url(style/image/space.png);width: 48px; height: 48px;"></a>
+	    <a href="#" data-role="button" onclick="sendCommandRemoveControl('stop')" data-iconpos="notext" style="background-image: url(style/image/stop.png);width: 48px; height: 48px;">Stop</a>
+	    </div>
+        <li><span lang.key="remote.volume">Volume</span></li>
+		<div align="center" data-role="controlgroup" data-type="horizontal">
+	    <a href="#" data-role="button" onclick="sendCommandRemoveControl('volup')" data-iconpos="notext" style="background-image: url(style/image/volume_up.png);width: 48px; height: 48px;">Volume+</a>
+	    <a data-role="button" data-iconpos="notext" style="background-image: url(style/image/space.png);width: 48px; height: 48px;"></a>
+	    <a href="#" data-role="button" onclick="sendCommandRemoveControl('voldown')" data-iconpos="notext" style="background-image: url(style/image/volume_down.png);width: 48px; height: 48px;">Volume-</a>
+	    <a data-role="button" data-iconpos="notext" style="background-image: url(style/image/space.png);width: 48px; height: 48px;"></a>
+	    <a href="#" data-role="button" onclick="sendCommandRemoveControl('mute')" data-iconpos="notext" style="background-image: url(style/image/volume_mute.png);width: 48px; height: 48px;">Mute</a>
+        </div>
+        <li><span lang.key="remote.contrast">Contrast</span></li>
+		<div align="center" data-role="controlgroup" data-type="horizontal">
+	    <a href="#" data-role="button" onclick="sendCommandRemoveControl('contrastup')" data-iconpos="notext" style="background-image: url(style/image/increase.png);width: 48px; height: 48px;">Contrast+</a>
+	    <a data-role="button" data-iconpos="notext" style="background-image: url(style/image/space.png);width: 48px; height: 48px;"></a>
+	    <a data-role="button" data-iconpos="notext" style="background-image: url(style/image/space.png);width: 48px; height: 48px;"></a>
+	    <a data-role="button" data-iconpos="notext" style="background-image: url(style/image/space.png);width: 48px; height: 48px;"></a>
+	    <a href="#" data-role="button" onclick="sendCommandRemoveControl('contrastdown')" data-iconpos="notext" style="background-image: url(style/image/decrease.png);width: 48px; height: 48px;">Contrast-</a>
+        </div>
+        <li><span lang.key="remote.brightness">Brightness</span></li>
+		<div align="center" data-role="controlgroup" data-type="horizontal">
+	    <a href="#" data-role="button" onclick="sendCommandRemoveControl('brightnessup')" data-iconpos="notext" style="background-image: url(style/image/increase.png);width: 48px; height: 48px;">Brightness+</a>
+	    <a data-role="button" data-iconpos="notext" style="background-image: url(style/image/space.png);width: 48px; height: 48px;"></a>
+	    <a data-role="button" data-iconpos="notext" style="background-image: url(style/image/space.png);width: 48px; height: 48px;"></a>
+	    <a data-role="button" data-iconpos="notext" style="background-image: url(style/image/space.png);width: 48px; height: 48px;"></a>
+	    <a href="#" data-role="button" onclick="sendCommandRemoveControl('brightnessdown')" data-iconpos="notext" style="background-image: url(style/image/decrease.png);width: 48px; height: 48px;">Brightness-</a>
+        </div>
+        <li><span lang.key="remote.device">Device</span></li>
+        <div align="center" data-role="controlgroup" data-type="horizontal">
+          <input id="resetbutton" type="button" data-theme="b" special.key="button" lang.key="reset.device" value="Reset Device">
+     	</div>
+	    <div class="ui-corner-all" id="popupDialog_reset" style="max-width: 400px" data-role="popup" data-overlay-theme="a" data-theme="c" data-dismissible="false">
+	    <div class="ui-corner-top" data-role="header" data-theme="a">
+	        <h1 id="title_alert" lang.key="pop.dliage">&nbsp;</h1>
+	    </div>
+	    <div class="ui-corner-bottom ui-content" data-role="content" data-theme="d" align="center">
+	        <h3 class="ui-title" lang.key="device_reset.confirm">&nbsp;</h3>
+	        <a href="#" data-role="button" data-rel="back" data-theme="c" data-inline="true" lang.key="pop.canel">Cancel</a>
+	        <a href="#" data-role="button" data-transition="flow" data-rel="back" data-theme="b" data-inline="true" id="reset_device" lang.key="pop.ok">OK</a>
+	    </div>
+		</div>
+		</ul>
+	</div>
+	</div>
+</body>
+</html>

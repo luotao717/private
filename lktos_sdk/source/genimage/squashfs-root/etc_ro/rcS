@@ -1,0 +1,11 @@
+#!/bin/sh
+mount -a
+mkdir -p /var/run
+nvram_daemon&
+goahead&
+
+#for telnet debugging
+telnetd
+
+#for syslogd
+mkdir -p /var/log
