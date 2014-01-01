@@ -218,7 +218,7 @@ static void Appwifipara(webs_t wp, char_t *path, char_t *query)
 	flash_read_wlan_mac(macbuf);
 	sprintf(tmpbuf,"%02X%02X%02X%02X%02X%02X",(macbuf[0] & 0377),(macbuf[1] & 0377),(macbuf[2] & 0377),(macbuf[3] & 0377),(macbuf[4] & 0377),(macbuf[5] & 0377));
 	nvram_bufset(RT2860_NVRAM, "devmac", tmpbuf);
-	sprintf(tmpbuf2,"orpowerbtest1%s",tmpbuf);
+	sprintf(tmpbuf2,"orpowerok%s",tmpbuf);
 	nvram_bufset(RT2860_NVRAM, "devsn", tmpbuf2);
 	//nvram_commit(RT2860_NVRAM);
 	
