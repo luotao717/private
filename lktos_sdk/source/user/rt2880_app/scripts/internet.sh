@@ -997,15 +997,15 @@ comwlanmac=00:0C:43:30:50:A0
 facmodeflag=`echo $wlanmac | grep -q $comwlanmac && echo 1 || echo 0`
 echo $facmodeflag 
 shkey=`nvram_get 2860 comcryptcheck`
-if [ "$shkey" != "check=ok" ]; then
-	if [ "$facmodeflag" == "0" ]; then
-		ifconfig ra0 down
-	fi
-fi
-regdev=`nvram_get 2860 regDevice`
-#if [ "$regdev" = "yes" ]; then
-#	ifconfig ra0 down
+#if [ "$shkey" != "check=ok" ]; then
+#	if [ "$facmodeflag" == "0" ]; then
+#		ifconfig ra0 down
+#	fi
 #fi
+regdev=`nvram_get 2860 regDevice`
+if [ "$regdev" = "yes" ]; then
+	ifconfig ra0 down
+fi
 #restart8021XDaemon(RT2860_NVRAM);
 #firewall_init();
 #management_init();
@@ -1018,6 +1018,6 @@ config-powersave.sh ethernet 1  1
 config-powersave.sh ethernet 1  2
 config-powersave.sh ethernet 1  3
 config-powersave.sh ethernet 1  4
-config-powersave.sh ethernet 1  0
+#config-powersave.sh ethernet 1  0
 config-powersave.sh sdr 1
 echo "++++++++++++++++++++++++++++++++"
