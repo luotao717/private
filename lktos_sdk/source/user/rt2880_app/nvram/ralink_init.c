@@ -1383,7 +1383,7 @@ int renew_nvram(int mode, char *fname)
 			//printf("\r\nssidt=%s",new_ssid);
 			if(flashReadFlag)
 			{
-				 sprintf(mac_6, " %02X%02X",(macBuf[4] & 0377), (macBuf[5] & 0377));
+				 sprintf(mac_6, "%02X%02X",(macBuf[4] & 0377), (macBuf[5] & 0377));
 				 strcat(new_ssid, mac_6);
 				 //printf("\r\n4bit=%s",mac_6);
 			}

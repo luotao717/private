@@ -53,6 +53,8 @@ sleep 3
 var_apssid=`nvram_get 2860 SSID1`
 sleep 1
 shairairplay -b 256 --apname=$var_apssid &
+sleep 3
+upnprender_out &
 
 
 
