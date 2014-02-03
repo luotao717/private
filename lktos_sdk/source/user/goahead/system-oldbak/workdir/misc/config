@@ -1,0 +1,27 @@
+#comment
+#configuration for MPLAYER
+#
+
+#select audio output with ALSA
+ao=alsa
+
+#cache in kBytes
+cache=256
+#start play after cache fill %
+cache-min=50
+
+#hide detail information
+quiet=yes
+
+#disable vidio
+vo=null
+vc=null
+
+#debug print level, for printing EOF
+msglevel=global=6
+
+#patch for MAP100 ALSA clock
+af=channels=2,resample=44100,format=s16le
+
+#for MP3, use mad decoder, set mad as first
+ac=mad,

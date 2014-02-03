@@ -1,7 +1,7 @@
 #!/bin/sh
 
 cd /system/workdir
-. ./configenv.sh
+. ./evn.sh
 
 ifconfig apcli0 up
 var_apclien=`nvram_get 2860 ApCliEnable`
@@ -11,6 +11,7 @@ var_auth=`nvram_get 2860 ApCliAuthMode`
 var_encry=`nvram_get 2860 ApCliEncrypType`
 var_pass=`nvram_get 2860 ApCliWPAPSK`
 var_channel=`nvram_get 2860 ApCliChannel`
+var_extch=`nvram_get 2860 ApCliExtCha`
 var_apssid=`nvram_get 2860 SSID1`
 var_wepkeyindex=`nvram_get 2860 ApCliWepKeyIndex`
 var_wepkey1=`nvram_get 2860 ApCliKey1`
@@ -40,21 +41,53 @@ if [ "$var_apclien" = "1" ]; then
 		iwpriv apcli0 set ApCliWPAPSK=$var_pass
 	fi
 	iwpriv apcli0 set ApCliEnable=1
+	iwpriv ra0 set HtExtcha=$var_extch
 	iwpriv ra0 set Channel=$var_channel
 fi
 
-brctl addif br0 apcli0
+#mount JFFS2 to mtdblock8 
+mount -t jffs2 /dev/mtdblock8 /mnt
 
+cp -rf /system/workdir/misc/general.dat /tmp/
+cp -rf /system/workdir/script/hosts /etc/
+cp -rf /system/workdir/script/dnsmasq.conf /etc/
 mknod /dev/muart c 250 0
+mknod /dev/enc c 248 0
+#iwevent &
 sleep 3
+
+#for melody
+MELODY=`grep "melody" /system/workdir/misc/general.dat | sed 's/melody[ \t]*=[ \t]*//' | sed  's/\r//g'`
+if [ "$MELODY" = "1" ]; then
+echo "melody on"
+mplayer /system/workdir/misc/melody.mp3 &
+mplayer /system/workdir/misc/melody.mp3 &
+mplayer /system/workdir/misc/melody.mp3 &
+mplayer /system/workdir/misc/melody.mp3 &
+mplayer /system/workdir/misc/melody.mp3 &
+else
+echo "melody off"
+fi
 
 mDNSResponder
-sleep 3
 var_apssid=`nvram_get 2860 SSID1`
 sleep 1
-shairairplay -b 256 --apname=$var_apssid &
-sleep 3
+airplay -b 256 --apname=$var_apssid &
+sleep 2
 upnprender_out &
+sleep 4
+a01controller &
+#a01controller &
+#gmediarender &
+sleep 4
+#upnprender_out &
+dnsmasq &
 
+#mv_guard &
+#mv_netguard &
+iwevent &
 
-
+#m1transerver_nietech &
+#m1transerver  &
+#myuartsocket &
+#iperf -s -i 5 -w 1M &

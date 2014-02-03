@@ -1,0 +1,1 @@
+<%wiimu_CGI_do_cmd();%>
