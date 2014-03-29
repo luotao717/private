@@ -324,6 +324,11 @@ image:
 	cp $(IMAGEDIR)/$(USER)_uImage $(TFTPDIR)
 	cp $(IMAGEDIR)/$(USER)_uImage $(IMAGEDIR)/../genimage/$(USER)_uImage
 	cp $(IMAGEDIR)/ramdisk $(IMAGEDIR)/../genimage/ramdisk
+	#cd $(IMAGEDIR)/../genimage/ \
+	cp -f $(IMAGEDIR)/../genimage/liwifiaudio_kernel_nohead.bin $(IMAGEDIR)/../genimage/kkkk.bin
+	cat $(IMAGEDIR)/../genimage/ramdisk >> $(IMAGEDIR)/../genimage/kkkk.bin
+	$(IMAGEDIR)/../genimage/ltmkfir -A mips -O linux -T kernel -C lzma -a 80000000 -e 8048f000 -k 1531920 -n "Linux Kernel Image" -d $(IMAGEDIR)/../genimage/kkkk.bin $(IMAGEDIR)/../genimage/likernel33_wifiaudio_uImage
+	rm -f $(IMAGEDIR)/../genimage/kkkk.bin
 
 .PHONY: release
 release:
