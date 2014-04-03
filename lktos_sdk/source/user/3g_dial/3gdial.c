@@ -729,7 +729,8 @@ if(!g_EV888U)
 
 /******************  AT+CIMI  START ***************************************************/
 	memset(cimivalue, '\0', sizeof(cimivalue));
-	write_str_ex(fd_mod, "at+cimi", strlen("at+cimi"));
+	//write_str_ex(fd_mod, "at+cimi", strlen("at+cimi"));
+	write_str(fd_mod, "at+cimi", strlen("at+cimi")); //by luotao
 	if(strstr(rddevbuf,"OK"))
 	{
 			/*
