@@ -1,0 +1,57 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<link href="images/style.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+<table width="800" height="560" border="0" cellpadding="0" cellspacing="0" bgcolor="#cae9fa">
+  	<tr>
+		<td colspan="3" valign="top" height="11"></td>
+  	</tr>
+	<tr>
+		<td width="20"></td>
+		<td valign="top">
+		<table width="760" border="0" cellpadding="0" cellspacing="0">
+			<tr>
+				<td class="pgTitle" height="34">模式设定</td>
+				<td class="pgButton" align="right"><input type="reset" class="button" name="set" value="重置应用" /></td>
+			</tr>
+			<tr>
+				<td colspan="2" class="pgHelp">在此页面可对网桥的工作模式进行切换，以滿足具体的工作需要。</td>
+			</tr>
+			<tr>
+				<td class="pgTitle" height="34">设定模式</td>
+				<td class="pgButton" align="right"><input type="reset" class="button" name="set" value="保存设定" /></td>
+			</tr>
+		</table>
+			
+		<table width="760" border="0" cellpadding="0" cellspacing="0">
+			<tr>
+				<td colspan="2" class="pgLable"><input type="radio" name="opmode" value="0" /> 主机模式</td>
+			</tr>
+			<tr>
+				<td colspan="2" class="pgMemo">设备将根据网络设置要求来组建WLAN网络，移动终端通过WIFI接入WLAN网络来共享打印机和相互通信。</td>
+			</tr>
+			<tr>
+				<td colspan="2" class="pgLable"><input type="radio" name="opmode" value="0" checked /> 从机模式</td>
+			</tr>
+			<tr>
+				<td colspan="2" class="pgMemo">设备将通过WIFI信号来加入前端路由器所组建的局域网，使局域网内的所有设备都能共享打印机并相互通信。</td>
+			</tr>
+			<tr>
+				<td class="pgleft">加入网络：</td>
+				<td class="pgRight"><input type="text" name="wlan_ssid"><input type="reset" class="button" name="set" value="搜索WLAN" /></td>
+			</tr>
+			<tr>
+				<td class="pgleft">密码：</td>
+				<td class="pgRight"><input type="text" name="wlan_password"></td>
+			</tr>
+		</table>
+		</td>
+		<td width="20"></td>
+	</tr>
+</table>
+</body>
+</html>

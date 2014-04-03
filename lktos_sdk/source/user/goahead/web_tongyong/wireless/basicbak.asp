@@ -953,8 +953,9 @@ function switch_isolated_ssid()
 
 function formCheck()
 {
-	if (!ssidCheck(document.basic_form.mssid_0, MM_ssid)) 
-		return false;
+	//by luotao for temp
+	//if (!ssidCheck(document.basic_form.mssid_0, MM_ssid)) 
+		//return false;
 
 	var wpsenable = "<% getCfgZero(1, "WscModeOption"); %>";
 	if (wpsenable != "0" && document.basic_form.hssid[0].checked == true)
@@ -1030,7 +1031,7 @@ function resetForm()
 <input type=hidden name=wifihiddenButton value="2">
 <table width="800" border="0" cellpadding="0" cellspacing="0" bgcolor="#cae9fa">
 <tr>
-<td class="pgTitle" height="34"><script>dw(MM_wireless)</script></td>
+<td class="pgTitle" height="34"><script>dw(MM_basic_settings)</script></td>
 <td class="pgButton" align="right"></td>
 </tr>
 <tr>

@@ -62,6 +62,8 @@ void	formDefineUserMgmt(void);
  */
 
 static char_t		*rootWeb = T("/etc_ro/web");		/* Root web directory */
+//static char_t		*rootWeb = T("/var/web");		/* Root web directory */
+
 static char_t		*password = T("");				/* Security password */
 static int			port = 80;						/* Server port */
 static int			retries = 5;					/* Server port retries */
@@ -267,8 +269,8 @@ static void goaInitGpio()
 #else
 	info.irq = 0;
 #endif
-	if (ioctl(fd, RALINK_GPIO_REG_IRQ, &info) < 0)
-		goto ioctl_err;
+	//if (ioctl(fd, RALINK_GPIO_REG_IRQ, &info) < 0)
+		//goto ioctl_err;
 	close(fd);
 
 	//issue a handler to handle SIGUSR1

@@ -1,6 +1,8 @@
 #!/bin/sh
 mount -a
 mkdir -p /var/run
+gpio l 21 1 1 4000 1 1
+gpio l 8 1 1 4000 1 1
 cat /etc_ro/motd
 nvram_daemon&
 #insmod usbcore.ko

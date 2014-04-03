@@ -165,20 +165,20 @@ function opera()
 </script>
 </head>
 <body onLoad="opera();Load_Setting()">
-<table width=700><tr><td>
-<table width=100% border=0 cellpadding=3 cellspacing=1> 
+<table width="760"><tr><td>
+<table width="760" border=0 cellpadding=3 cellspacing=1> 
 <tr><td><hr></td></tr>
 </table>
 
 <form method=post name=apcli_form action="/goform/wirelessApcli">
 <input type="hidden" name="submit-url" value="/wireless/apcli.asp">
 <input type="hidden" name="apcli_channel" value="<% getCfgGeneral(1, "Channel"); %>">
-<table width=100% border=0 cellpadding=3 cellspacing=1> 
+<table width="760" border=0 cellpadding=3 cellspacing=1> 
   <tr> 
     <td class="thead"><script>dw(MM_ssid)</script>:</td>
     <td><input type=text name="apcli_ssid" size=32 maxlength=32 value="<% getCfgToHTML(1, "ApCliSsid"); %>"> <script>dw('<input type=button class=button name="search_AP" value='+BT_search_ap+' onClick="open_search_ap()">')</script></td>
   </tr>
-  <tr> 
+  <tr style="display:none"> 
     <td class="thead">BSSID (<script>dw(MM_macaddr)</script>):</td>
     <td><input type=text name="apcli_bssid" size=17 maxlength=17 value="<% getCfgGeneral(1, "ApCliBssid"); %>"> (<script>dw(MM_optional)</script>)</td>
   </tr>
@@ -260,12 +260,14 @@ function opera()
 </table>
 
 <br>
-<table width=100% border=0 cellpadding=3 cellspacing=1> 
+<table width="760" border=0 cellpadding=3 cellspacing=1> 
   <tr>
-    <td>
-      <script>dw('<input type=submit class=button value="'+BT_apply+'" onClick="return formCheck()"> &nbsp; &nbsp;\
-      <input type=button class=button value="'+BT_reset+'" onClick="resetForm();">')</script>
+    <td class="thead">1111111111
     </td>
+	<td>
+	<script>dw('<input type=submit class=button value="'+BT_apply+'" onClick="return formCheck()"> &nbsp; &nbsp;\
+      <input type=button class=button value="'+BT_reset+'" onClick="resetForm();">')</script>
+	  11</td>
   </tr>
 </table>
 </form>  

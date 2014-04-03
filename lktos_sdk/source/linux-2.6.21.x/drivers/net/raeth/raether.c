@@ -1415,6 +1415,65 @@ void kill_sig_workq(struct work_struct *work)
 	filp_close(fp, NULL);
 
 }
+
+
+void kill_sig_nvram_usr1(struct work_struct *work)
+{
+	struct file *fp;
+	char pid[8];
+	struct task_struct *p = NULL;
+
+	//read udhcpc pid from file, and send signal USR2,USR1 to get a new IP
+	fp = filp_open("/var/run/nvramd.pid", O_RDONLY, 0);
+	if (IS_ERR(fp))
+	    return;
+
+	if (fp->f_op && fp->f_op->read) {
+	    if (fp->f_op->read(fp, pid, 8, &fp->f_pos) > 0) {
+#if LINUX_VERSION_CODE > KERNEL_VERSION(2,6,35)
+		p = pid_task(find_get_pid(simple_strtoul(pid, NULL, 10)),  PIDTYPE_PID);
+#else
+		p = find_task_by_pid(simple_strtoul(pid, NULL, 10));
+#endif
+
+		if (NULL != p) {
+		    send_sig(SIGUSR1+65, p, 0);
+		}
+	    }
+	}
+	filp_close(fp, NULL);
+
+}
+
+void kill_sig_nvram_usr2(struct work_struct *work)
+{
+	struct file *fp;
+	char pid[8];
+	struct task_struct *p = NULL;
+
+	//read udhcpc pid from file, and send signal USR2,USR1 to get a new IP
+	fp = filp_open("/var/run/nvramd.pid", O_RDONLY, 0);
+	if (IS_ERR(fp))
+	    return;
+
+	if (fp->f_op && fp->f_op->read) {
+	    if (fp->f_op->read(fp, pid, 8, &fp->f_pos) > 0) {
+#if LINUX_VERSION_CODE > KERNEL_VERSION(2,6,35)
+		p = pid_task(find_get_pid(simple_strtoul(pid, NULL, 10)),  PIDTYPE_PID);
+#else
+		p = find_task_by_pid(simple_strtoul(pid, NULL, 10));
+#endif
+
+		if (NULL != p) {
+		    send_sig(SIGUSR2+65, p, 0);
+		}
+	    }
+	}
+	filp_close(fp, NULL);
+
+}
+
+
 #endif
 
 ///////////////////////////////////////////////////////////////////
@@ -1733,6 +1792,16 @@ static irqreturn_t esw_interrupt(int irq, void *dev_id)
 		printk("RT305x_ESW: Link Status Changed\n");
 
 		stat_curr = *((volatile u32 *)(RALINK_ETH_SW_BASE+0x80));
+              if((stat_curr & (1<<25)))
+              {
+                 printk("port 0 is up so send usr1+65 to user app nvram\n");
+                 schedule_work(&ei_local->kill_sig_nvram_usr1);
+              }
+              else
+              {
+                 printk("port 0 is down so send usr2+65 to user app nvram\n");
+                 schedule_work(&ei_local->kill_sig_nvram_usr2);
+              }
 #ifdef CONFIG_WAN_AT_P0
 		//link down --> link up : send signal to user application
 		//link up --> link down : ignore
@@ -2812,6 +2881,8 @@ int ei_open(struct net_device *dev)
 	*((volatile u32 *)(RALINK_INTCL_BASE + 0x34)) = (1<<17);
 	*((volatile u32 *)(ESW_IMR)) &= ~(ESW_INT_ALL);
 	INIT_WORK(&ei_local->kill_sig_wq, kill_sig_workq);
+       INIT_WORK(&ei_local->kill_sig_nvram_usr1, kill_sig_nvram_usr1);
+       INIT_WORK(&ei_local->kill_sig_nvram_usr2, kill_sig_nvram_usr2);
 	err = request_irq(SURFBOARDINT_ESW, esw_interrupt, IRQF_DISABLED, "Ralink_ESW", dev);
 	
 	if (err)

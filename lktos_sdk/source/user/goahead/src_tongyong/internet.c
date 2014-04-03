@@ -1949,12 +1949,12 @@ int initInternet(void)
 	}
 #endif
 
-#if !defined(CONFIG_RALINK_RT2880) && !defined(CONFIG_RALINK_MT7620)
-	if (!strcmp(auth_mode, "Disable") || !strcmp(auth_mode, "OPEN"))
-		ledAlways(13, LED_OFF); //turn off security LED (gpio 13)
-	else
-		ledAlways(13, LED_ON); //turn on security LED (gpio 13)
-#endif
+//#if !defined(CONFIG_RALINK_RT2880) && !defined(CONFIG_RALINK_MT7620)
+	//if (!strcmp(auth_mode, "Disable") || !strcmp(auth_mode, "OPEN"))
+		//ledAlways(13, LED_OFF); //turn off security LED (gpio 13)
+	//else
+		//ledAlways(13, LED_ON); //turn on security LED (gpio 13)
+//#endif
 
 #if defined (RT2860_WAPI_SUPPORT) || defined (RTDEV_WAPI_SUPPORT)
 	restartWAPIDaemon(RT2860_NVRAM);	// in wireless.c
@@ -1973,18 +1973,50 @@ int initInternet(void)
 	firewall_init();
 	management_init();
 	RoutingInit();
-#if defined CONFIG_LKTOS_PRIVATE_OEM_NAME_CDRKING
-	system("gpio c 13 1");
-#else
-	system("gpio u 0"); //by luot for close the usb led init
-#endif
+//#if defined CONFIG_LKTOS_PRIVATE_OEM_NAME_CDRKING
+	//system("gpio c 13 1");
+//#else
+	//system("gpio u 0"); //by luot for close the usb led init
+//#endif
 #ifdef CONFIG_RALINKAPP_SWQOS
 	QoSInit();
 #endif
 #if defined (CONFIG_IPV6)
 	ipv6Config(strtol(nvram_bufget(RT2860_NVRAM, "IPv6OpMode"), NULL, 10));
 #endif
-
+       if (!strcmp(nvram_bufget(RT2860_NVRAM, "OperationMode"),"1")) 
+	{
+		system("gpio l 8 1 1 1 1 1");
+		system("gpio l 21 1 1 1 1 1");
+              sleep(1);
+		system("gpio k 8 0");
+		system("gpio k 21 0");
+              sleep(1);
+		system("gpio k 10 0");
+		system("gpio k 13 0");
+              sleep(1);
+		system("gpio l 14 4 4 4000 1 1");
+		system("gpio l 19 4 4 4000 1 1");
+	}
+	else
+	{
+		//system("gpio l 8 1 1 1 1 1");
+		//system("gpio l 21 1 1 1 1 1");
+		//sleep(1);
+		//system("gpio k 8 0");
+		//sleep(1);
+		//system("gpio k 21 0");
+		//sleep(1);
+		system("gpio k 14 0");
+		system("gpio k 19 0");
+		sleep(1);
+		system("gpio l 10 4 4 4000 1 1");
+		//sleep(1);
+		system("gpio l 13 4 4 4000 1 1");
+	}
+        system("config-powersave.sh ethernet 1  0");
+        sleep(3);
+        system("config-powersave.sh ethernet 0  0");
 	return 0;
 }
 

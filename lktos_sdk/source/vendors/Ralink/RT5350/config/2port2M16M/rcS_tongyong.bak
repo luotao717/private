@@ -1,6 +1,8 @@
 #!/bin/sh
 mount -a
 mkdir -p /var/run
+gpio l 21 1 1 4000 1 1
+gpio l 8 1 1 4000 1 1
 cat /etc_ro/motd
 nvram_daemon&
 #insmod usbcore.ko
@@ -12,7 +14,7 @@ nvram_daemon&
 #tar xf /bin/apa.tar -C /tmp
 #cp /bin/httpd /tmp/apache/bin/
 
-gpio l 9 6 6 4000 1 1
+#gpio l 9 6 6 4000 1 1
 goahead&
 
 sleep 1
@@ -23,3 +25,6 @@ telnetd
 #cp /etc_ro/web/normal_ws.css /tmp/apache/htdocs/normal_ws.css
 #for syslogd
 mkdir -p /var/log
+config-powersave.sh ethernet 1  0
+sleep 8
+config-powersave.sh ethernet 0  0

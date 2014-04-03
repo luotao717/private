@@ -1,0 +1,161 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<script language="javascript">
+function changeclass(id)
+{
+	if (id == "nstatus")
+	{
+		document.getElementById(id).className = "columnclick";
+		document.getElementById("nmode").className = "column";
+		document.getElementById("nnetwork").className = "column";
+		document.getElementById("nsystem").className = "column";
+	}
+	else if(id == "nmode")
+	{
+		document.getElementById(id).className = "columnclick";
+		document.getElementById("nstatus").className = "column";
+		document.getElementById("nnetwork").className = "column";
+		document.getElementById("nsystem").className = "column";
+	}
+	else if(id == "nnetwork")
+	{
+		document.getElementById(id).className = "columnclick";
+		document.getElementById("nstatus").className = "column";
+		document.getElementById("nmode").className = "column";
+		document.getElementById("nsystem").className = "column";
+	}
+	else if(id == "nsystem")
+	{
+		document.getElementById(id).className = "columnclick";
+		document.getElementById("nstatus").className = "column";
+		document.getElementById("nmode").className = "column";
+		document.getElementById("nnetwork").className = "column";
+	}
+	else
+	{
+		document.getElementById("nstatus").className = "column";
+		document.getElementById("nmode").className = "column";
+		document.getElementById("nnetwork").className = "column";
+		document.getElementById("nsystem").className = "column";
+	}
+}
+</script>
+<style>
+body {
+	margin:0px;
+	padding:0px;
+	font-family:Arial, Helvetica, sans-serif, "黑体";
+	font-size:24px;
+}
+.column {
+	text-align:left;
+	width:154px;
+	height:57px;
+	padding:0;
+	margin:0;
+}
+.column a {
+	float:left;
+	background:url(images/column_bg.gif) no-repeat left top;
+	color:#ffffff;
+	font-weight:bold;
+	width:154px;
+	height:57px;
+	text-decoration:none;
+	text-align:left;
+	padding: 22px 10px 0 20px;
+}
+.column a:hover {
+	float:left;
+	background:url(images/column_bg_over.gif) no-repeat left top;
+	font-weight:bold;
+	color:#1c8dc8;
+	width:154px;
+	height:57px;
+	text-decoration:none;
+	text-align:left;
+	padding: 22px 10px 0 20px;
+}
+.column a:visited {
+	float:left;
+	background:url(images/column_bg.gif) no-repeat left top;
+	color:#ffffff;
+	font-weight:bold;
+	width:154px;
+	height:57px;
+	text-decoration:none;
+	text-align:left;
+	padding: 22px 10px 0 20px;
+}
+
+.columnclick {
+	text-align:left;
+	width:154px;
+	height:57px;
+	padding:0;
+	margin:0;
+}
+.columnclick a {
+	float:left;
+	background:url(images/column_bg_over.gif) no-repeat left top;
+	color:#ffffff;
+	font-weight:bold;
+	width:154px;
+	height:57px;
+	text-decoration:none;
+	text-align:left;
+	padding: 22px 10px 0 20px;
+}
+.columnclick a:hover {
+	float:left;
+	background:url(images/column_bg_over.gif) no-repeat left top;
+	font-weight:bold;
+	color:#1c8dc8;
+	width:154px;
+	height:57px;
+	text-decoration:none;
+	text-align:left;
+	padding: 22px 10px 0 20px;
+}
+.columclick a:visited {
+	float:left;
+	background:url(images/column_bg_over.gif) no-repeat left top;
+	color:#ffffff;
+	font-weight:bold;
+	width:154px;
+	height:57px;
+	text-decoration:none;
+	text-align:left;
+	padding: 22px 10px 0 20px;
+}
+</style>
+</head>
+
+<body style="overflow-x:hidden;">
+<table width="200" border="0" cellpadding="0" cellspacing="0">
+  <tr>
+    <td height="34">&nbsp;</td>
+  </tr>
+  <tr>
+    <td valign="top" align="center" style="padding-left:20px;">
+	  <table width="100%" border="0" cellpadding="0" cellspacing="0">
+		<tr> 
+		  <td class="column" id="nstatus"><a href="adm/statusbak.asp" target="mainFrame" onclick="changeclass('nstatus');">系统状态</a></td>
+		</tr>
+		<tr>
+		  <td class="column" id="nmode"><a href="wireless/opmode1.asp" target="mainFrame" onclick="changeclass('nmode');">模式设定</a></td>
+		</tr>
+		<tr>
+		  <td class="column" id="nnetwork"><a href="internet/lanbak.asp" target="mainFrame" onclick="changeclass('nnetwork');">网络设置</a></td>
+		</tr>
+		<tr>
+		  <td class="column" id="nsystem"><a href="adm/upload_firmwarebak.asp" target="mainFrame" onclick="changeclass('nsystem');">系统管理</a></td>
+		</tr>
+	  </table>
+	</td>
+  </tr>
+</table>
+</body>
+</html>

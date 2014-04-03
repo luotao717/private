@@ -917,6 +917,8 @@ typedef struct end_device
     defined(CONFIG_RALINK_MT7621)
     //send signal to user application to notify link status changed
     struct work_struct  kill_sig_wq;
+    struct work_struct  kill_sig_nvram_usr1;
+    struct work_struct  kill_sig_nvram_usr2;
 #endif
 
     struct work_struct  reset_task;

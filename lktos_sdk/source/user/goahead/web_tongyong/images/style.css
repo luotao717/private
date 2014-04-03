@@ -1,0 +1,74 @@
+/* CSS Document */
+body { 
+	margin:0; 
+	padding:0; 
+	font-size:14px; 
+	font-family:Arial, Helvetica, sans-serif;
+}
+#loading {
+   	width:300px; height:120px; background-color:#333333; color:#ffffff; position:absolute; left:50%; top:50%; margin-top:-150px; margin-left:-250px; text-align:center; font-family:Arial, Helvetica, sans-serif; padding-top:20px;
+}
+a			{ outline:none}     /* for firefox */
+a:link      { text-decoration:none; color:#9a8790; font-size:12px;}   
+a:visited   { text-decoration:none; color:#9a8790; font-size:12px;}   
+a:hover     { text-decoration:none; color:#9a8790; font-size:12px; font-weight:bold;}  
+.pgLanguage {
+	font-family:Arial, Helvetica, sans-serif, "宋体"; 
+	font-size:12px; 
+	color:#0097d9;
+	font-weight:bold;
+	padding-right:20px;
+	text-align:right;
+}
+.pgTitle {
+	font-family:Arial, Helvetica, sans-serif, "黑体"; 
+	font-size:16px; 
+	font-weight:bold; 
+	padding-left:20px; 
+	background-color:#0097d9; 
+	color:#ffffff;
+}
+.pgButton {
+	padding-right:10px; 
+	background-color:#0097d9; 
+}
+.pgHelp, .pgMemo {
+	font-family:Arial, Helvetica, sans-serif, "宋体"; 
+	font-size:14px; 
+	padding:10px 20px 10px 20px; 
+	background-color:#ffffff; 
+	color:#9a8790;
+}
+.pgLable {
+	font-family:Arial, Helvetica, sans-serif, "宋体"; 
+	font-size:14px; 
+	padding:10px 20px 10px 20px; 
+	background-color:#ffffff; 
+	color:#000000;
+	font-weight:bold;
+}
+.pgleft {
+	font-family:Arial, Helvetica, sans-serif, "宋体"; 
+	font-size:14px; 
+	padding:10px 20px 10px 20px; 
+	background-color:#ffffff; 
+	color:#000000;
+	width:265px;
+	text-align:right;
+	font-weight:bold;
+}
+.pgRight {
+	background-color:#ffffff;
+	text-align:left;
+	width:495px;
+}
+.button {
+	font-family:Arial, Helvetica, sans-serif, "宋体"; 
+	font-size:12px;
+	border:0;
+	background-color:#cccccc;
+	cursor:pointer;
+	width:90px;
+	height:23px;
+}
+

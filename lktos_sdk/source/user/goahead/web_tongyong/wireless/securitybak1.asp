@@ -3,7 +3,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="-1">
 <meta http-equiv="Content-Type" content="text/html; charset=<% getCharset(); %>">
-<link rel="stylesheet" href="../images/style.css" type="text/css">
+<link rel="stylesheet" href="../style/normal_ws.css" type="text/css">
 <script language="javascript" src="../js/language_<% getCfgZero(1, "LanguageType"); %>.js"></script>
 <script language="javascript" src="../js/common.js"></script>
 <script language="javascript">
@@ -949,34 +949,34 @@ function resetForm()
 }
 </script>
 </head>
-<body onLoad="Load_Setting()">
+<body onLoad="Load_Setting()" class="mainbody">
+<blockquote>
+<table width=700><tr><td>
+<table width=100% border=0 cellpadding=3 cellspacing=1> 
+<tr><td class="title"><script>dw(MM_security_settings)</script></td></tr>
+<tr><td><script>dw(JS_msg_wlsecurity)</script></td></tr>
+<tr><td><hr></td></tr>
+</table>
 
 <form method="post" name="security_form" action="/goform/APSecurity">
 <input type="hidden" id="submitUrl" name="submit-url" value="/wireless/security.asp">
-<table width="800" border="0" cellpadding="0" cellspacing="0" bgcolor="#cae9fa">
-<tr>
-<td  class="pgTitle" height="34"><script>dw(MM_security_settings)</script></td>
-<td class="pgButton" align="right"></td>
-</tr>
-<tr>
-<td  colspan="2" class="pgHelp" ><script>dw(JS_msg_wlsecurity)</script></td>
-</tr>
+<table width=100% border=0 cellpadding=3 cellspacing=1> 
   <tr>
-    <td class="pgleft"><script>dw(MM_select_ssid)</script>:</td>
-    <td class="pgRight"><select name="ssidIndex" onChange="selectMBSSIDChanged()"></select></td>
+    <td class="thead"><script>dw(MM_select_ssid)</script>:</td>
+    <td><select name="ssidIndex" onChange="selectMBSSIDChanged()"></select></td>
   </tr>
   <tr style="display:none">
     <td class="title2" colspan="2"> <span id="sp_title">Security Policy</span></td>
   </tr>
   <tr id="div_security_infra_mode"> 
-    <td class="pgleft"><script>dw(MM_security_mode)</script>:</td>
-    <td class="pgRight"><select name="security_mode" onChange="securityMode(1)"></select></td>
+    <td class="thead"><script>dw(MM_security_mode)</script>:</td>
+    <td><select name="security_mode" onChange="securityMode(1)"></select></td>
   </tr>
 </table>
 <table id="div_wep" style="display:none" width=100% border=0 cellpadding=3 cellspacing=1> 
   <tr style="display:none"> 
-    <td class="pgleft">WEP <script>dw(MM_default_key)</script>:</td>
-    <td class="pgRight"><select name="wep_default_key" onChange="setChange(1)">
+    <td class="thead">WEP <script>dw(MM_default_key)</script>:</td>
+    <td><select name="wep_default_key" onChange="setChange(1)">
 	<option value="1"><script>dw(MM_key)</script> 1</option>
 	<option value="2"><script>dw(MM_key)</script> 2</option>
 	<option value="3"><script>dw(MM_key)</script> 3</option>
@@ -984,29 +984,29 @@ function resetForm()
       </select></td>
   </tr>
   <tr> 
-    <td class="pgleft"><script>dw(MM_wep_key)</script>:</td>
-    <td class="pgRight"><input name="wep_key_1" maxlength="26" onKeyUp="setChange(1)"> <select name="WEP1Select" onChange="setChange(1)"> 
+    <td class="thead"><script>dw(MM_wep_key)</script>:</td>
+    <td><input name="wep_key_1" maxlength="26" onKeyUp="setChange(1)"> <select name="WEP1Select" onChange="setChange(1)"> 
 		<option value="1"><script>dw(MM_ascii)</script></option>
 		<option value="0"><script>dw(MM_hex)</script></option>
 		</select></td>
   </tr>
   <tr style="display:none"> 
-    <td class="pgleft"><script>dw(MM_wep_key)</script> 2:</td>
-    <td class="pgRight"><input name="wep_key_2" maxlength="26" onKeyUp="setChange(1)"> <select name="WEP2Select" onChange="setChange(1)">
+    <td class="thead"><script>dw(MM_wep_key)</script> 2:</td>
+    <td><input name="wep_key_2" maxlength="26" onKeyUp="setChange(1)"> <select name="WEP2Select" onChange="setChange(1)">
 		<option value="1"><script>dw(MM_ascii)</script></option>
 		<option value="0"><script>dw(MM_hex)</script></option>
 		</select></td>
   </tr>
   <tr style="display:none"> 
-    <td class="pgleft"><script>dw(MM_wep_key)</script> 3:</td>
-    <td class="pgRight"><input name="wep_key_3" maxlength="26" onKeyUp="setChange(1)"> <select name="WEP3Select" onChange="setChange(1)">
+    <td class="thead"><script>dw(MM_wep_key)</script> 3:</td>
+    <td><input name="wep_key_3" maxlength="26" onKeyUp="setChange(1)"> <select name="WEP3Select" onChange="setChange(1)">
 		<option value="1"><script>dw(MM_ascii)</script></option>
 		<option value="0"><script>dw(MM_hex)</script></option>
 		</select></td>
   </tr>
   <tr style="display:none"> 
-    <td class="pgleft"><script>dw(MM_wep_key)</script> 4:</td>
-    <td class="pgRight"><input name="wep_key_4" maxlength="26" onKeyUp="setChange(1)"> <select name="WEP4Select" onChange="setChange(1)">
+    <td class="thead"><script>dw(MM_wep_key)</script> 4:</td>
+    <td><input name="wep_key_4" maxlength="26" onKeyUp="setChange(1)"> <select name="WEP4Select" onChange="setChange(1)">
 		<option value="1"><script>dw(MM_ascii)</script></option>
 		<option value="0"><script>dw(MM_hex)</script></option>
 		</select></td>
@@ -1015,34 +1015,34 @@ function resetForm()
 
 <table id="div_wpa" style="display:none" width=100% border=0 cellpadding=3 cellspacing=1> 
   <tr id="div_wpa_algorithms" style="display:none">
-    <td class="pgleft"><script>dw(MM_wpa_alg)</script>:</td>
-    <td class="pgRight"><input name="cipher" value="0" type="radio" onClick="onWPAAlgorithmsClick(0)">TKIP
+    <td class="thead"><script>dw(MM_wpa_alg)</script>:</td>
+    <td><input name="cipher" value="0" type="radio" onClick="onWPAAlgorithmsClick(0)">TKIP
     <input name="cipher" value="1" type="radio" onClick="onWPAAlgorithmsClick(1)">AES
     <input name="cipher" value="2" type="radio" onClick="onWPAAlgorithmsClick(2)">TKIP+AES</td>
   </tr>
   <tr id="wpa_passphrase" style="display:none">
-    <td class="pgleft"><script>dw(MM_passphrase)</script>:</td>
-    <td class="pgRight"><input name="passphrase" size="28" maxlength="64" onKeyUp="setChange(1)"></td>
+    <td class="thead"><script>dw(MM_passphrase)</script>:</td>
+    <td><input name="passphrase" size="28" maxlength="64" onKeyUp="setChange(1)"></td>
   </tr>
   <tr id="wpa_key_renewal_interval" style="display:none">
-    <td class="pgleft"><script>dw(MM_key_renewal_interval)</script>:</td>
-    <td class="pgRight"><input name="keyRenewalInterval" size="6" maxlength="7" value="3600" onKeyUp="setChange(1)"> <script>dw(MM_seconds)</script></td>
+    <td class="thead"><script>dw(MM_key_renewal_interval)</script>:</td>
+    <td><input name="keyRenewalInterval" size="6" maxlength="7" value="3600" onKeyUp="setChange(1)"> <script>dw(MM_seconds)</script></td>
   </tr>
   <tr id="wpa_PMK_Cache_Period" style="display:none">
-    <td class="pgleft"><script>dw(MM_pmk_cache_period)</script>:</td>
-    <td class="pgRight"><input name="PMKCachePeriod" size="4" maxlength="4" onKeyUp="setChange(1)"> <script>dw(MM_minutes)</script></td>
+    <td class="thead"><script>dw(MM_pmk_cache_period)</script>:</td>
+    <td><input name="PMKCachePeriod" size="4" maxlength="4" onKeyUp="setChange(1)"> <script>dw(MM_minutes)</script></td>
   </tr>
   <tr id="wpa_preAuthentication" style="display:none">
-    <td class="pgleft"><script>dw(MM_pre_auth)</script>:</td>
-    <td class="pgRight"><input name="PreAuthentication" value="0" type="radio" onClick="onPreAuthenticationClick(0)"><script>dw(MM_disable)</script>
+    <td class="thead"><script>dw(MM_pre_auth)</script>:</td>
+    <td><input name="PreAuthentication" value="0" type="radio" onClick="onPreAuthenticationClick(0)"><script>dw(MM_disable)</script>
     <input name="PreAuthentication" value="1" type="radio" onClick="onPreAuthenticationClick(1)"><script>dw(MM_enable)</script></td>
   </tr>
 </table>
 
 <table id="div_8021x_wep" style="display:none" width=100% border=0 cellpadding=3 cellspacing=1> 
   <tr>
-    <td class="pgleft">802.1x WEP:</td>
-    <td class="pgRight"><input name="ieee8021x_wep" value="0" type="radio" onClick="onIEEE8021XWEPClick(0)"><script>dw(MM_disable)</script>
+    <td class="thead">802.1x WEP:</td>
+    <td><input name="ieee8021x_wep" value="0" type="radio" onClick="onIEEE8021XWEPClick(0)"><script>dw(MM_disable)</script>
     <input name="ieee8021x_wep" value="1" type="radio" onClick="onIEEE8021XWEPClick(1)"><script>dw(MM_enable)</script></td>
   </tr>
 </table>
@@ -1078,7 +1078,7 @@ function resetForm()
 	<td class="title2" colspan="5"><script>dw(MM_radius_server)</script></td>
   </tr>
   <tr> 
-	<td class="pgleft"><script>dw(MM_ipaddr)</script></td>
+	<td class="thead"><script>dw(MM_ipaddr)</script></td>
     <td><script>dw(MM_port)</script></td>
     <td><script>dw(MM_shared_secret)</script></td>
     <td><script>dw(MM_session_time_out)</script></td>
@@ -1095,7 +1095,7 @@ function resetForm()
 
 <table id="div_wapi_psk" style="display:none" width=100% border=0 cellpadding=3 cellspacing=1> 
   <tr>
-    <td class="pgleft">WAPI-PSK Key:</td>
+    <td class="thead">WAPI-PSK Key:</td>
     <td><input type="text" name="wapipsk_prekey" size="28" maxlength="64" value=""></td>
     <td><select name="wapipsk_keytype">
         <option value="0" selected>HEX</option>
@@ -1106,22 +1106,22 @@ function resetForm()
 
 <table id="div_wapi_cert" style="display:none" width=100% border=0 cellpadding=3 cellspacing=1> 
   <tr> 
-    <td class="pgleft">WAPI AS IP Address:</td>
+    <td class="thead">WAPI AS IP Address:</td>
     <td><input type="text" name="wapicert_asipaddr" maxlength="32" value=""></td>
   </tr>
   <tr> 
-    <td class="pgleft">WAPI AS Port:</td>
+    <td class="thead">WAPI AS Port:</td>
     <td><input type="text" name="wapicert_asport" size="5" maxlength="5" value="3810" readOnly> (1-65535)</td>
   </tr>
   <tr>
-    <td class="pgleft">WAPI AS Certificate:</td>
+    <td class="thead">WAPI AS Certificate:</td>
     <td><select name="wapicert_ascert">
         <% getWAPIASCertList(); %>
       </select>
       <input type="button" value="Install" name="wapi_as_cert_upload" onClick="open_wapi_cert_upload('as')"></td>
   </tr>
   <tr>
-    <td class="pgleft">WAPI User Certificate:</td>
+    <td class="thead">WAPI User Certificate:</td>
     <td><select name="wapicert_usercert">
         <% getWAPIUserCertList(); %>
       </select>
@@ -1135,11 +1135,11 @@ var aptable;
 
 for(aptable = 0; aptable < MBSSID_MAX; aptable++){
 	document.write("<table id=AccessPolicy_"+ aptable +" width=100% border=0 cellpadding=3 cellspacing=1>");
-	document.write("<tr><td class=pgleft>"+MM_auth_mode+":</td>");
-	document.write("<td class=pgRight><select name=apselect_"+ aptable + " id=apselect_"+aptable+" onchange=\"setChange(1)\">");
+	document.write("<tr><td class=thead>"+MM_auth_mode+":</td>");
+	document.write("<td><select name=apselect_"+ aptable + " id=apselect_"+aptable+" onchange=\"setChange(1)\">");
 	document.write("<option value=0 >"+MM_disable+"</option><option value=1 >"+MM_allow+"</option><option value=2 >"+MM_deny+"</option></select></td></tr>");
-	document.write("<tr><td class=pgleft>"+MM_macaddr+":</td>");
-	document.write("<td class=pgRight><input name=newap_text_"+aptable+" id=newap_text_"+aptable+" size=17 maxlength=17></td></tr>");
+	document.write("<tr><td class=thead>"+MM_macaddr+":</td>");
+	document.write("<td><input name=newap_text_"+aptable+" id=newap_text_"+aptable+" size=17 maxlength=17></td></tr>");
 
 	for(i=0; i< ACCESSPOLICYLIST_MAX/2; i++){
 		input_name = "newap_"+ aptable +"_" + (2*i);
@@ -1174,7 +1174,6 @@ for(aptable = 0; aptable < MBSSID_MAX; aptable++){
 <br>
 <table width=100% border=0 cellpadding=3 cellspacing=1> 
   <tr>
-  <td class="pgleft"></td>
     <td>
       <script>dw('<input type="button" class="button" value="'+BT_apply+'" onClick="submit_apply()"> &nbsp; &nbsp;\
       <input type="button" class="button" value="'+BT_reset+'" onClick="resetForm();" >')</script>
@@ -1184,5 +1183,6 @@ for(aptable = 0; aptable < MBSSID_MAX; aptable++){
 </form>
 
 </td></tr></table>
+</blockquote>
 </body></html>
  

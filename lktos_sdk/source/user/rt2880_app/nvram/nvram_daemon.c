@@ -20,6 +20,8 @@
 int ramad_start(void);
 #endif
 static char *saved_pidfile;
+static int currentWorkmode=0;
+static int processexcute=0;
 
 void loadDefault(int chip_id)
 {
@@ -61,6 +63,56 @@ void loadDefault(int chip_id)
 static void nvramIrqHandler(int signum)
 {
 	if (signum == SIGUSR1) {
+		if(!processexcute)
+		{
+			processexcute=1;
+			if(currentWorkmode)			
+			{				
+				system("nvram_set 2860 OperationMode 0");
+				system("nvram_set 2860 BridgeMode 1");
+				system("nvram_set 2860 dhcpEnabled 0");
+				system("nvram_set 2860 natEnabled 0");
+				system("nvram_set 2860 ApCliEnable 1");
+				system("nvram_set 2860 apClient 1");
+                            system("gpio l 14 1 1 1 1 1");
+		              system("gpio l 19 1 1 1 1 1");
+		             sleep(1);
+                		system("gpio k 14 0");
+                		//sleep(1);
+                		system("gpio k 19 0");
+                		sleep(1);
+                		system("gpio l 10 4 4 4000 1 1");
+                		//sleep(1);
+                		system("gpio l 13 4 4 4000 1 1");
+				currentWorkmode=0;
+			}
+			else
+			{
+				system("nvram_set 2860 OperationMode 1");
+				system("nvram_set 2860 BridgeMode 0");
+				system("nvram_set 2860 dhcpEnabled 1");
+				system("nvram_set 2860 natEnabled 1");
+				system("nvram_set 2860 ApCliEnable 0");
+				system("nvram_set 2860 apClient 0");
+                            system("gpio l 10 1 1 1 1 1");
+		              system("gpio l 13 1 1 1 1 1");
+		             sleep(1);
+                		system("gpio k 10 0");
+                		//sleep(1);
+                		system("gpio k 13 0");
+                		sleep(1);
+                		system("gpio l 14 4 4 4000 1 1");
+                		//sleep(1);
+                		system("gpio l 19 4 4 4000 1 1");
+				currentWorkmode=1;
+			}
+			//sleep(3);
+			system("internet.sh");
+                     system("config-powersave.sh ethernet 1  0");
+                    sleep(3);
+                     system("config-powersave.sh ethernet 0  0");
+			processexcute=0;
+		}
 #ifdef CONFIG_RALINK_RT2880
 		int gopid;
 		FILE *fp = fopen("/var/run/goahead.pid", "r");
@@ -94,6 +146,38 @@ static void nvramIrqHandler(int signum)
 #endif
 		system("reboot");
 	}
+        else if (signum == SIGUSR1+65) 
+        {
+            printf("recieve sigusr1+65 \r\n");
+              if(currentWorkmode)	
+              {
+                    system("gpio l 14 1 1 1 1 1");
+                    system("gpio k 14 1");
+                    system("gpio l 19 1 1 1 1 1");
+        		system("gpio k 19 1");
+              }
+              else
+              {
+                    system("gpio l 10 1 1 1 1 1");
+        		system("gpio k 10 1");
+                    system("gpio l 13 1 1 1 1 1");
+        		system("gpio k 13 1");
+              }
+        }
+         else if (signum == SIGUSR2+65) 
+        {
+            printf("recieve sigusr2+65 \r\n");
+            if(currentWorkmode)
+            {
+                 system("gpio l 14 4 4 4000 1 1");
+    	          system("gpio l 19 4 4 4000 1 1");
+            }
+            else
+            {
+                 system("gpio l 10 4 4 4000 1 1");
+    	          system("gpio l 13 4 4 4000 1 1");
+            }
+        }
 }
 
 /*
@@ -130,7 +214,9 @@ int initGpio(void)
 	info.irq = 1;	// MT7620 reset default
 #else
 	//RT2883, RT3052, RT3352, RT6855 use gpio 10 for load-to-default
-	info.irq = 10;
+	//info.irq = 10; for hp
+       info.irq = 7;
+
 #endif	
 
 	fd = open(GPIO_DEV, O_RDONLY);
@@ -205,6 +291,8 @@ int initGpio(void)
 	//issue a handler to handle SIGUSR1 and SIGUSR2
 	signal(SIGUSR1, nvramIrqHandler);
 	signal(SIGUSR2, nvramIrqHandler);
+       signal(SIGUSR1+65, nvramIrqHandler);
+	signal(SIGUSR2+65, nvramIrqHandler);
 	return 0;
 
 ioctl_err:
@@ -258,7 +346,40 @@ int main(int argc,char **argv)
 	if (strcmp(nvram_bufget(RT2860_NVRAM, "WebInit"),"1")) {
 		loadDefault(2860);
 	}
-	
+	if (!strcmp(nvram_bufget(RT2860_NVRAM, "OperationMode"),"1")) 
+	{
+		currentWorkmode=1;
+        /*
+		system("gpio l 8 1 1 1 1 1");
+		system("gpio l 21 1 1 1 1 1");
+		system("gpio k 8 0");
+		system("gpio k 21 0");
+		system("gpio k 10 0");
+		system("gpio k 13 0");
+		system("gpio l 14 3 3 4000 1 1");
+		system("gpio l 19 3 3 4000 1 1");
+		*/
+	}
+	else
+	{
+		currentWorkmode=0;
+       
+		system("gpio l 8 1 1 1 1 1");
+		system("gpio l 21 1 1 1 1 1");
+		sleep(1);
+		system("gpio k 8 0");
+		//sleep(1);
+		system("gpio k 21 0");
+         /*
+		sleep(2);
+		system("gpio k 14 0");
+		system("gpio k 19 0");
+		sleep(2);
+		system("gpio l 10 3 3 4000 1 1");
+		sleep(2);
+		system("gpio l 13 3 3 4000 1 1");
+		*/
+	}
 	if (strcmp(nvram_bufget(RTDEV_NVRAM, "WebInit"),"1")) {
 #if defined (CONFIG_RTDEV) || \
     defined (CONFIG_RTDEV_PLC)

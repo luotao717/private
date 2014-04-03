@@ -227,7 +227,7 @@ function opera()
 <form method=post name=apcli_form action="/goform/wirelessBridge">
 <input type="hidden" name="submit-url" value="/wireless/bridge.asp">
 <input type="hidden" name="apcli_channel" value="<% getCfgGeneral(1, "Channel"); %>">
-<table width=100% border=0 cellpadding=3 cellspacing=1> 
+<table width=100% border=0 cellpadding=3 cellspacing=1 style="display:none"> 
   <tr>
     <td class="thead"><script>dw(MM_apclient_mode)</script>:</td>
     <td><select name="apcliEnbl" onChange="updateApClient()">
@@ -326,6 +326,7 @@ function opera()
 <br>
 <table width=100% border=0 cellpadding=3 cellspacing=1> 
   <tr>
+  	<td class="thead"></td>
     <td>
       <script>dw('<input type=submit class=button value="'+BT_apply+'" onClick="return formCheck()"> &nbsp; &nbsp;\
       <input type=button class=button value="'+BT_reset+'" onClick="resetForm();">')</script>

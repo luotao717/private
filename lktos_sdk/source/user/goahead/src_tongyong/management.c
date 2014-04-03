@@ -1156,7 +1156,7 @@ static void RebootSystem(webs_t wp, char_t *path, char_t *query)
 	websWrite(wp, T("<html>\n<head>\n"));
 	websWrite(wp, T("<title>My Title</title>\n"));
 	websWrite(wp, T("<link rel=\"stylesheet\" href=\"/style/normal_ws.css\" type=\"text/css\">\n"));
-	websWrite(wp, T("<meta http-equiv=\"content-type\" content=\"text/html;charset=utf-8\">\n"));
+	websWrite(wp, T("<meta http-equiv=\"content-type\" content=\"text/html;charset=gb2312\">\n"));
 	websWrite(wp, T("<script language=\"javascript\" src=\"../js/language_%s.js\"></script>\n"),langType);
 	websWrite(wp, T("<script language=\"javascript\">\n\
 		function refresh_all(){	\n\

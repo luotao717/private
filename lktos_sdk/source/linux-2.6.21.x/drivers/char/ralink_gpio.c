@@ -2132,6 +2132,7 @@ int __init ralink_gpio_init(void)
 	gpiomode &= ~0x2000;  //clear bit[13] WLAN_LED
 #endif
 	gpiomode |= RALINK_GPIOMODE_DFT;
+       gpiomode |= (1 << 6); //set jtag to gpio mode by luotao
 	*(volatile u32 *)(RALINK_REG_GPIOMODE) = cpu_to_le32(gpiomode);
 
 	//enable gpio interrupt

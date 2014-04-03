@@ -24,6 +24,7 @@ body {
 }
 .thead {
 	width:200px;
+	text-align:right;
 }
 .thead2 {
 	width:220px;
