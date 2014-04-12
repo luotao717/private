@@ -1797,6 +1797,9 @@ static void wirelessApcli(webs_t wp, char_t *path, char_t *query)
 	char_t	*key2, *key3, *key4, *key2type, *key3type, *key4type;
 
 	char  apcli_encryp_type[5];
+	char  lan_ipaddr[16];
+	
+	strcpy(lan_ipaddr, nvram_bufget(RT2860_NVRAM, "lan_ipaddr"));
 
 	//fetch from web input
 	ssid = websGetVar(wp, T("apcli_ssid"), T(""));
@@ -1850,15 +1853,54 @@ static void wirelessApcli(webs_t wp, char_t *path, char_t *query)
 	//nvram_bufset(RT2860_NVRAM, "ApCliKey4Str", key4);
 
 	nvram_commit(RT2860_NVRAM);
-	initInternet();
+	//initInternet();
+	//doSystem("wificlient.sh");
+	const char	*langType = nvram_bufget(RT2860_NVRAM, "LanguageType");
 
-	websRedirect(wp, submitUrl);
+	a_assert(websValid(wp));
+
+	websWrite(wp, T("HTTP/1.0 200 OK\n"));
+
+/*
+ *	By license terms the following line of code must not be modified
+ */
+	websWrite(wp, T("Server: %s\r\n"), WEBS_NAME);
+
+	websWrite(wp, T("Pragma: no-cache\n"));
+	websWrite(wp, T("Cache-control: no-cache\n"));
+	websWrite(wp, T("Content-Type: text/html\n"));
+	websWrite(wp, T("\n"));
+	websWrite(wp, T("<html>\n<head>\n"));
+	websWrite(wp, T("<title>My Title</title>\n"));
+	websWrite(wp, T("<link rel=\"stylesheet\" href=\"/style/normal_ws.css\" type=\"text/css\">\n"));
+	websWrite(wp, T("<meta http-equiv=\"content-type\" content=\"text/html;charset=utf-8\">\n"));
+	websWrite(wp, T("<script language=\"javascript\" src=\"../js/language_%s.js\"></script>\n"),langType);
+
+	websWrite(wp, T("<script language=\"javascript\">\n\
+		function refresh_all(){	\n\
+		  top.location.href = \"http://%s/home.asp\"; \n\
+		} \n\
+		function update(){ \n\
+		  self.setTimeout(\"refresh_all()\", 40000);\n\
+		}\n</script>\n"), lan_ipaddr);	
+	websWrite(wp, T("</head>\n<body onload=\"update()\">\n"));
+	websWrite(wp, T("<blockquote>\n"));
+	websWrite(wp, T("<br><b><script>dw(MM_set_wizard_ok)</script></b>\n"));
+	websWrite(wp, T("</blockquote>\n"));
+	websWrite(wp, T("</body>\n</html>\n"));
+
+	sleep(3);
+	doSystem("reboot");
+	//websRedirect(wp, submitUrl);
 }
 
 static int  ApcliScan(int eid, webs_t wp, int argc, char_t **argv)
 {
 	FILE *fp;
 	char buf[4096];
+	char *p, *head,tmpBuf[1024], resultBuf[1024]={0},tmpBufUnit[128];
+	char channel[5]={0},strSsid[34]={0},strBssid[21]={0},security[24]={0},signal[10]={0},mode[8]={0},extch[8]={0},nettype[4]={0},yesno[5]={0};
+	int idex;
 #if 0
 	char *ptr;
 	char channel[4], ssid[186], bssid[20], security[23];
@@ -1916,8 +1958,7 @@ static int  ApcliScan(int eid, webs_t wp, int argc, char_t **argv)
 		websWrite(wp, "</tr>\n");
 #else
 #if 1	//modify by chenfei
-		char *p, tmpBuf[1024], tmpBufUnit[128];
-		int idex;	
+			
 		memset(tmpBuf, 0, 1024);
 		for(idex=0; idex<12; idex++) {			
 			if(idex == 0)
@@ -1937,18 +1978,42 @@ static int  ApcliScan(int eid, webs_t wp, int argc, char_t **argv)
 			}						
 		}
 
-		if(tmpBuf[strlen(tmpBuf)-1] == '\n'){
-			tmpBuf[strlen(tmpBuf)-1] = '\0'; 
-			websWrite(wp, "%s#", tmpBuf);
+		if(tmpBuf[strlen(tmpBuf)-1] == '\n')
+		{
+			tmpBuf[strlen(tmpBuf)-1] = '\0';
+			//printf("\r\n222%s",tmpBuf);
+			sscanf(tmpBuf,"%4s%33s%20s%23s%9s%7s%7s%3s%4s",channel,strSsid,strBssid,security,signal,mode,extch,nettype,yesno);
+			sprintf(resultBuf,"%s;%s;%s;%s;%s;%s;%s;%s;%s#",channel,strSsid,strBssid,security,signal,mode,extch,nettype,yesno);
+			//printf("\r\n1111%s;%s;%s;%s;%s;%s;%s;%s;%s#",channel,strSsid,strBssid,security,signal,mode,extch,nettype,yesno);
+			websWrite(wp, "%s", resultBuf);
+			//websWrite(wp, "%s#", tmpBuf);
 		}
 		else
-			websWrite(wp, "%s#", tmpBuf);
+		{
+			printf("\r\n333",tmpBuf);
+			//websWrite(wp, "%s#", tmpBuf);
+		}
 #else	
 		websWrite(wp, "%s", buf);
 #endif
 #endif
 	}
-	pclose(fp);	
+	pclose(fp);
+#if 0
+	p=NULL;
+	p=strchr(tmpBuf,'#');
+	head=tmpBuf;
+	while(p != NULL)
+	{
+		*p='\0';
+		
+		sscanf(head,"%-4s%-33s%-20s%-23s%-9s%-7s%-7s%-3s%-4s",channel,strSsid,strBssid,security,signal,mode,extch,nettype,yesno);
+		printf("\r\n1111%s;%s;%s;%s;%s;%s;%s;%s;%s#",channel,strSsid,strBssid,security,signal,mode,extch,nettype,yesno);
+		head=p+1;
+		p=strchr(head,'#');
+	}
+	printf("\r\nserch over\r\n");
+#endif
 }
 #endif
 

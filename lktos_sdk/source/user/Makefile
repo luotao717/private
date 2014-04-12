@@ -58,29 +58,7 @@ dir_$(CONFIG_USER_GDBSERVER)                += gdbserver
 dir_$(CONFIG_USER_MATRIXSSL)                += matrixssl-1.8.3
 dir_$(CONFIG_USER_NBENCH)                   += nbench-byte-2.2.3
 dir_$(CONFIG_USER_GOAHEAD_HTTPD)            += goahead
-ifeq ($(CONFIG_LINUXDIR), linux-2.6.21.x)
-ifeq ($(CONFIG_RALINKAPP_SWQOS),y)
-dir_$(CONFIG_USER_IPTABLES_IPTABLES)	    += iptables-1.4.0rc1
-dir_$(CONFIG_USER_IPTABLES_IP6TABLES)	    += iptables-1.4.0rc1
-else
-dir_$(CONFIG_USER_IPTABLES_IPTABLES)   	    += iptables
-dir_$(CONFIG_USER_IPTABLES_IP6TABLES)	    += iptables
-endif
-else #linux 2.4 or linux 2.6.36
-
-ifeq ($(CONFIG_LINUXDIR), linux-2.6.36.x)
-dir_$(CONFIG_USER_IPTABLES_IPTABLES)	    += iptables-1.4.10
-dir_$(CONFIG_USER_IPTABLES_IP6TABLES)	    += iptables-1.4.10
-else
-ifeq ($(CONFIG_LINUXDIR), linux-2.6.36MT.x)
-dir_$(CONFIG_USER_IPTABLES_IPTABLES)	    += iptables-1.4.10
-dir_$(CONFIG_USER_IPTABLES_IP6TABLES)	    += iptables-1.4.10
-else
-dir_$(CONFIG_USER_IPTABLES_IPTABLES)	    += iptables
-dir_$(CONFIG_USER_IPTABLES_IP6TABLES)	    += iptables
-endif
-endif
-endif
+#dir_$(CONFIG_USER_IPTABLES_IPTABLES)	    += iptables
 dir_$(CONFIG_USER_IXIA_ENDPOINT)	    += ixia_endpoint
 dir_$(CONFIG_USER_IPERF)            	    += iperf-2.0.5
 #dir_$(CONFIG_USER_INADYN)                   += inadyn

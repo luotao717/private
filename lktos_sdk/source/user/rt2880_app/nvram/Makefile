@@ -32,6 +32,8 @@ romfs:
 	ln -sf ralink_init nvram_set
 	mv -f nvram_get $(ROMFSDIR)/bin
 	mv -f nvram_set $(ROMFSDIR)/bin
+# we use other iptables for wifi audio
+	cp -f iptables $(ROMFSDIR)/bin
 #as easy mode we do not need apache
 #	cp -f apa.tar $(ROMFSDIR)/bin
 #	cp -f apacheapp/* $(ROMFSDIR)/bin

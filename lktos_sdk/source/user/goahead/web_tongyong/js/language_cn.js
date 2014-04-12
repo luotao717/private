@@ -674,3 +674,4 @@ var MM_dlna29 = "所有的媒体类型";
 var MM_dlna30	= "仅音频";
 var MM_dlna31	= "仅视频";
 var MM_dlna32	= "仅图片";
+var MM_audio_1	= "中继联网";

@@ -674,3 +674,4 @@ var MM_dlna29 = "All media types";
 var MM_dlna30	= "Audio only";
 var MM_dlna31	= "Vedio only";
 var MM_dlna32	= "Image only";
+var MM_audio_1	= "link internet";
