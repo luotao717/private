@@ -2316,7 +2316,8 @@ irqreturn_t ralink_gpio_irq_handler(int irq, void *irqaction)
 				}
 				else {
 					//press for several seconds
-					ralink_gpio_notify_user(2);
+					//for hp to change this to reloadfac
+					//ralink_gpio_notify_user(2);
 				}
 			}
 		}

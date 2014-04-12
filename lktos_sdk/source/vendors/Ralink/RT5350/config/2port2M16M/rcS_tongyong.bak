@@ -25,6 +25,3 @@ telnetd
 #cp /etc_ro/web/normal_ws.css /tmp/apache/htdocs/normal_ws.css
 #for syslogd
 mkdir -p /var/log
-config-powersave.sh ethernet 1  0
-sleep 8
-config-powersave.sh ethernet 0  0

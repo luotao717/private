@@ -290,7 +290,9 @@ function resetForm()
 		</td>
 		<td width="20"></td>
 	</tr>
-	
+<tr>
+	<td colspan="3" height="10"></td>
+	</tr>	
 	<tr>
 		<td width="20"></td>
 		<td>
@@ -332,7 +334,9 @@ function resetForm()
 		</td>
 		<td width="20"></td>
 	</tr>
-	
+<tr>
+	<td colspan="3" height="10"></td>
+	</tr>	
 	<tr>
 	<td></td>
 	<td class="pgTitle" height="34"><script>dw(MM_dhcp_server_settings)</script></td>
@@ -445,6 +449,9 @@ function resetForm()
 		<td width="20"></td>
 	</tr>
 	<tr>
+	<td colspan="3" height="10"></td>
+	</tr>
+	<tr>
  	<td width="20"></td>
     <td>
       <span id="wirelessbac">
@@ -455,6 +462,11 @@ function resetForm()
 	</tr>
 </table>	
 </form>
-<table width="800" height="100%" border="0" cellpadding="0" cellspacing="0" bgcolor="#cae9fa">
+<table width="800" height="200" border="0" cellpadding="0" cellspacing="0" bgcolor="#cae9fa">
+<tr>
+<td>
+</td>
+</tr>
+</table>
 </body>
 </html>

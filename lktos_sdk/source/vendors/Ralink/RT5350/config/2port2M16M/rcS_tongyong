@@ -25,3 +25,4 @@ telnetd
 #cp /etc_ro/web/normal_ws.css /tmp/apache/htdocs/normal_ws.css
 #for syslogd
 mkdir -p /var/log
+reloadfac &

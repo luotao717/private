@@ -129,6 +129,7 @@ function Load_Setting()
 	{
 		document.getElementById("div_apclient_br").style.display = "";
 		document.getElementById("div_apclient").style.display = "";
+		document.getElementById("div_apclient_line").style.display = "";
 		document.getElementById("apcli_status").innerHTML = <% getIndex(1, "apcliStatus"); %>;
 		
 		if (apcli_mode == "OPEN" && apcli_enc == "NONE")
@@ -146,6 +147,7 @@ function Load_Setting()
 	{
 		document.getElementById("div_apclient_br").style.display = "none";
 		document.getElementById("div_apclient").style.display = "none";
+		document.getElementById("div_apclient_line").style.display = "none";
 		document.getElementById("apcli_status").innerHTML = MM_unknown;
 	}
 
@@ -166,11 +168,13 @@ function Load_Setting()
 	{
 		document.getElementById("div_wan_br").style.display = "none";
 		document.getElementById("div_wan").style.display = "none";
+		document.getElementById("div_wan_line").style.display = "none";
 	}
 	else
 	{
 		document.getElementById("div_wan_br").style.display = "";
 		document.getElementById("div_wan").style.display = "";
+		document.getElementById("div_wan_line").style.display = "";
 	}
 	
 	if (channel == 0)
@@ -240,7 +244,9 @@ function Load_Setting()
 		</td>
 		<td width="20"></td>
 	</tr>
-	
+	<tr>
+	<td colspan="3" height="10"></td>
+	</tr>
 	<tr>
 		<td width="20"></td>
 		<td valign="top">
@@ -272,6 +278,9 @@ function Load_Setting()
 		</table>
 		</td>
 		<td width="20"></td>
+	</tr>
+	<tr>
+	<td colspan="3" height="10"></td>
 	</tr>
 	<tr id="div_wan_br">
 	<td></td>
@@ -318,7 +327,9 @@ function Load_Setting()
 		</td>
 		<td width="20"></td>
 	</tr>
-
+<tr id="div_wan_line">
+	<td colspan="3" height="10"></td>
+</tr>
 <tr>
 <td></td>
 <td class="pgTitle" height="34"><script>dw(MM_wireless_iface)</script></td>
@@ -365,7 +376,9 @@ function Load_Setting()
 		<td width="20"></td>
 	</tr>
 	
-	
+<tr>
+	<td colspan="3" height="10"></td>
+	</tr>	
 	<tr id="div_apclient_br">
 	<td></td>
 	<td class="pgTitle" height="34"><script>dw(MM_wireless_repeater_iface)</script></td>
@@ -395,7 +408,9 @@ function Load_Setting()
 		</td>
 		<td width="20"></td>
 	</tr>
-	
+	<tr id="div_apclient_line">
+	<td colspan="3" height="10"></td>
+	</tr>	
 	<tr>
 	<td></td>
 	<td class="pgTitle" height="34"><script>dw(MM_lan_iface)</script></td>
@@ -425,13 +440,15 @@ function Load_Setting()
 		</td>
 		<td width="20"></td>
 	</tr>
-	
-</table>
-<table width="800" height="300" border="0" cellpadding="0" cellspacing="0" bgcolor="#cae9fa">
 <tr>
 <td></td>
 </tr>
 </table>
-
+<table width="800" height="200" border="0" cellpadding="0" cellspacing="0" bgcolor="#cae9fa">
+<tr>
+<td>
+</td>
+</tr>
+</table>
 </body>
 </html>

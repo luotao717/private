@@ -1338,7 +1338,7 @@ function resetForm()
 <table width=100% border=0 cellpadding=3 cellspacing=1> 
   <tr>
 	<td class="pgleft"></td>
-	<td>
+	<td class="pgRight">
       <script>dw('<input type=submit class=button value="'+BT_apply+'" onClick="return formCheck()"> &nbsp; &nbsp;\
       <input type=button class=button value="'+BT_reset+'" onClick="resetForm();">')</script>
     </td>

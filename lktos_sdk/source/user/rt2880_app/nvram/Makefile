@@ -2,7 +2,7 @@ NVDIR = $(ROOTDIR)/lib/libnvram
 CFLAGS += -I$(NVDIR) -I$(ROOTDIR)/$(LINUXDIR)/drivers/char
 LDFLAGS += -lnvram
 LIBNVRAM = $(ROOTDIR)/lib/libnvram/libnvram-0.9.28.so
-EXEC = nvram_daemon ralink_init
+EXEC = nvram_daemon ralink_init reloadfac
 CONF_H	= $(ROOTDIR)/$(LINUXDIR)/include/linux/autoconf.h
 UCONF_H	= $(ROOTDIR)/config/autoconf.h
 
@@ -18,8 +18,11 @@ endif
 
 ralink_init: ralink_init.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LDLIBS)
+	
+reloadfac: reloadfac.o
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LDLIBS)
 
-ralink_init.o: $(CONF_H) $(UCONF_H) $(LIBNVRAM)
+reloadfac.o: $(CONF_H) $(UCONF_H) $(LIBNVRAM)
 
 nvram_daemon.o: $(CONF_H) $(UCONF_H) $(LIBNVRAM)
 

@@ -2021,8 +2021,49 @@ static void wirelessBridge(webs_t wp, char_t *path, char_t *query)
 
 	char  apcli_encryp_type[5];
 
+
+	char_t	*bridgeMode = websGetVar(wp, T("bridgeMode"), T("0"));
+    const char	*lan_ip = nvram_bufget(RT2860_NVRAM, "lan_ipaddr");
+	const char	*langType = nvram_bufget(RT2860_NVRAM, "LanguageType");
+
+	//new OperationMode
+	if (!strncmp(bridgeMode, "1", 2) || !strncmp(bridgeMode, "4", 2)) //when bridge or mac passthrough
+	{
+		nvram_bufset(RT2860_NVRAM, "OperationMode", "0");
+		nvram_bufset(RT2860_NVRAM, "natEnabled", "0");	
+		nvram_bufset(RT2860_NVRAM, "dhcpEnabled", "0");
+              nvram_bufset(RT2860_NVRAM, "ApCliEnable", "1");
+              nvram_bufset(RT2860_NVRAM, "apClient", "1");
+	}
+	else if (!strncmp(bridgeMode, "0", 2) || !strncmp(bridgeMode, "2", 2) || !strncmp(bridgeMode, "3", 2))
+	{	
+		if (!strncmp(bridgeMode, "0", 2) || !strncmp(bridgeMode, "3", 2))	
+		{
+			nvram_bufset(RT2860_NVRAM, "OperationMode", "1");	//when gateway or wds
+			nvram_bufset(RT2860_NVRAM, "ApCliEnable", "0");
+                     nvram_bufset(RT2860_NVRAM, "apClient", "0");
+		}
+		else
+		{
+			nvram_bufset(RT2860_NVRAM, "OperationMode", "3");	//when wisp
+			nvram_bufset(RT2860_NVRAM, "ApCliEnable", "1");
+		}
+		
+		nvram_bufset(RT2860_NVRAM, "natEnabled", "1");
+		nvram_bufset(RT2860_NVRAM, "dhcpEnabled", "1");
+	}
+
+	if (!strncmp(bridgeMode, "4", 2))
+		nvram_bufset(RT2860_NVRAM, "MACRepeaterEn", "1");
+	else
+		nvram_bufset(RT2860_NVRAM, "MACRepeaterEn", "0");
+	
+	nvram_bufset(RT2860_NVRAM, "BridgeMode", bridgeMode);
+
+	
+	
 	//fetch from web input
-	apcli_enable = websGetVar(wp, T("apcliEnbl"), T(""));
+	//apcli_enable = websGetVar(wp, T("apcliEnbl"), T(""));
 	ssid = websGetVar(wp, T("apcli_ssid"), T(""));
 	bssid = websGetVar(wp, T("apcli_bssid"), T(""));
 
@@ -2044,11 +2085,12 @@ static void wirelessBridge(webs_t wp, char_t *path, char_t *query)
 	enc = websGetVar(wp, T("apcli_enc"), T("AES"));//encryp type TKIP|AES	
 	wpapsk = websGetVar(wp, T("apcli_wpapsk"), T(""));
 
-	if ( (atoi(apcli_enable) == 1) && (gstrlen(ssid) == 0) ) {
+	//if ( (atoi(apcli_enable) == 1) && (gstrlen(ssid) == 0) ) 
+	if ( (atoi(bridgeMode) == 1) && (gstrlen(ssid) == 0) ) 
+	{
 		websError(wp, 200, "SSID is empty");
 		return;
 	}
-	
 	if ( (!strcmp(mode, "OPEN")) && (!strcmp(enc_open, "NONE")) )//Disable
 		strcpy(apcli_encryp_type, enc_open);
 	else if ( (!strcmp(mode, "OPEN")) && (!strcmp(enc_open, "WEP")) )//WEP
@@ -2058,14 +2100,14 @@ static void wirelessBridge(webs_t wp, char_t *path, char_t *query)
 
 	//printf("###############apcli_enable=%s\n", apcli_enable);
 	
-#if defined (RT2860_APCLI_SUPPORT)
-	nvram_bufset(RT2860_NVRAM, "apClient", apcli_enable);
-#endif
+//#if defined (RT2860_APCLI_SUPPORT)
+	//nvram_bufset(RT2860_NVRAM, "apClient", apcli_enable);
+//#endif
 
-	if (atoi(apcli_enable)==1)	
-		nvram_bufset(RT2860_NVRAM, "ApCliEnable", "1");
-	else
-		nvram_bufset(RT2860_NVRAM, "ApCliEnable", "0");
+	//if (atoi(apcli_enable)==1)	
+		//nvram_bufset(RT2860_NVRAM, "ApCliEnable", "1");
+	//else
+		//nvram_bufset(RT2860_NVRAM, "ApCliEnable", "0");
 	
 	nvram_bufset(RT2860_NVRAM, "ApCliSsid", ssid);
 	nvram_bufset(RT2860_NVRAM, "ApCliBssid", bssid);
@@ -2086,9 +2128,41 @@ static void wirelessBridge(webs_t wp, char_t *path, char_t *query)
 	//nvram_bufset(RT2860_NVRAM, "ApCliKey4Str", key4);
 
 	nvram_commit(RT2860_NVRAM);
-	initInternet();
+	a_assert(websValid(wp));
 
-	websRedirect(wp, submitUrl);
+	websWrite(wp, T("HTTP/1.0 200 OK\n"));
+
+/*
+ *	By license terms the following line of code must not be modified
+ */
+	websWrite(wp, T("Server: %s\r\n"), WEBS_NAME);
+
+	websWrite(wp, T("Pragma: no-cache\n"));
+	websWrite(wp, T("Cache-control: no-cache\n"));
+	websWrite(wp, T("Content-Type: text/html\n"));
+	websWrite(wp, T("\n"));
+	websWrite(wp, T("<html>\n<head>\n"));
+	websWrite(wp, T("<title>My Title</title>\n"));
+	websWrite(wp, T("<link rel=\"stylesheet\" href=\"/style/normal_ws.css\" type=\"text/css\">\n"));
+	websWrite(wp, T("<meta http-equiv=\"content-type\" content=\"text/html;charset=gb2312\">\n"));
+	websWrite(wp, T("<script language=\"javascript\">\n\
+		function refresh_all(){	\n\
+		  top.location.href = \"http://%s/home.asp\"; \n\
+		} \n\
+		function update(){ \n\
+		  self.setTimeout(\"refresh_all()\", 40000);\n\
+		}\n</script>\n"), lan_ip);	
+	websWrite(wp, T("</head>\n<body onload=\"update()\">\n"));
+	websWrite(wp, T("<blockquote>\n"));
+	websWrite(wp, T("<br><b>模式设置成功，系统正在重启。请稍候!</b>\n"));
+	websWrite(wp, T("</blockquote>\n"));
+	websWrite(wp, T("</body>\n</html>\n"));
+	
+	sleep(2);
+	system("reboot");
+	
+	//initInternet();
+	//websRedirect(wp, submitUrl);
 }
 
 
