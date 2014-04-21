@@ -243,7 +243,7 @@ function ChOnChange()
 		{
 			if (document.basic_form.n_bandwidth[2].checked == true)
 			{
-				//document.getElementById("extension_channel").style.display = "";
+				document.getElementById("extension_channel").style.display = "";
 				document.basic_form.n_extcha.disabled = false;
 				document.basic_form.n_2040_coexit[1].checked = true;
 			}
@@ -258,7 +258,7 @@ function ChOnChange()
 		{
 			if (document.basic_form.n_bandwidth[2].checked == true)
 			{
-				//document.getElementById("extension_channel").style.display = "";
+				document.getElementById("extension_channel").style.display = "";
 				document.basic_form.n_extcha.disabled = false;
 				document.basic_form.n_2040_coexit[1].checked = true;
 			}
@@ -285,13 +285,13 @@ function ChBwOnClick()
 	}
 	else if (document.basic_form.n_bandwidth[1].checked == true) //40M
 	{
-		//document.getElementById("extension_channel").style.display = "";
+		document.getElementById("extension_channel").style.display = "";
 		document.basic_form.n_extcha.disabled = false;
 		document.basic_form.n_2040_coexit[0].checked = true;	//disable
 	}
 	else
 	{
-		//document.getElementById("extension_channel").style.display = "";
+		document.getElementById("extension_channel").style.display = "";
 		document.basic_form.n_extcha.disabled = false;
 		document.basic_form.n_2040_coexit[1].checked = true;	//enable
 
@@ -458,13 +458,13 @@ function Load_Setting()
 	else if (1*ht_bw == 1 && 1*ht_2040_coexit == 0)
 	{
 		document.basic_form.n_bandwidth[1].checked = true;	//40M
-		//document.getElementById("extension_channel").style.display = "";
+		document.getElementById("extension_channel").style.display = "";
 		document.basic_form.n_extcha.disabled = false;
 	}
 	else
 	{
 		document.basic_form.n_bandwidth[2].checked = true;	//20/40M
-		//document.getElementById("extension_channel").style.display = "";
+		document.getElementById("extension_channel").style.display = "";
 		document.basic_form.n_extcha.disabled = false;
 	}
 
@@ -1028,320 +1028,5 @@ function resetForm()
 <form method=post name=basic_form action="/goform/wirelessBasic">
 <input type="hidden" name="submit-url" value="/wireless/basic.asp">
 <input type=hidden name=wifihiddenButton value="2">
-<table width="800" border="0" cellpadding="0" cellspacing="0" bgcolor="#cae9fa">
-<tr>
-<td class="pgTitle" height="34"><script>dw(MM_wireless)</script></td>
-<td class="pgButton" align="right"><script>dw('<input type=submit class=button value="'+BT_apply+'" onClick="return formCheck()"> &nbsp; &nbsp;\
-      <input type=button class=button value="'+BT_reset+'" onClick="resetForm();">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;')</script></td>
-</tr>
-<tr>
-<td colspan="2" class="pgHelp" ><script>dw(JS_msg_wlbasic)</script></td>
-</tr>
-  <tr>
-    <td class="pgleft"><script>dw(MM_disable_wlan)</script>:</td>
-    <td class="pgRight"><input type="checkbox" name="wlan_disabled" value="ON" onClick="wireless_onoff_click()"></td>
-  </tr>
-  <tr style="display:none">
-    <td class="pgleft">Radio On/Off:</td>
-    <td class="pgRight"><input type="button" name="radioButton" value="RADIO ON" onClick="if (this.value.indexOf('OFF') >= 0) RadioStatusChange(1); else RadioStatusChange(0); document.wireless_basic.submit();"><input type=hidden name=radiohiddenButton value="2"></td>
-  </tr> 
-  <tr> 
-    <td class="pgleft"><script>dw(MM_network_mode)</script>:</td>
-    <td class="pgRight"><select name="wirelessmode" onChange="wirelessModeChange()">
-        <option value=0>11b/g</option>
-        <option value=1>11b</option>
-        <option value=4>11g</option>
-        <option value=9>11b/g/n</option>
-		<option value=6>11n(2.4G)</option>
-      </select></td>
-  </tr>
-  <input type="hidden" name="bssid_num" value="1">
-  <tr> 
-    <td class="pgleft"><script>dw(MM_ssid)</script>:</td>
-    <td class="pgRight"><input type=text name=mssid_0 size=32 maxlength=32 value="<% getCfgToHTML(1, "SSID1"); %>">
-      <span style="display:none">&nbsp;&nbsp;<script>dw(MM_hidden)</script>
-      <input type=checkbox name=hssid value="0">
-      &nbsp;&nbsp;<script>dw(MM_isolated)</script>
-      <input type=checkbox name=isolated_ssid value="0"></span>&nbsp;&nbsp;</td>
-  </tr>
-  <tr id="div_hssid1"> 
-    <td class="pgleft"><script>dw(MM_multiple)</script> SSID 1:</td>
-    <td class="pgRight"><input type=text name=mssid_1 size=32 maxlength=32 value="<% getCfgToHTML(1, "SSID2"); %>">
-      <span style="display:none">&nbsp;&nbsp;<script>dw(MM_hidden)</script>
-      <input type=checkbox name=hssid value="1">
-      &nbsp;&nbsp;<script>dw(MM_isolated)</script>
-      <input type=checkbox name=isolated_ssid value="1"></span></td>
-  </tr>
-  <tr id="div_hssid2"> 
-    <td class="pgleft"><script>dw(MM_multiple)</script> SSID 2:</td>
-    <td class="pgRight"><input type=text name=mssid_2 size=32 maxlength=32 value="<% getCfgToHTML(1, "SSID3"); %>">
-      <span style="display:none">&nbsp;&nbsp;<script>dw(MM_hidden)</script>
-      <input type=checkbox name=hssid value="2">
-      &nbsp;&nbsp;<script>dw(MM_isolated)</script>
-      <input type=checkbox name=isolated_ssid value="2"></span></td>
-  </tr>
-  <tr id="div_hssid3"> 
-    <td class="pgleft"><script>dw(MM_multiple)</script> SSID 3:</td>
-    <td class="pgRight"><input type=text name=mssid_3 size=32 maxlength=32 value="<% getCfgToHTML(1, "SSID4"); %>">
-      &nbsp;&nbsp;<script>dw(MM_hidden)</script>
-      <input type=checkbox name=hssid value="3">
-      &nbsp;&nbsp;<script>dw(MM_isolated)</script>
-      <input type=checkbox name=isolated_ssid value="3"></td>
-  </tr>
-  <tr id="div_hssid4"> 
-    <td class="pgleft"><script>dw(MM_multiple)</script> SSID 4:</td>
-    <td class="pgRight"><input type=text name=mssid_4 size=32 maxlength=32 value="<% getCfgToHTML(1, "SSID5"); %>">
-      &nbsp;&nbsp;<script>dw(MM_hidden)</script>
-      <input type=checkbox name=hssid value="4">
-      &nbsp;&nbsp;<script>dw(MM_isolated)</script>
-      <input type=checkbox name=isolated_ssid value="4"></td>
-  </tr>
-  <tr id="div_hssid5"> 
-    <td class="pgleft">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<script>dw(MM_multiple)</script> SSID 5:</td>
-    <td class="pgRight"><input type=text name=mssid_5 size=32 maxlength=32 value="<% getCfgToHTML(1, "SSID6"); %>">
-      &nbsp;&nbsp;<script>dw(MM_hidden)</script>
-      <input type=checkbox name=hssid value="5">
-      &nbsp;&nbsp;<script>dw(MM_isolated)</script>
-      <input type=checkbox name=isolated_ssid value="5"></td>
-  </tr>
-  <tr id="div_hssid6"> 
-    <td class="pgleft">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<script>dw(MM_multiple)</script> SSID 6:</td>
-    <td class="pgRight"><input type=text name=mssid_6 size=32 maxlength=32 value="<% getCfgToHTML(1, "SSID7"); %>">
-      &nbsp;&nbsp;<script>dw(MM_hidden)</script>
-      <input type=checkbox name=hssid value="6">
-      &nbsp;&nbsp;<script>dw(MM_isolated)</script>
-      <input type=checkbox name=isolated_ssid value="6"></td>
-  </tr>
-  <tr id="div_hssid7"> 
-    <td class="pgleft">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<script>dw(MM_multiple)</script> SSID 7:</td>
-    <td class="pgRight"><input type=text name=mssid_7 size=32 maxlength=32 value="<% getCfgToHTML(1, "SSID8"); %>">
-      &nbsp;&nbsp;<script>dw(MM_hidden)</script>
-      <input type=checkbox name=hssid value="7">
-      &nbsp;&nbsp;<script>dw(MM_isolated)</script>
-      <input type=checkbox name=isolated_ssid value="7"></td>
-  </tr>
-  <tr id="div_hssid8"> 
-    <td class="pgleft">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<script>dw(MM_multiple)</script> SSID 8:</td>
-    <td class="pgRight"><input type=text name=mssid_8 size=32 maxlength=32 value="<% getCfgToHTML(1, "SSID9"); %>">
-      &nbsp;&nbsp;<script>dw(MM_hidden)</script>
-      <input type=checkbox name=hssid value="8">
-      &nbsp;&nbsp;<script>dw(MM_isolated)</script>
-      <input type=checkbox name=isolated_ssid value="8"></td>
-  </tr>
-  <tr id="div_hssid9"> 
-    <td class="pgleft">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<script>dw(MM_multiple)</script> SSID 9:</td>
-    <td class="pgRight"><input type=text name=mssid_9 size=32 maxlength=32 value="<% getCfgToHTML(1, "SSID10"); %>">
-      &nbsp;&nbsp;<script>dw(MM_hidden)</script>
-      <input type=checkbox name=hssid value="9">
-      &nbsp;&nbsp;<script>dw(MM_isolated)</script>
-      <input type=checkbox name=isolated_ssid value="9"></td>
-  </tr>
-  <tr id="div_hssid10"> 
-    <td class="pgleft">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<script>dw(MM_multiple)</script> SSID 10:</td>
-    <td class="pgRight"><input type=text name=mssid_10 size=32 maxlength=32 value="<% getCfgToHTML(1, "SSID11"); %>">
-      &nbsp;&nbsp;<script>dw(MM_hidden)</script>
-      <input type=checkbox name=hssid value="10">
-      &nbsp;&nbsp;<script>dw(MM_isolated)</script>
-      <input type=checkbox name=isolated_ssid value="10"></td>
-  </tr>
-  <tr id="div_hssid11"> 
-    <td class="pgleft">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<script>dw(MM_multiple)</script> SSID 11:</td>
-    <td class="pgRight"><input type=text name=mssid_11 size=32 maxlength=32 value="<% getCfgToHTML(1, "SSID12"); %>">
-      &nbsp;&nbsp;<script>dw(MM_hidden)</script>
-      <input type=checkbox name=hssid value="11">
-      &nbsp;&nbsp;<script>dw(MM_isolated)</script>
-      <input type=checkbox name=isolated_ssid value="11"></td>
-  </tr>
-  <tr id="div_hssid12"> 
-    <td class="pgleft">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<script>dw(MM_multiple)</script> SSID 12:</td>
-    <td class="pgRight"><input type=text name=mssid_12 size=32 maxlength=32 value="<% getCfgToHTML(1, "SSID13"); %>">
-      &nbsp;&nbsp;<script>dw(MM_hidden)</script>
-      <input type=checkbox name=hssid value="12">
-      &nbsp;&nbsp;<script>dw(MM_isolated)</script>
-      <input type=checkbox name=isolated_ssid value="12"></td>
-  </tr>
-  <tr id="div_hssid13"> 
-    <td class="pgleft">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<script>dw(MM_multiple)</script> SSID 13:</td>
-    <td class="pgRight"><input type=text name=mssid_13 size=32 maxlength=32 value="<% getCfgToHTML(1, "SSID14"); %>">
-      &nbsp;&nbsp;<script>dw(MM_hidden)</script>
-      <input type=checkbox name=hssid value="13">
-      &nbsp;&nbsp;<script>dw(MM_isolated)</script>
-      <input type=checkbox name=isolated_ssid value="13"></td>
-  </tr>
-  <tr id="div_hssid14"> 
-    <td class="pgleft">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<script>dw(MM_multiple)</script> SSID 14;</td>
-    <td class="pgRight"><input type=text name=mssid_14 size=32 maxlength=32 value="<% getCfgToHTML(1, "SSID15"); %>">
-      &nbsp;&nbsp;<script>dw(MM_hidden)</script>
-      <input type=checkbox name=hssid value="14">
-      &nbsp;&nbsp;<script>dw(MM_isolated)</script>
-      <input type=checkbox name=isolated_ssid value="14"></td>
-  </tr>
-  <tr id="div_hssid15"> 
-    <td class="pgleft">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<script>dw(MM_multiple)</script> SSID 15:</td>
-    <td class="pgRight"><input type=text name=mssid_15 size=32 maxlength=32 value="<% getCfgToHTML(1, "SSID16"); %>">
-      &nbsp;&nbsp;<script>dw(MM_hidden)</script>
-      <input type=checkbox name=hssid value="15">
-      &nbsp;&nbsp;<script>dw(MM_isolated)</script>
-      <input type=checkbox name=isolated_ssid value="15"></td>
-  </tr>
-  <tr style="display:none"> 
-    <td class="pgleft"><script>dw(MM_broadcast_ssid)</script>:</td>
-    <td class="pgRight"><input type=radio name=broadcastssid value="1" checked onClick="switch_hidden_ssid()"><script>dw(MM_enable)</script>
-    <input type=radio name=broadcastssid value="0" onClick="switch_hidden_ssid()"><script>dw(MM_disable)</script></td>
-  </tr>
-  <tr style="display:none"> 
-    <td class="pgleft">AP <script>dw(MM_isolated)</script>:</td>
-    <td class="pgRight"><input type=radio name=apisolated value="1" onClick="switch_isolated_ssid()"><script>dw(MM_enable)</script>
-    <input type=radio name=apisolated value="0" checked onClick="switch_isolated_ssid()"><script>dw(MM_disable)</script> <script>dw(MM_isolated_single_ap)</script></td>
-  </tr>
-  <tr id="div_mbssidapisolated"> 
-    <td class="pgleft"><script>dw(MM_multiple)</script> AP <script>dw(MM_isolated)</script>:</td>
-    <td class="pgRight"><input type=radio name=mbssidapisolated value="1"><script>dw(MM_enable)</script>
-    <input type=radio name=mbssidapisolated value="0" checked><script>dw(MM_disable)</script> <script>dw(MM_isolated_multiple_ap)</script></td>
-  </tr>
-  <tr> 
-    <td class="pgleft">BSSID:</td>
-    <td class="pgRight"><% getWlanCurrentMac(); %></td>
-  </tr>
-  <tr id="div_11a_channel">
-    <td class="pgleft"><script>dw(MM_channel)</script>:</td>
-    <td class="pgRight"><select name="sz11aChannel" onChange="ChOnChange()">
-	<option value=0><script>dw(MM_auto_select)</script></option>
-	<% getWlan11aChannels(); %>
-      </select></td>
-  </tr>
-  <tr id="div_11b_channel">
-    <td class="pgleft"><script>dw(MM_channel)</script>:</td>
-    <td class="pgRight"><select name="sz11bChannel" onChange="ChOnChange()">
-	<option value=0><script>dw(MM_auto_select)</script></option>
-	<% getWlan11bChannels(); %></select></td>
-  </tr>
-  <tr id="div_11g_channel">
-    <td class="pgleft"><script>dw(MM_channel)</script>:</td>
-    <td class="pgRight"><select name="sz11gChannel" onChange="ChOnChange()">
-	<option value=0><script>dw(MM_auto_select)</script></option>
-	<% getWlan11gChannels(); %>
-      </select></td>
-  </tr>
-  <tr id="div_abg_rate">
-    <td class="pgleft"><script>dw(MM_rate)</script>:</td>
-    <td class="pgRight"><select name="abg_rate"></select></td>
-  </tr>
-</table>
-
-<br style="display:none">
-<table id="div_11n" style="display:none" width=760 border=0 cellpadding=3 cellspacing=1> 
-  <tr style="display:none"> 
-    <td class="title2" colspan="2"><script>dw(MM_ht_phy_mode)</script><hr></td>
-  </tr>
-  <tr style="display:none">
-    <td class="pgleft"><script>dw(MM_nopmode)</script>:</td>
-    <td class="pgRight"><input type=radio name=n_mode value="0" checked><script>dw(MM_mixed_mode)</script>
-    <input type=radio name=n_mode value="1"><script>dw(MM_green_field)</script></td>
-  </tr>
-  <tr style="display:none">
-    <td class="pgleft"><script>dw(MM_bandwidth)</script>:</td>
-    <td class="pgRight"><input type=radio name=n_bandwidth value="0" onClick="ChBwOnClick()" checked>20MHz
-    <input type=radio name=n_bandwidth value="1" onClick="ChBwOnClick()">40MHz
-    <input type=radio name=n_bandwidth value="1" onClick="ChBwOnClick()">20/40MHz</td>
-  </tr>
-  <tr style="display:none">
-    <td class="pgleft"><script>dw(MM_guard_interval)</script>:</td>
-    <td class="pgRight"><input type=radio name=n_gi value="0" checked><script>dw(MM_long)</script><input type=radio name=n_gi value="1"><script>dw(MM_auto)</script></td>
-  </tr>
-  <tr style="display:none">
-    <td class="pgleft">MCS:</td>
-    <td class="pgRight"><select name="n_mcs">
-	<option value="0">0</option>
-	<option value="1">1</option>
-	<option value="2">2</option>
-	<option value="3">3</option>
-	<option value="4">4</option>
-	<option value="5">5</option>
-	<option value="6">6</option>
-	<option value="7">7</option>
-	<option value="8">8</option>
-	<option value="9">9</option>
-	<option value="10">10</option>
-	<option value="11">11</option>
-	<option value="12">12</option>
-	<option value="13">13</option>
-	<option value="14">14</option>
-	<option value="15">15</option>
-	<option value="32">32</option>
-	<option value="33" selected><script>dw(MM_auto)</script></option>
-      </select></td>
-  </tr>
-  <tr style="display:none">
-    <td class="pgleft"><script>dw(MM_rdg)</script>(RDG):</td>
-    <td class="pgRight"><input type=radio name=n_rdg value="0" checked><script>dw(MM_disable)</script>
-    <input type=radio name=n_rdg value="1"><script>dw(MM_enable)</script></td>
-  </tr>
-  <tr id="extension_channel" style="display:none">
-    <td class="pgleft"><script>dw(MM_ext_channel)</script>:</td>
-    <td class="pgRight"><select id="n_extcha" name="n_extcha">
-	<option value=1 selected>2412MHz -- (1)</option>
-      </select></td>
-  </tr>
-  <tr style="display:none">
-    <td class="pgleft"><script>dw(MM_stbc)</script>:</td>
-    <td class="pgRight"><input type=radio name=n_stbc value="0" checked><script>dw(MM_disable)</script>
-    <input type=radio name=n_stbc value="1"><script>dw(MM_enable)</script></td>
-  </tr>
-  <tr style="display:none">
-    <td class="pgleft"><script>dw(MM_amsdu)</script>:</td>
-    <td class="pgRight"><input type=radio name=n_amsdu value="0" checked><script>dw(MM_disable)</script>
-    <input type=radio name=n_amsdu value="1"><script>dw(MM_enable)</script></td>
-  </tr >
-  <tr style="display:none">
-    <td class="pgleft"><script>dw(MM_auto_block_ack)</script>:</td>
-    <td class="pgRight"><input type=radio name=n_autoba value="0" checked><script>dw(MM_disable)</script>
-    <input type=radio name=n_autoba value="1"><script>dw(MM_enable)</script></td>
-  </tr>
-  <tr style="display:none">
-    <td class="pgleft"><script>dw(MM_decline_ba_request)</script>:</td>
-    <td class="pgRight"><input type=radio name=n_badecline value="0" checked><script>dw(MM_disable)</script>
-    <input type=radio name=n_badecline value="1"><script>dw(MM_enable)</script></td>
-  </tr>
-  <tr style="display:none">
-    <td class="pgleft"><script>dw(MM_ht_disallow_tkip)</script>:</td>
-    <td class="pgRight"><input type=radio name=n_disallow_tkip value="0" checked><script>dw(MM_disable)</script>
-    <input type=radio name=n_disallow_tkip value="1"><script>dw(MM_enable)</script></td>
-  </tr>
-  <tr id="div_2040_coexit" style="display:none">
-    <td class="pgleft"><script>dw(MM_2040_coexit)</script>:</td>
-    <td class="pgRight"><input type=radio name=n_2040_coexit value="0" checked><script>dw(MM_disable)</script>
-    <input type=radio name=n_2040_coexit value="1"><script>dw(MM_enable)</script></td>
-  </tr>
-</table>
-
-<table style="display:none" width=760 border=0 cellpadding=3 cellspacing=1> 
-  <tr> 
-    <td class="title2" colspan="2">Others<hr></td>
-  </tr>
-  <tr>
-    <td class="pgleft">HT TxStream:</td>
-    <td class="pgRight"><select name="tx_stream">
-	<option value=1>1</option>
-	<option value=2 id="div_HtTx2Stream">2</option>
-      </select></td>
-  </tr>
-  <tr>
-    <td class="pgleft">HT RxStream:</td>
-    <td class="pgRight"><select name="rx_stream">
-	<option value=1>1</option>
-	<option value=2 id="div_HtRx2Stream">2</option>
-      </select></td>
-  </tr>
-</table>
 </form>  
-<table width="760" height="300" border="0" cellpadding=3 cellspacing=1 bgcolor="#cae9fa">
-<tr>
-<td>
-</td>
-<td>
-</td>
-</tr>
-</table>
-</td></tr></table>
 </body></html>

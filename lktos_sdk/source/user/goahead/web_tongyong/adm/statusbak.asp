@@ -444,7 +444,7 @@ function Load_Setting()
 <td></td>
 </tr>
 </table>
-<table width="800" height="200" border="0" cellpadding="0" cellspacing="0" bgcolor="#cae9fa">
+<table width="800" height="300" border="0" cellpadding="0" cellspacing="0" bgcolor="#cae9fa">
 <tr>
 <td>
 </td>

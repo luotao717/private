@@ -449,13 +449,18 @@ function resetForm()
  	<td width="20"></td>
     <td>
       <span id="wirelessbac">
-	<iframe width="760" height="550" id="wirelessbasic_Page" name="wirelessbasic_Page" src="/wireless/basic.asp" frameborder="0" marginheight="0" scrolling="no"> </iframe>
+	<iframe width="760" height="300" id="wirelessbasic_Page" name="wirelessbasic_Page" src="/wireless/basic.asp" frameborder="0" marginheight="0" scrolling="no"> </iframe>
 </span>
 		</td>
 		<td width="20"></td>
 	</tr>
 </table>	
 </form>
-
+<table width="800" height="200" border="0" cellpadding="0" cellspacing="0" bgcolor="#cae9fa">
+<tr>
+<td>
+</td>
+</tr>
+</table>
 </body>
 </html>
