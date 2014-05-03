@@ -487,6 +487,23 @@ static void Appwifipara(webs_t wp, char_t *path, char_t *query)
 		system("iwpriv apcli0 set ApCliEnable 1");
 		*/
 	}
+	else if(!strncmp(security,"WPAPSK/TKIPAES",15))
+	{
+		nvram_bufset(RT2860_NVRAM, "ApCliAuthMode","WPAPSK");
+		nvram_bufset(RT2860_NVRAM, "ApCliEncrypType","AES");
+		nvram_bufset(RT2860_NVRAM, "ApCliWPAPSK",routepwd);
+		nvram_commit(RT2860_NVRAM);
+		/*
+		system("iwpriv apcli0 set ApCliEnable 0");
+		system("iwpriv apcli0 set ApCliAuthMode WPAPSK");
+		system("iwpriv apcli0 set ApCliEncrypType AES");
+		sprintf(tmpbuf,"iwpriv apcli0 set ApCliSsid %s",ssid);
+		system(tmpbuf);
+		sprintf(tmpbuf,"iwpriv apcli0 set ApCliWPAPSK %s",routepwd);
+		system(tmpbuf);
+		system("iwpriv apcli0 set ApCliEnable 1");
+		*/
+	}
 	else if(!strncmp(security,"WPA2PSK/TKIP",12))
 	{
 		nvram_bufset(RT2860_NVRAM, "ApCliAuthMode","WPA2PSK");
@@ -508,6 +525,23 @@ static void Appwifipara(webs_t wp, char_t *path, char_t *query)
 	{
 		nvram_bufset(RT2860_NVRAM, "ApCliAuthMode","WPA2PSK");
 		nvram_bufset(RT2860_NVRAM, "ApCliEncrypType","AES");
+		nvram_bufset(RT2860_NVRAM, "ApCliWPAPSK",routepwd);
+		nvram_commit(RT2860_NVRAM);
+		/*
+		system("iwpriv apcli0 set ApCliEnable 0");
+		system("iwpriv apcli0 set ApCliAuthMode WPA2PSK");
+		system("iwpriv apcli0 set ApCliEncrypType AES");
+		sprintf(tmpbuf,"iwpriv apcli0 set ApCliSsid %s",ssid);
+		system(tmpbuf);
+		sprintf(tmpbuf,"iwpriv apcli0 set ApCliWPAPSK %s",routepwd);
+		system(tmpbuf);
+		system("iwpriv apcli0 set ApCliEnable 1");
+		*/
+	}
+	else if(!strncmp(security,"WPA1PSKWPA2PSK/TKIP",19))
+	{
+		nvram_bufset(RT2860_NVRAM, "ApCliAuthMode","WPA2PSK");
+		nvram_bufset(RT2860_NVRAM, "ApCliEncrypType","TKIP");
 		nvram_bufset(RT2860_NVRAM, "ApCliWPAPSK",routepwd);
 		nvram_commit(RT2860_NVRAM);
 		/*
