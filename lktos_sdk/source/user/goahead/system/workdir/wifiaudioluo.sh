@@ -18,17 +18,17 @@ mknod /dev/enc c 248 0
 sleep 3
 
 #for melody
-MELODY=`grep "melody" /system/workdir/misc/general.dat | sed 's/melody[ \t]*=[ \t]*//' | sed  's/\r//g'`
-if [ "$MELODY" = "1" ]; then
-echo "melody on"
-mplayer /system/workdir/misc/melody.mp3 &
-mplayer /system/workdir/misc/melody.mp3 &
-mplayer /system/workdir/misc/melody.mp3 &
-mplayer /system/workdir/misc/melody.mp3 &
-mplayer /system/workdir/misc/melody.mp3 &
-else
-echo "melody off"
-fi
+#MELODY=`grep "melody" /system/workdir/misc/general.dat | sed 's/melody[ \t]*=[ \t]*//' | sed  's/\r//g'`
+#if [ "$MELODY" = "1" ]; then
+#echo "melody on"
+#mplayer /system/workdir/misc/melody.mp3 &
+#mplayer /system/workdir/misc/melody.mp3 &
+#mplayer /system/workdir/misc/melody.mp3 &
+#mplayer /system/workdir/misc/melody.mp3 &
+#mplayer /system/workdir/misc/melody.mp3 &
+#else
+#echo "melody off"
+#fi
 
 mDNSResponder
 var_apssid=`nvram_get 2860 SSID1`
@@ -52,3 +52,7 @@ iwevent &
 #m1transerver  &
 #myuartsocket &
 #iperf -s -i 5 -w 1M &
+mplayer /system/workdir/misc/melody.mp3
+/sbin/ifconfig ra0 up
+/bin/gpio l 18 6 6 4000 1 1
+/bin/reloadfac &

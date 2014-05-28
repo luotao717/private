@@ -615,6 +615,8 @@ ifconfig lo 127.0.0.1
 ifconfig br0 down
 brctl delbr br0
 
+ifconfig ra0 down
+
 # stop all
 iptables --flush
 iptables --flush -t nat
@@ -1002,6 +1004,13 @@ shkey=`nvram_get 2860 comcryptcheck`
 #		ifconfig ra0 down
 #	fi
 #fi
+reg s 0
+reg m 60 7 2 3
+reg s 0xB0000600
+#dtr is gpio#11
+reg m 24 0 11 1
+wiimu_var1=`reg p 20`
+reg m 24 1 1 1
 /system/workdir/wifiaudioluo.sh
 #restart8021XDaemon(RT2860_NVRAM);
 #firewall_init();
