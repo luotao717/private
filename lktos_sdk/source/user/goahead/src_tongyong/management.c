@@ -268,6 +268,8 @@ static void setSysAdm(webs_t wp, char_t *path, char_t *query)
 	websRedirect(wp, submitUrl);     
 }
 
+
+
 /*
  * goform/setSysLang
  */

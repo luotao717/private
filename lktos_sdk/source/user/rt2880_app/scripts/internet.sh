@@ -1011,7 +1011,7 @@ shkey=`nvram_get 2860 comcryptcheck`
 #echo $wlancryptluotaott > /tmp/wlancryptfile
 echo "--------------------------------"
 config-powersave.sh ethernet 1  1
-config-powersave.sh ethernet 1  2
+#config-powersave.sh ethernet 1  2
 #config-powersave.sh ethernet 1  3
 #config-powersave.sh ethernet 1  4
 config-powersave.sh ethernet 1  0
