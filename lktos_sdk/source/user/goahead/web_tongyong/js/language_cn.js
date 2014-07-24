@@ -682,3 +682,7 @@ var MM_devicename = "设备名称";
 var MM_AP_MSG1 = "AP管理";
 var MM_AP_MSG2 = "在次页面可对单独的AP设备进行管理";
 var MM_AP_setup_ok = "远程AP设置成功并正在重启中....";
+var MM_AP_ALLSET1 = "批量管理AP";
+var MM_AP_ALLSET2 = "在本页面可对AP进行批量配置修改";
+var MM_AP_ALLSET3 = "批量修改无线SSID";
+var MM_AP_ALLSET4 = "批量修改无线密码";

@@ -19,7 +19,7 @@ sleep 1
 #mount -t usbfs none /proc/bus/usb
 #for telnet debugging
 telnetd
-
+apslave_daemon &
 #cp /etc_ro/web/normal_ws.css /tmp/apache/htdocs/normal_ws.css
 #for syslogd
 mkdir -p /var/log
