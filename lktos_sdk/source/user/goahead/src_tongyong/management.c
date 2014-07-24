@@ -199,6 +199,158 @@ static void setWizard(webs_t wp, char_t *path, char_t *query)
 	sleep(3);
 	doSystem("reboot");
 }
+
+static void AppApSingleSetup(webs_t wp, char_t *path, char_t *query)
+{
+	char_t *devicename, *connectionType, *security_mode;
+	char_t *staticIp, *staticNetmask, *staticGateway, *staticPriDns, *staticSecDns;
+	char_t *pppoeUser, *pppoePass, *pppoeOPMode, *pppoeRedialPeriod;
+	char_t *wlan_disabled, *ssid, *wireless_mode, *security_key;
+	char lan_ipaddr[16];
+	
+	strcpy(lan_ipaddr, nvram_bufget(RT2860_NVRAM, "lan_ipaddr"));
+
+	LFW(devicename, devicename);
+	LFW(connectionType, connectionType);
+	LFW(staticIp, staticIp);
+	LFW(staticNetmask, staticNetmask);
+	LFW(staticGateway, staticGateway);
+	LFW(staticPriDns, staticPriDns);
+	LFW(staticSecDns, staticSecDns);
+	LFW(pppoeUser, pppoeUser);
+	LFW(pppoePass, pppoePass);
+#ifndef CONFIG_USER_PPPOECD
+	LFW(pppoeOPMode, pppoeOPMode);
+	LFW(pppoeRedialPeriod, pppoeRedialPeriod);
+#endif
+	LFW(wlan_disabled, wlan_disabled);
+	LFW(ssid, ssid);
+	LFW(wireless_mode, wireless_mode);
+	LFW(security_mode, security_mode);
+	LFW(security_key, security_key);
+
+	nvram_bufset(RT2860_NVRAM, "device_name", devicename);
+	nvram_bufset(RT2860_NVRAM, "wanConnectionMode", connectionType);
+	if (!strncmp(connectionType, "STATIC", 7)) 
+	{
+		/*
+		 * lan and wan ip should not be the same
+		 */
+		if (!strncmp(staticIp, lan_ipaddr, 15)) 
+		{
+			websError(wp, 200, "IP address is identical to LAN");
+			return;
+		}
+		nvram_bufset(RT2860_NVRAM, "wan_ipaddr", staticIp);
+		nvram_bufset(RT2860_NVRAM, "wan_netmask", staticNetmask);
+		nvram_bufset(RT2860_NVRAM, "wan_gateway", staticGateway);
+		nvram_bufset(RT2860_NVRAM, "wan_primary_dns", staticPriDns);
+		nvram_bufset(RT2860_NVRAM, "wan_secondary_dns", staticSecDns);
+	}
+	else if (!strncmp(connectionType, "PPPOE", 6)) 
+	{
+		nvram_bufset(RT2860_NVRAM, "wan_pppoe_user", pppoeUser);
+		nvram_bufset(RT2860_NVRAM, "wan_pppoe_user_mm", pppoeUser);
+		nvram_bufset(RT2860_NVRAM, "wan_pppoe_pass", pppoePass);
+		nvram_bufset(RT2860_NVRAM, "wan_pppoe_opmode", pppoeOPMode);//Keep Alive
+		nvram_bufset(RT2860_NVRAM, "wan_pppoe_optime", pppoeRedialPeriod);//Redial Period time
+	}
+
+	if (!strcmp(wlan_disabled, "ON")) 
+	{
+		//doSystem("ifconfig ra0 down");
+		nvram_set(RT2860_NVRAM, "WiFiOff", "1");
+	}
+	else
+	{
+		//doSystem("ifconfig ra0 up");
+		nvram_set(RT2860_NVRAM, "WiFiOff", "0");
+	}	
+
+	if (0 == strlen(ssid)) 
+	{
+		websError(wp, 403, T("'SSID' should not be empty!"));
+		return;
+	}
+	nvram_bufset(RT2860_NVRAM, "SSID1", ssid);
+	nvram_bufset(RT2860_NVRAM, "WirelessMode", wireless_mode);
+	nvram_bufset(RT2860_NVRAM, "AuthMode", security_mode);
+	if (!strcmp(security_mode, "OPEN"))
+	{ 
+		nvram_bufset(RT2860_NVRAM, "EncrypType", "WEP");
+		nvram_bufset(RT2860_NVRAM, "DefaultKeyID", "1");
+		if (10 == strlen(security_key) || 26 == strlen(security_key))
+			nvram_bufset(RT2860_NVRAM, "Key1Type", "0"); 	// HEX
+		else if (5 == strlen(security_key) || 13 == strlen(security_key))
+			nvram_bufset(RT2860_NVRAM, "Key1Type", "1");	// ASCII
+		nvram_bufset(RT2860_NVRAM, "Key1Str1", security_key);
+	}
+	else if (!strcmp(security_mode, "WPAPSK"))
+	{
+		nvram_bufset(RT2860_NVRAM, "EncrypType", "AES");
+		nvram_bufset(RT2860_NVRAM, "DefaultKeyID", "1"); //old value=2, modify by chenfei
+		nvram_bufset(RT2860_NVRAM, "RekeyInterval", "3600");
+		nvram_bufset(RT2860_NVRAM, "RekeyMethod", "TIME");
+		nvram_bufset(RT2860_NVRAM, "IEEE8021X", "0");
+		nvram_bufset(RT2860_NVRAM, "WPAPSK1", security_key);
+	}
+	else if (!strcmp(security_mode, "WPA2PSK"))
+	{
+		nvram_bufset(RT2860_NVRAM, "EncrypType", "AES");
+		nvram_bufset(RT2860_NVRAM, "DefaultKeyID", "1"); //old value=2, modify by chenfei
+		nvram_bufset(RT2860_NVRAM, "RekeyInterval", "3600");
+		nvram_bufset(RT2860_NVRAM, "RekeyMethod", "TIME");
+		nvram_bufset(RT2860_NVRAM, "IEEE8021X", "0");
+		nvram_bufset(RT2860_NVRAM, "WPAPSK1", security_key);
+	}
+	else if (!strcmp(security_mode, "WPAPSKWPA2PSK"))
+	{
+		nvram_bufset(RT2860_NVRAM, "EncrypType", "AES");
+		nvram_bufset(RT2860_NVRAM, "DefaultKeyID", "1"); //old value=2, modify by chenfei
+		nvram_bufset(RT2860_NVRAM, "RekeyInterval", "3600");
+		nvram_bufset(RT2860_NVRAM, "RekeyMethod", "TIME");
+		nvram_bufset(RT2860_NVRAM, "IEEE8021X", "0");
+		nvram_bufset(RT2860_NVRAM, "WPAPSK1", security_key);
+	}
+	else
+	{
+		nvram_bufset(RT2860_NVRAM, "EncrypType", "NONE");
+	}
+
+	nvram_commit(RT2860_NVRAM);      
+
+	const char	*langType = nvram_bufget(RT2860_NVRAM, "LanguageType");
+
+	a_assert(websValid(wp));
+
+	websWrite(wp, T("HTTP/1.0 200 OK\n"));
+
+/*
+ *	By license terms the following line of code must not be modified
+ */
+	websWrite(wp, T("Server: %s\r\n"), WEBS_NAME);
+
+	websWrite(wp, T("Pragma: no-cache\n"));
+	websWrite(wp, T("Cache-control: no-cache\n"));
+	websWrite(wp, T("Content-Type: text/html\n"));
+	websWrite(wp, T("\n"));
+	websWrite(wp, T("<html>\n<head>\n"));
+	websWrite(wp, T("<title>My Title</title>\n"));
+	websWrite(wp, T("<link rel=\"stylesheet\" href=\"/style/normal_ws.css\" type=\"text/css\">\n"));
+	websWrite(wp, T("<meta http-equiv=\"content-type\" content=\"text/html;charset=utf-8\">\n"));
+	websWrite(wp, T("<script language=\"javascript\" src=\"../js/language_%s.js\"></script>\n"),langType);
+
+	websWrite(wp, T("</head>\n<body>\n"));
+	websWrite(wp, T("<blockquote>\n"));
+	websWrite(wp, T("<br><b><script>dw(MM_AP_setup_ok)</script></b>\n"));
+	websWrite(wp, T("</blockquote>\n"));
+	websWrite(wp, T("</body>\n</html>\n"));
+
+	sleep(3);
+	doSystem("reboot");
+}
+
+
 #endif
 
 #if (defined CONFIG_RALINK_WATCHDOG || defined CONFIG_RALINK_WATCHDOG_MODULE) && defined CONFIG_USER_WATCHDOG
@@ -1313,6 +1465,7 @@ void formDefineManagement(void)
 	websAspDefine(T("getWatchDogBuilt"), getWatchDogBuilt);
 #ifdef CONFIG_USER_WIZARD
 	websFormDefine(T("setWizard"), setWizard);
+	websFormDefine(T("AppApSingleSetup"), AppApSingleSetup);
 #endif
 	websFormDefine(T("setSysAdm"), setSysAdm);
 	websFormDefine(T("setSysLang"), setSysLang);

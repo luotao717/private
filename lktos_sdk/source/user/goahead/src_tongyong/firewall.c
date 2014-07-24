@@ -2824,6 +2824,34 @@ static int ShowLeftItem(int eid, webs_t wp, int argc, char_t **argv)
 	return 0;
 }
 
+static int ShowSingleApMange(int eid, webs_t wp, int argc, char_t **argv)
+{
+	char *strptr=NULL; 
+	char_t *ip;
+	char_t cmdbuf[256]={0};
+
+	//printf("\r\ntttt");
+	ip = websGetVar(wp, T("apip"), T(""));
+	//printf("\r\ntttt--%s");
+	sprintf(cmdbuf,"http://%s:80/adm/apSimpleSlave.asp",ip);
+	websWrite(wp, T("%s"),cmdbuf);		
+	return 0;
+}
+
+static int ShowSingleApIp(int eid, webs_t wp, int argc, char_t **argv)
+{
+	char *strptr=NULL; 
+	char_t *ip;
+	char_t cmdbuf[256]={0};
+
+	//printf("\r\ntttt");
+	ip = websGetVar(wp, T("apip"), T(""));
+	//printf("\r\ntttt--%s");
+	//sprintf(cmdbuf,"http://%s:80/adm/apSimpleSlave.asp",ip);
+	websWrite(wp, T("%s"),ip);		
+	return 0;
+}
+
 
 void formDefineFirewall(void)
 {
@@ -2841,6 +2869,8 @@ void formDefineFirewall(void)
 	websFormDefine(T("DMZ"), DMZ);
 
 	websAspDefine(T("ShowLeftItem"), ShowLeftItem);//by luotao
+	websAspDefine(T("ShowSingleApMange"), ShowSingleApMange);//by luotao
+	websAspDefine(T("ShowSingleApIp"), ShowSingleApIp);//by luotao
 	websAspDefine(T("getWebURLEnableASP"), getWebURLEnableASP);
 	websAspDefine(T("getPortForwardEnableASP"), getPortForwardEnableASP);
 	websAspDefine(T("showPortForwardRulesASP"), showPortForwardRulesASP);

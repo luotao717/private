@@ -91,6 +91,16 @@ function Echange(nowthis,v_num){
                 <li><a href="adm/password.asp" target="mainFrame"><script>dw(MM_admin_settings)</script></a></li>
               </ul>
 		     </div>
+			 <div class="column"><a href="internet/aplist.asp" target="mainFrame" onClick="Echange(this,4)"><script>dw(MM_APmanagement)</script></a></div>
+          <div class="xiala" id="sj" style="display:none">
+              <ul>
+			  <!--
+                <li><a href="wireless/opmode.asp" target="mainFrame"><script>dw(MM_bridge_settings)</script></a></li>
+				-->
+                <li><a href="internet/aplist.asp" target="mainFrame"><script>dw(MM_APlist)</script></a></li>
+                <li><a href="internet/apallmange.asp" target="mainFrame"><script>dw(MM_APallSet)</script></a></li>
+              </ul>
+		     </div>
 		     <div class="column"><a href="adm/status.asp" target="mainFrame"><script>dw(MM_sysstatus)</script></a></div>
 		   </td>
      </tr>

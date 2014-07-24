@@ -2,7 +2,7 @@ NVDIR = $(ROOTDIR)/lib/libnvram
 CFLAGS += -I$(NVDIR) -I$(ROOTDIR)/$(LINUXDIR)/drivers/char
 LDFLAGS += -lnvram
 LIBNVRAM = $(ROOTDIR)/lib/libnvram/libnvram-0.9.28.so
-EXEC = nvram_daemon ralink_init
+EXEC = nvram_daemon ralink_init apslave_daemon apmasterSend
 CONF_H	= $(ROOTDIR)/$(LINUXDIR)/include/linux/autoconf.h
 UCONF_H	= $(ROOTDIR)/config/autoconf.h
 
@@ -16,12 +16,22 @@ nvram_daemon: nvram_daemon.o
 endif
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LDLIBS)
 
+apslave_daemon: apslave_daemon.o
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LDLIBS)
+
+apmasterSend: apmasterSend.o
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LDLIBS)
+
 ralink_init: ralink_init.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LDLIBS)
 
 ralink_init.o: $(CONF_H) $(UCONF_H) $(LIBNVRAM)
 
 nvram_daemon.o: $(CONF_H) $(UCONF_H) $(LIBNVRAM)
+
+apslave_daemon.o: $(CONF_H) $(UCONF_H) $(LIBNVRAM)
+
+apmasterSend.o: $(CONF_H) $(UCONF_H) $(LIBNVRAM)
 
 clean:
 	rm -f *.o $(EXEC)

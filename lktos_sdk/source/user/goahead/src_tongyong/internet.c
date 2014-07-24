@@ -64,6 +64,8 @@ static int getL2TPBuilt(int eid, webs_t wp, int argc, char_t **argv);
 
 
 static int getDhcpCliList(int eid, webs_t wp, int argc, char_t **argv);
+static int getApScanList(int eid, webs_t wp, int argc, char_t **argv);//for ap mangement by luotao
+
 static int getDns(int eid, webs_t wp, int argc, char_t **argv);
 static int getHostSupp(int eid, webs_t wp, int argc, char_t **argv);
 static int getIfLiveWeb(int eid, webs_t wp, int argc, char_t **argv);
@@ -120,6 +122,7 @@ void ripdRestart(void);
 
 void formDefineInternet(void) {
 	websAspDefine(T("getDhcpCliList"), getDhcpCliList);
+	websAspDefine(T("getApScanList"), getApScanList);
 	websAspDefine(T("getDns"), getDns);
 	websAspDefine(T("getHostSupp"), getHostSupp);
 	websAspDefine(T("getIfLiveWeb"), getIfLiveWeb);
@@ -554,6 +557,42 @@ static int getDhcpCliList(int eid, webs_t wp, int argc, char_t **argv)
 	fclose(fp);
 	return 0;
 }
+
+static int getApScanList(int eid, webs_t wp, int argc, char_t **argv)
+{
+	FILE *fp;
+	char buf[80] = {0};
+	unsigned char hostname[64];
+	unsigned char mac[18];
+	unsigned char ip[16];
+	int i;
+	struct in_addr addr;
+	unsigned long expires;
+	unsigned d, h, m;
+
+	//doSystem("killall -q -USR1 udhcpd");
+	system("apmasterSend &");
+	sleep(5);
+	system("killall apmasterSend");
+	fp = fopen("/var/apscanlist", "r");
+	if (NULL == fp)
+		return websWrite(wp, T(""));
+	while (fgets(buf, sizeof(buf), fp) != NULL) 
+	{
+		sscanf(buf, "%s %s %s", hostname, mac,ip);
+		if (strlen(hostname) > 0)
+			websWrite(wp, T("<tr align=center><td>%-32s</td>\n"), hostname);
+		else
+			websWrite(wp, T("<tr align=center><td>&nbsp;</td>"));
+		websWrite(wp, T("<td>%s"), mac);
+		websWrite(wp, T("</td>\n<td>%s</td>\n<td>"), ip);
+		websWrite(wp, T("<a href=\"../adm/apSingleMange.asp?apip=%s\">  <script>dw(MM_ApSingleMange)</script></a>"), ip);
+		websWrite(wp, T("</td></tr>\n"), h, m, (unsigned)expires);
+	}
+	fclose(fp);
+	return 0;
+}
+
 
 /*
  * arguments: type - 1 = write Primary DNS
