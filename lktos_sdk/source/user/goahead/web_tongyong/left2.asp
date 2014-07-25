@@ -96,11 +96,13 @@ function Echange(nowthis,v_num){
               <ul>
 			  <!--
                 <li><a href="wireless/opmode.asp" target="mainFrame"><script>dw(MM_bridge_settings)</script></a></li>
-				-->
+				   -->
                 <li><a href="internet/aplist.asp" target="mainFrame"><script>dw(MM_APlist)</script></a></li>
                 <li><a href="adm/apAllsetup.asp" target="mainFrame"><script>dw(MM_APallSet)</script></a></li>
+                
               </ul>
 		     </div>
+		  
 		     <div class="column"><a href="adm/status.asp" target="mainFrame"><script>dw(MM_sysstatus)</script></a></div>
 		   </td>
      </tr>

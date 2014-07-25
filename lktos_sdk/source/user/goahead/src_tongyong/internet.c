@@ -65,6 +65,7 @@ static int getL2TPBuilt(int eid, webs_t wp, int argc, char_t **argv);
 
 static int getDhcpCliList(int eid, webs_t wp, int argc, char_t **argv);
 static int getApScanList(int eid, webs_t wp, int argc, char_t **argv);//for ap mangement by luotao
+static int setSendCmd(int eid, webs_t wp, int argc, char_t **argv);//for ap mangement by luotao
 
 static int getDns(int eid, webs_t wp, int argc, char_t **argv);
 static int getHostSupp(int eid, webs_t wp, int argc, char_t **argv);
@@ -119,10 +120,12 @@ static void staticDhcpDelete(webs_t wp, char_t *path, char_t *query);
 
 inline void zebraRestart(void);
 void ripdRestart(void);
+int GetNoByIp(char *ip);
 
 void formDefineInternet(void) {
 	websAspDefine(T("getDhcpCliList"), getDhcpCliList);
-	websAspDefine(T("getApScanList"), getApScanList);
+	websAspDefine(T("setSendCmd"), setSendCmd);
+	websAspDefine(T("getApScanList"), getApScanList);	
 	websAspDefine(T("getDns"), getDns);
 	websAspDefine(T("getHostSupp"), getHostSupp);
 	websAspDefine(T("getIfLiveWeb"), getIfLiveWeb);
@@ -565,13 +568,15 @@ static int getApScanList(int eid, webs_t wp, int argc, char_t **argv)
 	unsigned char hostname[64];
 	unsigned char mac[18];
 	unsigned char ip[16];
-	int i;
+	unsigned char tmp[5];
+	int i = 0;
+	int ip_end = 0 ;
 	struct in_addr addr;
 	unsigned long expires;
 	unsigned d, h, m;
 
 	//doSystem("killall -q -USR1 udhcpd");
-	system("apmasterSend &");
+	system("apmasterSend 1 &");
 	sleep(5);
 	system("killall apmasterSend");
 	fp = fopen("/var/apscanlist", "r");
@@ -579,11 +584,15 @@ static int getApScanList(int eid, webs_t wp, int argc, char_t **argv)
 		return websWrite(wp, T(""));
 	while (fgets(buf, sizeof(buf), fp) != NULL) 
 	{
-		sscanf(buf, "%s %s %s", hostname, mac,ip);
+		i++;
+
+		sscanf(buf, "%s %s %s %s",tmp, hostname, mac,ip);
+		ip_end = GetNoByIp(ip);		
+		websWrite(wp, T("<tr><td> %d&nbsp; <input type=\"checkbox\" name=\"list%d\"> </td>"), i, ip_end );
 		if (strlen(hostname) > 0)
-			websWrite(wp, T("<tr align=center><td>%-32s</td>\n"), hostname);
+			websWrite(wp, T("<align=center><td>%-32s</td>\n"), hostname);
 		else
-			websWrite(wp, T("<tr align=center><td>&nbsp;</td>"));
+			websWrite(wp, T("<align=center><td>&nbsp;</td>"));
 		websWrite(wp, T("<td>%s"), mac);
 		websWrite(wp, T("</td>\n<td>%s</td>\n<td>"), ip);
 		websWrite(wp, T("<a href=\"../adm/apSingleMange.asp?apip=%s\">  <script>dw(MM_ApSingleMange)</script></a>"), ip);
@@ -593,6 +602,69 @@ static int getApScanList(int eid, webs_t wp, int argc, char_t **argv)
 	return 0;
 }
 
+int GetNoByIp(char *ip)
+{
+	char *temptr=NULL;
+	char tofindstr[8] = {0};
+	temptr=strchr(ip,'.');
+	if(temptr != NULL)
+	{
+		temptr=strchr(temptr+1,'.');
+	}
+	if(temptr != NULL)
+	{
+		temptr=strchr(temptr+1,'.');
+	}
+	if(temptr != NULL)
+	{
+		return  atoi(temptr+1);
+	}
+	return 0 ;
+
+	
+}
+
+// cmd = #ssid=value#pwd=value#login=value#login_psw=value#lan=|1|2|3...........|254|
+static int setSendCmd(int eid, webs_t wp, int argc, char_t **argv)
+{
+//#error 111111111111111111111
+	int i;
+	char_t name_buf[16]={0};
+	char_t long_buf[1024] = {0};
+	char_t *value = NULL;
+	char_t *ssid , *wpa_psw , *username,*userpsw;
+
+	    doSystem("rm -f /var/apsendcmd");
+		ssid = websGetVar(wp, T("ssid"), T(""));
+		if (ssid)
+				sprintf(long_buf,"ssid=%s",ssid);
+		
+		wpa_psw = websGetVar(wp, T("encryp"), T(""));
+		if (wpa_psw)
+				sprintf(long_buf,"#pwd=%s",wpa_psw);	
+
+		username = websGetVar(wp, T("login"), T(""));
+		if (username)
+				sprintf(long_buf,"#login=%s",username);	
+
+		userpsw = websGetVar(wp, T("password"), T(""));
+		if (userpsw)
+				sprintf(long_buf,"#login_psw=%s",userpsw);	
+
+		sprintf(long_buf,"%s#lan=",long_buf);
+		
+		for(i=2; i< 254; i++){
+			snprintf(name_buf, 16, "list%d", i);
+			value = websGetVar(wp, name_buf, NULL);
+			if(value){
+				sprintf(long_buf,"%s|%d",long_buf,i);		
+			}
+		}
+
+	   	
+	   sprintf(long_buf,"echo %s|  >> /var/apsendcmd",long_buf);
+	   doSystem(long_buf);
+}
 
 /*
  * arguments: type - 1 = write Primary DNS

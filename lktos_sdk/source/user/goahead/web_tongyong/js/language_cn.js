@@ -25,6 +25,8 @@ var BT_remove = "移除";
 var BT_security_setting = "安全设置";
 var BT_login = "登录";
 var BT_auto_detects = "自动检测";
+var BT_checkall = "全选";
+var BT_checkallno = "全不选";
 //----------------------------------
 var MM_add = "新增";
 var MM_delete = "删除";
@@ -440,6 +442,7 @@ var MM_modemStatus2 = "没检测到Modem";
 var MM_3g_SIM = "SIM卡信息";
 var MM_NoSim = "没检测到SIM卡";
 var MM_HaveSim = "检测到SIM卡";
+var MM_Index = "序号";
 //--------------------------------  
 var JS_msg1 = "（最大规则数目是10条）";
 var JS_msg2 = "（选择丢弃，该数据包不符合任何规则）";
