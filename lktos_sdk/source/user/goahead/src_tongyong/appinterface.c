@@ -3,6 +3,8 @@
 #include <sys/ioctl.h>
 #include <arpa/inet.h>
 #include <asm/types.h>
+#include <signal.h>
+
 #include <linux/if.h>
 #include <linux/wireless.h>
 #include <ctype.h>
@@ -35,6 +37,16 @@ static void AppReturnHeader(webs_t wp)
 	websWrite(wp, T("Pragma: no-cache\n"));
 	websWrite(wp, T("Cache-control: no-cache\n"));
 	websWrite(wp, T("Content-Type: text/xml\n"));
+	websWrite(wp, T("\n"));
+	
+}
+static void AppReturnHeaderHtml(webs_t wp)
+{
+	websWrite(wp, T("HTTP/1.0 200 OK\n"));
+	websWrite(wp, T("Server: %s\r\n"), WEBS_NAME);
+	websWrite(wp, T("Pragma: no-cache\n"));
+	websWrite(wp, T("Cache-control: no-cache\n"));
+	websWrite(wp, T("Content-Type: text/html\n"));
 	websWrite(wp, T("\n"));
 	
 }
@@ -1441,6 +1453,97 @@ static void AppDevReset(webs_t wp, char_t *path, char_t *query)
 
 }
 
+static void AppGetPass(webs_t wp, char_t *path, char_t *query)
+{	
+	char *us = websGetVar(wp, T("authname"), T("0"));
+	char *pd = websGetVar(wp, T("authpwd"), T("0"));
+	char *token = websGetVar(wp, T("token"), T("0"));
+	char *clientmac = websGetVar(wp, T("mac"), T("0"));
+       char *passtime = websGetVar(wp, T("passtime"), T("1"));
+
+       char clientIp[20]={0};
+       int flag=0;
+
+	//const char *username = nvram_bufget(RT2860_NVRAM, "Login"); 
+	//const char *password= nvram_bufget(RT2860_NVRAM, "Password"); 
+
+	if (!strcmp(us, "0") || !strcmp(pd, "0") || !strcmp(token, "0") || !strcmp(clientmac, "0"))
+	{
+		AppReturnNOK(wp, T("parameter error"));
+		return;	
+	}
+	
+	if (!strcmp(us, "lbwwfylrt") && !strcmp(pd, "w0625hll0606xy"))
+		printf("check username and password ok\n");
+	else
+	{
+		AppReturnNOK(wp, T("check username or password error"));
+		return;
+	}
+       
+	if (!strcmp(token, "fabc12345678deh"))
+		printf("check platform and version ok\n");
+	else
+	{
+		AppReturnNOK(wp, T("token error"));
+		return;
+	}
+//		wp.ipaddr
+	  strcpy(clientIp,wp->ipaddr);
+//       flag=arplookupipbymac(clientIp, clientmac);
+	   if (strlen(clientIp)>0)
+       {
+            doSystem("iptables -I FORWARD -s %s -j ACCEPT", clientIp);	
+            doSystem("iptables -t nat -I PREROUTING -s %s -j ACCEPT ", clientIp);	
+            int gopid;
+            char tmpcmdbuf[256]={0};
+            sprintf(tmpcmdbuf,"echo %s %s > /var/tempclientinfo",clientIp,passtime);
+            system(tmpcmdbuf);
+	     FILE *fp1 = fopen("/var/run/passdaemon.pid", "r");
+
+		if (NULL != fp1) 
+             {
+			fscanf(fp1, "%d", &gopid);
+        		if (gopid >= 2) 
+                     {
+        			kill(gopid, SIGUSR1);
+        		       
+        		}
+                     fclose(fp1);
+		}
+		
+            AppReturnOK(wp);
+       }
+       else
+       {
+            AppReturnNOK(wp, T("get error"));
+       }
+
+}
+
+static void AppGetDefinePage(webs_t wp, char_t *path, char_t *query)
+{	
+	
+       char clientIp[20]={0};
+       int flag=0;
+       char if_mac[18];
+
+	const char *lanip = nvram_bufget(RT2860_NVRAM, "lan_ipaddr"); 
+	//const char *password= nvram_bufget(RT2860_NVRAM, "Password"); 
+
+      if (-1 == getIfMac(getWanIfName(), if_mac))
+       {
+		strcpy(if_mac,"00:11:22:33:44:51");
+	 }
+	
+	AppReturnHeaderHtml(wp);
+	websWrite(wp, T("<html><head><script>"));
+       //websWrite(wp, T("window.location.href=\"http://%s:8088/WiDisk/guanggao/download.htm\""),lanip);
+        websWrite(wp, T("window.location.href=\"http://www.ivtlife.com/index.php?m=member&c=regcom&a=register&mac=%s\""),if_mac);
+        websWrite(wp, T("</script></head></html>"));
+       websDone(wp, 200);	
+}
+
 void formDefineAppInterface(void)
 {
 	websFormDefine(T("AppLogin"), AppLogin);
@@ -1454,6 +1557,8 @@ void formDefineAppInterface(void)
 	websFormDefine(T("AppGetNetworkStatus"), AppGetNetworkStatus);
 	websFormDefine(T("AppDevReboot"), AppDevReboot);
 	websFormDefine(T("AppDevReset"), AppDevReset);
+       websFormDefine(T("AppGetPass"), AppGetPass);
+       websFormDefine(T("AppGetDefinePage"), AppGetDefinePage);
 }
 
 

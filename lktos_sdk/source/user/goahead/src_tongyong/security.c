@@ -61,7 +61,7 @@ int websSecurityHandler(webs_t wp, char_t *urlPrefix, char_t *webDir, int arg,
 	accessMeth_t	am;
 
 	websStatType	tempsbuf;
-	char_t			localpath[512]={0};
+	char_t			localpath[1024]={0};
 
 	a_assert(websValid(wp));
 	a_assert(url && *url);
@@ -95,16 +95,38 @@ int websSecurityHandler(webs_t wp, char_t *urlPrefix, char_t *webDir, int arg,
 	}
 #endif
 	//printf("\r\nfdsfsdf--%s",wp->host);
-	if(!strncmp(wp->path,"/",2))
-	{
-		sprintf(localpath,"http://%s:8088/WiDisk/",websIpaddrUrl);
-		websRedirect(wp, localpath);	
-		return 1;
-	}
+//	if(!strncmp(wp->path,"/",2))
+//	{
+//		sprintf(localpath,"http://%s:8088/WiDisk/",websIpaddrUrl);
+//		websRedirect(wp, localpath);	
+//		return 1;
+//	}
 	//if(!strncmp(wp->path,"/home.asp",10))
 		//return 0;
 	if (wp->path != NULL && strstr(wp->path, "/goform/App"))
 		return 0;
+       if(!strncmp(wp->path,"/",2))
+	{
+		sprintf(localpath,"http://%s/goform/AppGetDefinePage",websIpaddrUrl);
+		websRedirect(wp, localpath);	
+		return 0;
+	}
+       /*
+       if(strncmp(wp->path,"/cgi-bin/",9) && strncmp(wp->path,"/goform/",8))
+	{
+              sprintf(localpath,"/etc_ro/web%s",path);
+              if (websPageStat(wp, localpath, path, &tempsbuf) < 0)
+		{
+   
+			sprintf(localpath,"http://%s/goform/AppGetDefinePage",websIpaddrUrl);
+		       websRedirect(wp, localpath);	
+			return 0;
+		}
+	}
+	*/
+#if 1
+       
+#endif
 /*
  *	Check to see if URL must be encrypted
  */

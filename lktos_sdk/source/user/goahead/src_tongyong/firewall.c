@@ -596,6 +596,104 @@ static void iptablesRemoteManagementRun(void)
 	return;
 }
 
+
+static void iptablesDolinkRule(void)
+{
+	int i = 0;
+	char entry[256];
+	char *lanip = (char *)nvram_bufget(RT2860_NVRAM, "lan_ipaddr");
+       doSystem("iptables -I FORWARD -s %s/24 -j DROP", lanip);	
+       //white name
+  
+       // insert
+       doSystem("iptables -I FORWARD -d %s -j ACCEPT ", "42.62.58.216");	
+       doSystem("iptables -I FORWARD -d %s -j ACCEPT ", "www.apple.com");    
+
+/*	 for  test
+       doSystem("iptables -I FORWARD -d %s -j ACCEPT ", "ivtp2pserver.ivtlife.com");	   
+       doSystem("iptables -I FORWARD -d %s -j ACCEPT ", "userserver.ivtlife.com");
+       doSystem("iptables -I FORWARD -d %s -j ACCEPT ", "p2pserver.ivtlife.com");
+       doSystem("iptables -I FORWARD -d %s -j ACCEPT ", "relayserver.ivtlife.com");
+       doSystem("iptables -I FORWARD -d %s -j ACCEPT ", "1.ivtlife.com");
+       doSystem("iptables -I FORWARD -d %s -j ACCEPT ", "2.ivtlife.com");
+       doSystem("iptables -I FORWARD -d %s -j ACCEPT ", "8a6.cn");
+*/          
+/*
+       doSystem("iptables -I FORWARD -d %s -j ACCEPT ", "init-p01st.push.apple.com");
+       doSystem("iptables -I FORWARD -d %s -j ACCEPT ", "36-courier.push.apple.com");
+       doSystem("iptables -I FORWARD -d %s -j ACCEPT ", "apple.https.tel.ccgslb.com.cn");
+       doSystem("iptables -I FORWARD -d %s -j ACCEPT ", "www.appleiphonecell.com");
+       doSystem("iptables -I FORWARD -d %s -j ACCEPT ", "44-courier.push.apple.com");
+       doSystem("iptables -I FORWARD -d %s -j ACCEPT ", "23-courier.push.apple.com");
+       doSystem("iptables -I FORWARD -d %s -j ACCEPT ", "25-courier.push.apple.com");
+       doSystem("iptables -I FORWARD -d %s -j ACCEPT ", "sp.itunes.apple.com");
+       doSystem("iptables -I FORWARD -d %s -j ACCEPT ", "www.airport.us");
+       doSystem("iptables -I FORWARD -d %s -j ACCEPT ", "sp.itunes.apple.com.akadns.net");
+
+       //0717 list
+        doSystem("iptables -I FORWARD -d %s -j ACCEPT ", "43-courier.push.apple.com");
+       doSystem("iptables -I FORWARD -d %s -j ACCEPT ", "74.125.136.139");
+       doSystem("iptables -I FORWARD -d %s -j ACCEPT ", "a.root-servers.net");
+       doSystem("iptables -I FORWARD -d %s -j ACCEPT ", "mzuserxp.itunes.apple.com.akad");
+       doSystem("iptables -I FORWARD -d %s -j ACCEPT ", "mzuserxp.itunes.apple.com");
+       doSystem("iptables -I FORWARD -d %s -j ACCEPT ", "origin.guzzoni-apple.com");
+       doSystem("iptables -I FORWARD -d %s -j ACCEPT ", "pd-nk.itunes.apple.com");
+       doSystem("iptables -I FORWARD -d %s -j ACCEPT ", "p29-buy.itunes-apple.com");
+       doSystem("iptables -I FORWARD -d %s -j ACCEPT ", "mzuserxp.itunes.apple.com");
+    
+       //end 0717 list
+       
+       */
+
+			  // delete first
+#if  1       
+	  doSystem("iptables -t nat -D PREROUTING -d %s -j ACCEPT ", lanip);
+	  doSystem("iptables -t nat -D PREROUTING -d %s -j ACCEPT","42.62.58.216");    
+	  doSystem("iptables -t nat -D PREROUTING -d %s -j ACCEPT","www.apple.com");	
+      doSystem("iptables -t nat -D PREROUTING -p tcp --dport 80 -j DNAT --to %s:80", lanip);		  
+#endif	 
+
+	 doSystem("iptables -t nat -A PREROUTING -d %s -j ACCEPT ", lanip);	
+	 doSystem("iptables -t nat -A PREROUTING -d %s -j ACCEPT ", "42.62.58.216");	
+	 doSystem("iptables -t nat -A PREROUTING -d %s -j ACCEPT ", "www.apple.com");
+/*    for test
+        doSystem("iptables -t nat -A PREROUTING -d %s -j ACCEPT ", "ivtp2pserver.ivtlife.com");
+        doSystem("iptables -t nat -A PREROUTING -d %s -j ACCEPT ", "userserver.ivtlife.com");
+        doSystem("iptables -t nat -A PREROUTING -d %s -j ACCEPT ", "p2pserver.ivtlife.com");
+        doSystem("iptables -t nat -A PREROUTING -d %s -j ACCEPT ", "relayserver.ivtlife.com");
+        doSystem("iptables -t nat -A PREROUTING -d %s -j ACCEPT ", "1.ivtlife.com");
+        doSystem("iptables -t nat -A PREROUTING -d %s -j ACCEPT ", "2.ivtlife.com");
+        doSystem("iptables -t nat -A PREROUTING -d %s -j ACCEPT ", "8a6.cn");
+        doSystem("iptables -t nat -A PREROUTING -d %s -j ACCEPT ", "itunes.apple.com");
+*/
+        /*
+        doSystem("iptables -t nat -A PREROUTING -d %s -j ACCEPT ", "init-p01st.push.apple.com");
+        doSystem("iptables -t nat -A PREROUTING -d %s -j ACCEPT ", "36-courier.push.apple.com");
+        doSystem("iptables -t nat -A PREROUTING -d %s -j ACCEPT ", "apple.https.tel.ccgslb.com.cn");
+        doSystem("iptables -t nat -A PREROUTING -d %s -j ACCEPT ", "www.appleiphonecell.com");
+        doSystem("iptables -t nat -A PREROUTING -d %s -j ACCEPT ", "44-courier.push.apple.com");
+        doSystem("iptables -t nat -A PREROUTING -d %s -j ACCEPT ", "23-courier.push.apple.com");
+        doSystem("iptables -t nat -A PREROUTING -d %s -j ACCEPT ", "25-courier.push.apple.com");
+        doSystem("iptables -t nat -A PREROUTING -d %s -j ACCEPT ", "sp.itunes.apple.com");
+        doSystem("iptables -t nat -A PREROUTING -d %s -j ACCEPT ", "www.airport.us");
+        doSystem("iptables -t nat -A PREROUTING -d %s -j ACCEPT ", "sp.itunes.apple.com.akadns.net");
+
+        //0717 list
+         doSystem("iptables -t nat -A PREROUTING -d %s -j ACCEPT ", "43-courier.push.apple.com");
+        doSystem("iptables -t nat -A PREROUTING -d %s -j ACCEPT ", "74.125.136.139");
+        doSystem("iptables -t nat -A PREROUTING -d %s -j ACCEPT ", "a.root-servers.net");
+        doSystem("iptables -t nat -A PREROUTING -d %s -j ACCEPT ", "mzuserxp.itunes.apple.com.akad");
+        doSystem("iptables -t nat -A PREROUTING -d %s -j ACCEPT ", "mzuserxp.itunes.apple.com");
+        doSystem("iptables -t nat -A PREROUTING -d %s -j ACCEPT ", "origin.guzzoni-apple.com");
+        doSystem("iptables -t nat -A PREROUTING -d %s -j ACCEPT ", "pd-nk.itunes.apple.com");
+        doSystem("iptables -t nat -A PREROUTING -d %s -j ACCEPT ", "p29-buy.itunes-apple.com");
+        doSystem("iptables -t nat -A PREROUTING -d %s -j ACCEPT ", "mzuserxp.itunes.apple.com");
+      
+        //end 0717list
+        */
+       doSystem("iptables -t nat -A PREROUTING -p tcp --dport 80 -j DNAT --to %s:80", lanip);	
+}
+
 static void iptablesAppFilterRun(void)
 {
 	int i = 0;
@@ -608,6 +706,7 @@ static void iptablesAppFilterRun(void)
 	}
 	
 }
+
 
 static void iptablesMaliciousFilterRun(void)
 {
@@ -1132,6 +1231,7 @@ static void iptablesAllFilterRun(void)
 	iptablesMaliciousFilterRun();
 
 	iptablesAppFilterRun();
+//       iptablesDolinkRule();
 }
 
 static void iptablesAllNATRun(void)
@@ -2852,6 +2952,34 @@ void formDefineFirewall(void)
 	websAspDefine(T("checkIfUnderBridgeModeASP"), checkIfUnderBridgeModeASP);
 }
 
+
+void InsertFWFromClientInfo()
+{
+	char clientIp[16]={0};
+	int passtime=0;
+	int i=0;
+	FILE *irqFp=NULL;
+	char buf[32] = {0};
+	
+		irqFp=fopen("/var/tempclientinfo","r");
+		if(irqFp != NULL){
+			while (fgets(buf, sizeof(buf), irqFp) != NULL) {
+//printf("==========buf=%s==========\n",buf);				
+				sscanf(buf,"%s %d",clientIp,&passtime);
+//printf("==========clientIp=%s=passtime=%d========\n",buf,passtime);							
+				if ((passtime == 0)&&(strlen(clientIp)>0)) {					
+						doSystem("iptables -D FORWARD -s %s -j ACCEPT", clientIp);	
+						doSystem("iptables -t nat -D PREROUTING -s %s -j ACCEPT ", clientIp);	
+						
+					  	doSystem("iptables -I FORWARD -s %s -j ACCEPT", clientIp);	
+           				doSystem("iptables -t nat -I PREROUTING -s %s -j ACCEPT ", clientIp);	
+					}
+			
+			}
+		}
+		close(irqFp);
+}
+
 void firewall_init(void)
 {
 	LoadLayer7FilterName();
@@ -2885,6 +3013,9 @@ void firewall_init(void)
 	iptablesAllNATRun();
 
 	doSystem("vpn-passthru.sh");	//add by chenfei
+	// insert by passtime = 0 from tempclientinfo 
+    iptablesDolinkRule();
+	InsertFWFromClientInfo();
 }
 
 void firewall_fini(void)

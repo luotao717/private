@@ -46,3 +46,8 @@ if [ "$nat_en" = "1" ]; then
 	iptables -t nat -A POSTROUTING -s $lan_ip/24 -o $wan_if -j MASQUERADE
 fi
 
+#if [ "$wanmode" = "STATIC" -o "$opmode" = "0" ]; then
+#	echo 1 > /proc/sys/net/ipv4/ip_forward
+#else
+#	echo 0 > /proc/sys/net/ipv4/ip_forward
+#endif

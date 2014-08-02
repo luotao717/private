@@ -97,6 +97,32 @@ void arplookup(char *ip, char *arp)
     return;
 }
 
+int arplookupipbymac(char *ip, char *mac)
+{
+    char buf[256];
+    int resultflag=0;
+    FILE *fp = fopen("/proc/net/arp", "r");
+    if(!fp){
+        trace(0, T("no proc fs mounted!\n"));
+        return resultflag;
+    }
+    strcpy(ip, "0.0.0.0");
+    while(fgets(buf, 256, fp))
+    {
+        char ip_entry[32], hw_type[8],flags[8], hw_address[32];
+        sscanf(buf, "%s %s %s %s", ip_entry, hw_type, flags, hw_address);
+        if(!strcmp(mac, hw_address))
+        {
+            strcpy(ip, ip_entry);
+            resultflag=1;
+            break;
+        }
+    }
+
+    fclose(fp);
+    return resultflag;
+}
+
 
 /*
  * description: kill process whose pid was recorded in file
