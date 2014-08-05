@@ -85,6 +85,8 @@ static int	getRaxABand(int eid, webs_t wp, int argc, char_t **argv);
 
 static void wirelessBasic(webs_t wp, char_t *path, char_t *query);
 static void wirelessAdvanced(webs_t wp, char_t *path, char_t *query);
+static void autoTestWirelessconnect(webs_t wp, char_t *path, char_t *query);
+
 #if	defined (RT2860_WDS_SUPPORT)
 static void wirelessWds(webs_t wp, char_t *path, char_t *query);
 #endif
@@ -157,6 +159,7 @@ void formDefineWireless(void) {
 #endif
 	websFormDefine(T("wirelessBasic"), wirelessBasic);
 	websFormDefine(T("wirelessAdvanced"), wirelessAdvanced);
+       websFormDefine(T("autoTestWirelessconnect"), autoTestWirelessconnect);
 #if	defined (RT2860_WDS_SUPPORT)
 	websFormDefine(T("wirelessWds"), wirelessWds);
 #endif
@@ -3104,6 +3107,72 @@ static int getWAPIASCertList(int eid, webs_t wp, int argc, char_t **argv)
 
 	return 0;
 }
+
+
+static void autoTestWirelessconnect(webs_t wp, char_t *path, char_t *query)
+{
+	int i, s;
+	struct iwreq iwr;
+	RT_802_11_MAC_TABLE table = {0};
+
+	char *ifname;
+        char msgbuf[512]={0};
+	int flag = 0;
+	char outmac[18] = {0};
+	char outip[16]= {0};
+	float nsd = 2.0769230769230769230769230769231;
+	char outtx[50] = {0};
+
+	char *wlan_off=nvram_bufget(RT2860_NVRAM, "WiFiOff");
+	if(atoi(wlan_off))
+	{
+		sprintf(msgbuf,"%s","failed wifi is off");
+	}
+	s = socket(AF_INET, SOCK_DGRAM, 0);
+	strncpy(iwr.ifr_name, "ra0", IFNAMSIZ);
+	iwr.u.data.pointer = (caddr_t) &table;
+        
+	if (s < 0) 
+       {
+		sprintf(msgbuf,"%s","failed");
+	}
+      else
+      {
+	    if (ioctl(s, RTPRIV_IOCTL_GET_MAC_TABLE_STRUCT, &iwr) < 0) 
+           {
+		sprintf(msgbuf,"%s","failed");
+		close(s);
+              websWrite(wp, T("HTTP/1.1 200 OK\nContent-type: text/plain\nPragma: no-cache\nCache-Control: no-cache\n\n"));
+        	websWrite(wp, T("%s"), msgbuf);
+        	websDone(wp, 200);
+		return ;
+	    }
+	    close(s);
+            sprintf(msgbuf,"%s","WIFI OK but no sta connected");
+        	for (i = 0; i < table.Num; i++) 
+             {
+        		if (table.Entry[i].TxRate.field.BW == 0) { //20M
+        			if (table.Entry[i].TxRate.field.ShortGI == 1)
+        				flag = 15; //400ns
+        			else
+        				flag = 0; //800ns
+        		}
+
+        		sprintf(msgbuf,"WIFI OK  connect sta is %02x:%02x:%02x:%02x:%02x:%02x", 
+        				table.Entry[i].Addr[0], table.Entry[i].Addr[1],
+        				table.Entry[i].Addr[2], table.Entry[i].Addr[3],
+        				table.Entry[i].Addr[4], table.Entry[i].Addr[5]);      
+                    break;
+        	}
+
+	}
+	websWrite(wp, T("HTTP/1.1 200 OK\nContent-type: text/plain\nPragma: no-cache\nCache-Control: no-cache\n\n"));
+	websWrite(wp, T("%s"), msgbuf);
+	websDone(wp, 200);
+       return;
+}
+
+
 
 static int getWAPIUserCertList(int eid, webs_t wp, int argc, char_t **argv)
 {

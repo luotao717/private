@@ -674,3 +674,16 @@ var MM_dlna29 = "All media types";
 var MM_dlna30	= "Audio only";
 var MM_dlna31	= "Vedio only";
 var MM_dlna32	= "Image only";
+var MM_AUTOTEST_1	= "Auto Test";
+var MM_AUTOTEST_2	= "This page used to factory auto test";
+var MM_AUTOTEST_WANMAC	= "WAN MAC Address";
+var MM_AUTOTEST_LANMAC	= "LAN MAC Address";
+var MM_AUTOTEST_WLANMAC	= "WLAN MAC Address";
+var MM_AUTOTEST_3	= "WAN DHCP clent enabled test";
+var MM_AUTOTEST_4	= "SAMBA enabled test";
+var MM_AUTOTEST_5	= "TF card read test";
+var MM_AUTOTEST_6	= "U disk read test";
+var MM_AUTOTEST_7	= "Wireless connect and signal test";
+var MM_AUTOTEST_8	= "WAN link test";
+var MM_AUTOTEST_9	= "Auto Test";
+

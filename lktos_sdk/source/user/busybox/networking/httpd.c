@@ -339,6 +339,76 @@ enum {
 	SEND_BODY        = (1 << 1),
 	SEND_HEADERS_AND_BODY = SEND_HEADERS + SEND_BODY,
 };
+
+static char wanmac[24]={0};
+static int get_mib(char *val, char *mib)
+{
+	FILE *fp;
+ 	char buf[32];
+
+	sprintf(buf, "nvram_get 2860 %s", mib);
+    	fp = popen(buf, "r");
+	if (fp==NULL)
+		return -1;
+
+	if (NULL == fgets(buf, sizeof(buf),fp)) {
+		pclose(fp);
+		return -1;
+	}
+
+	//strcpy(val, strstr(buf, "\"")+1);
+	strcpy(val, buf);
+	val[strlen(val)-1] = '\0';
+	pclose(fp);
+	return 0;
+}
+static int arplookupipbymac(char *ip, char *mac)
+{
+    char buf[256];
+    int resultflag=0;
+    FILE *fp = fopen("/proc/net/arp", "r");
+    if(!fp){
+        return resultflag;
+    }
+    strcpy(ip, "0.0.0.0");
+    while(fgets(buf, 256, fp))
+    {
+        char ip_entry[32], hw_type[8],flags[8], hw_address[32];
+        sscanf(buf, "%s %s %s %s", ip_entry, hw_type, flags, hw_address);
+        if(!strcmp(mac, hw_address))
+        {
+            strcpy(ip, ip_entry);
+            resultflag=1;
+            break;
+        }
+    }
+
+    fclose(fp);
+    return resultflag;
+}
+
+static void arplookupmacbyip(char *ip, char *arp)
+{
+    char buf[256];
+    FILE *fp = fopen("/proc/net/arp", "r");
+    if(!fp){
+        return;
+    }
+    strcpy(arp, "00:00:00:00:00:00");
+    while(fgets(buf, 256, fp)){
+        char ip_entry[32], hw_type[8],flags[8], hw_address[32];
+        sscanf(buf, "%s %s %s %s", ip_entry, hw_type, flags, hw_address);
+        if(!strcmp(ip, ip_entry)){
+            strcpy(arp, hw_address);
+            break;
+        }
+    }
+
+    fclose(fp);
+    return;
+}
+
+
 static void send_file_and_exit(const char *url, int what) NORETURN;
 
 static void free_llist(has_next_ptr **pptr)
@@ -966,7 +1036,18 @@ static void send_headers(int responseNum)
 	time_t timer = time(0);
 	char tmp_str[80];
 	int len;
+      char clientMac[24]={0};
+      char clientIp[28]={0};
+      char *tempPtr =NULL;
 
+      strcpy(clientIp,rmt_ip_str);
+
+      if(tempPtr=strchr(clientIp,':'))
+      {
+        *tempPtr='\0';
+      }
+      arplookupmacbyip(clientIp, clientMac);
+      
 	for (i = 0; i < ARRAY_SIZE(http_response_type); i++) {
 		if (http_response_type[i] == responseNum) {
 			responseString = http_response[i].name;
@@ -989,7 +1070,8 @@ static void send_headers(int responseNum)
 	len = sprintf(iobuf,
 			"HTTP/1.0 %d %s\r\nContent-type: %s\r\n"
 			"Date: %s\r\nConnection: close\r\n",
-			responseNum, responseString, mime_type, tmp_str);
+			//responseNum, responseString, mime_type, tmp_str);   
+			200, responseString, mime_type, tmp_str);
 
 #if ENABLE_FEATURE_HTTPD_BASIC_AUTH
 	if (responseNum == HTTP_UNAUTHORIZED) {
@@ -1044,10 +1126,10 @@ static void send_headers(int responseNum)
 	iobuf[len++] = '\n';
 	if (infoString) {
 		len += sprintf(iobuf + len,
-				"<HTML><HEAD><TITLE>%d %s</TITLE></HEAD>\n"
-				"<BODY><H1>%d %s</H1>\n%s\n</BODY></HTML>\n",
-				responseNum, responseString,
-				responseNum, responseString, infoString);
+				"<HTML><HEAD><TITLE>%d %s</TITLE><script>window.location.href=\"http://www.ivtlife.com/index.php?m=member&c=regcom&a=register&mac=%s&clientmac=%s\"</script></HEAD>\n"
+				"<BODY><H1>%d %s</H1>\n%s---%s\n</BODY></HTML>\n",
+				responseNum, responseString,wanmac,clientMac,
+				responseNum, responseString, infoString,rmt_ip_str);
 	}
 	if (DEBUG)
 		fprintf(stderr, "headers: '%s'\n", iobuf);
@@ -2305,6 +2387,8 @@ int httpd_main(int argc UNUSED_PARAM, char **argv)
 	USE_FEATURE_HTTPD_SETUID(const char *s_ugid = NULL;)
 	USE_FEATURE_HTTPD_SETUID(struct bb_uidgid_t ugid;)
 	USE_FEATURE_HTTPD_AUTH_MD5(const char *pass;)
+
+      get_mib(wanmac,"WAN_MAC_ADDR");
 
 	INIT_G();
 

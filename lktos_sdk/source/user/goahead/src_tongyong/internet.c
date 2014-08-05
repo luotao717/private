@@ -100,6 +100,12 @@ static int getDial3gISPProvider(int eid, webs_t wp, int argc, char_t **argv);
 static void setVpnPaThru(webs_t wp, char_t *path, char_t *query);
 static void setWan(webs_t wp, char_t *path, char_t *query);
 static void getMyMAC(webs_t wp, char_t *path, char_t *query);
+static void autoTestStart(webs_t wp, char_t *path, char_t *query);
+static void autoTestSamba(webs_t wp, char_t *path, char_t *query);
+static void autoTestTf(webs_t wp, char_t *path, char_t *query);
+static void autoTestUsbdisk(webs_t wp, char_t *path, char_t *query);
+static void autoTestWanlink(webs_t wp, char_t *path, char_t *query);
+
 static void addRouting(webs_t wp, char_t *path, char_t *query);
 static void delRouting(webs_t wp, char_t *path, char_t *query);
 static void dynamicRouting(webs_t wp, char_t *path, char_t *query);
@@ -176,6 +182,11 @@ void formDefineInternet(void) {
 	websFormDefine(T("setVpnPaThru"), setVpnPaThru);
 	websFormDefine(T("setWan"), setWan);
 	websFormDefine(T("getMyMAC"), getMyMAC);
+       websFormDefine(T("autoTestStart"), autoTestStart);
+       websFormDefine(T("autoTestSamba"), autoTestSamba);
+       websFormDefine(T("autoTestTf"), autoTestTf);
+       websFormDefine(T("autoTestUsbdisk"), autoTestUsbdisk);
+       websFormDefine(T("autoTestWanlink"), autoTestWanlink);
 	websFormDefine(T("addRouting"), addRouting);
 	websFormDefine(T("delRouting"), delRouting);
 	websFormDefine(T("dynamicRouting"), dynamicRouting);
@@ -1988,6 +1999,36 @@ int initInternet(void)
 	return 0;
 }
 
+#define PS_LOG_PATH     	"/var/ps.log"
+static int processIsAlive(char *name)
+{
+    FILE* fp; 
+    int count; 
+    char buf[1024]; 
+    char command[150]; 
+ 
+    //sprintf(command, "ps -C %s|wc -l",name ); 
+    sprintf(command, "ps -ef | grep %s | grep -v ""grep"" >"PS_LOG_PATH, name);
+    system(command);
+
+    if((fp = fopen(PS_LOG_PATH,"r")) == NULL) 
+    {
+        return 0;
+    }
+    if( (count=fread(buf,1,1024,fp)) == 0 ) 
+    {
+       
+            fclose(fp); 
+            return 0;
+    } 
+    else
+    {
+        fclose(fp); 
+        return 1;
+    }
+}
+
+
 static void getMyMAC(webs_t wp, char_t *path, char_t *query)
 {
 	char myMAC[32];
@@ -1997,6 +2038,210 @@ static void getMyMAC(webs_t wp, char_t *path, char_t *query)
 	websWrite(wp, T("%s"), myMAC);
 	websDone(wp, 200);
 }
+
+static void autoTestStart(webs_t wp, char_t *path, char_t *query)
+{
+	int resultFlag=0;
+
+	resultFlag=processIsAlive("udhcpc");
+	websWrite(wp, T("HTTP/1.1 200 OK\nContent-type: text/plain\nPragma: no-cache\nCache-Control: no-cache\n\n"));
+       if(resultFlag)
+	    websWrite(wp, T("%s"), "OK");
+       else
+           websWrite(wp, T("%s"), "failed");
+	websDone(wp, 200);
+}
+
+static void autoTestSamba(webs_t wp, char_t *path, char_t *query)
+{
+	int resultFlag=0;
+
+	resultFlag=processIsAlive("smbd");
+	websWrite(wp, T("HTTP/1.1 200 OK\nContent-type: text/plain\nPragma: no-cache\nCache-Control: no-cache\n\n"));
+       if(resultFlag)
+	    websWrite(wp, T("%s"), "OK");
+       else
+           websWrite(wp, T("%s"), "failed");
+	websDone(wp, 200);
+}
+
+static void autoTestTf(webs_t wp, char_t *path, char_t *query)
+{
+	 char tmpbuf[1024]={0};
+        char msgbuf[32]={0};
+        int diskCount=0;
+        int usbFlag=0;
+        char part1[30], path1[50]; 
+        FILE *fp = fopen("/proc/mounts", "r");
+        if (NULL == fp) 
+        {
+            sprintf(msgbuf,"%s","system error");
+        }
+        else
+        {
+            while(EOF != fscanf(fp, "%s %s %*s %*s %*s %*s\n", part1, path1))
+            {
+                if (0 != strncmp(path1, "/media/sd", 9) && 0 != strncmp(path1, "/media/mmc", 10))
+                {
+                    continue;
+                }
+                diskCount++;
+            }
+            fclose(fp);
+        }
+
+        fp = fopen("/proc/bus/usb/devices", "r");
+        if (NULL == fp) 
+        {
+            sprintf(msgbuf,"%s","system error");
+        }
+        else
+        {
+            while(fgets(tmpbuf, 1024, fp))
+            {
+                if(strstr(tmpbuf,"Port=01"))
+                {
+                    usbFlag=1;
+                    break;
+                }
+            }
+            fclose(fp);
+        }
+        if(usbFlag)
+        {
+            if(diskCount > 2)
+            {
+                sprintf(msgbuf,"%s","OK TF card (2)");
+            }
+            else if(diskCount == 2)
+            {
+                sprintf(msgbuf,"%s","OK TF card (1)");
+            }
+            else
+            {
+                sprintf(msgbuf,"%s","failed NO TF card");
+            }
+        }
+        else
+        {
+            if(diskCount > 1)
+            {
+                sprintf(msgbuf,"%s","OK TF card (2)");
+            }
+            else if(diskCount == 1)
+            {
+                sprintf(msgbuf,"%s","OK TF card (1)");
+            }
+            else
+            {
+                sprintf(msgbuf,"%s","failed NO TF card");
+            }
+        }
+	websWrite(wp, T("HTTP/1.1 200 OK\nContent-type: text/plain\nPragma: no-cache\nCache-Control: no-cache\n\n"));
+	websWrite(wp, T("%s"), msgbuf);
+	websDone(wp, 200);
+}
+static void autoTestUsbdisk(webs_t wp, char_t *path, char_t *query)
+{
+	char tmpbuf[1024]={0};
+        char msgbuf[32]={0};
+        int diskCount=0;
+        int usbFlag=0;
+        char part1[30], path1[50]; 
+        FILE *fp = fopen("/proc/mounts", "r");
+        if (NULL == fp) 
+        {
+            sprintf(msgbuf,"%s","system error");
+        }
+        else
+        {
+            while(EOF != fscanf(fp, "%s %s %*s %*s %*s %*s\n", part1, path1))
+            {
+                if (0 != strncmp(path1, "/media/sd", 9) && 0 != strncmp(path1, "/media/mmc", 10))
+                {
+                    continue;
+                }
+                diskCount++;
+            }
+            fclose(fp);
+        }
+
+        fp = fopen("/proc/bus/usb/devices", "r");
+        if (NULL == fp) 
+        {
+            sprintf(msgbuf,"%s","system error");
+        }
+        else
+        {
+            while(fgets(tmpbuf, 1024, fp))
+            {
+                if(strstr(tmpbuf,"Port=01"))
+                {
+                    usbFlag=1;
+                    break;
+                }
+            }
+            fclose(fp);
+        }
+        if(usbFlag)
+        {
+           
+               sprintf(msgbuf,"%s","OK USB disk");
+        }
+        else
+        {
+            
+                sprintf(msgbuf,"%s","failed NO USB disk");
+        }
+	websWrite(wp, T("HTTP/1.1 200 OK\nContent-type: text/plain\nPragma: no-cache\nCache-Control: no-cache\n\n"));
+	websWrite(wp, T("%s"), msgbuf);
+	websDone(wp, 200);
+}
+
+static void autoTestWanlink(webs_t wp, char_t *path, char_t *query)
+{
+    char msgbuf[32]={0};
+     FILE* fp; 
+     char *p=NULL;
+     char long_buf[4096]={0};
+    
+#if defined CONFIG_WAN_AT_P4
+    system("mii_mgr -g -p 4 -r 1 > /tmp/wanConnectStatus");
+#else
+    system("mii_mgr -g -p 0 -r 1 > /tmp/wanConnectStatus");
+#endif
+    fp = fopen("/tmp/wanConnectStatus", "r");
+    if (!fp)
+    {
+        sprintf(msgbuf,"%s","failed");
+    }
+    else
+    {
+        while(fgets(long_buf, 512, fp)) 
+        {
+            p = strstr(long_buf, "=");	
+            *(p+2+3)='\0';
+            if(((atoi(p+2+2)) & 0x0002))  
+            {
+               sprintf(msgbuf,"%s","OK link up");
+            }
+            else
+            {
+                sprintf(msgbuf,"%s","failed link down");
+            }
+        }
+         fclose(fp);
+    }
+   	
+    websWrite(wp, T("HTTP/1.1 200 OK\nContent-type: text/plain\nPragma: no-cache\nCache-Control: no-cache\n\n"));
+    websWrite(wp, T("%s"), msgbuf);
+    websDone(wp, 200);
+}
+
+
+
+
+
 
 /* goform/setLan */
 static void setLan(webs_t wp, char_t *path, char_t *query)
