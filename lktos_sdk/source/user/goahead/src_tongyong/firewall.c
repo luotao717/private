@@ -2961,23 +2961,29 @@ void InsertFWFromClientInfo()
 	FILE *irqFp=NULL;
 	char buf[32] = {0};
 	
-		irqFp=fopen("/var/tempclientinfo","r");
-		if(irqFp != NULL){
+		irqFp=fopen("/var/tempclientinfoAll","r");
+		if(irqFp != NULL)
+              {
 			while (fgets(buf, sizeof(buf), irqFp) != NULL) {
 //printf("==========buf=%s==========\n",buf);				
 				sscanf(buf,"%s %d",clientIp,&passtime);
 //printf("==========clientIp=%s=passtime=%d========\n",buf,passtime);							
-				if ((passtime == 0)&&(strlen(clientIp)>0)) {					
+				if ((strlen(clientIp)>0))
+                            {					
 						doSystem("iptables -D FORWARD -s %s -j ACCEPT", clientIp);	
 						doSystem("iptables -t nat -D PREROUTING -s %s -j ACCEPT ", clientIp);	
-						
-					  	doSystem("iptables -I FORWARD -s %s -j ACCEPT", clientIp);	
-           				doSystem("iptables -t nat -I PREROUTING -s %s -j ACCEPT ", clientIp);	
-					}
+
+                                        if(passtime == 0)
+                                        {
+    					            doSystem("iptables -I FORWARD -s %s -j ACCEPT", clientIp);	
+               				    doSystem("iptables -t nat -I PREROUTING -s %s -j ACCEPT ", clientIp);	
+                                        }
+				}
 			
 			}
+            	close(irqFp);
 		}
-		close(irqFp);
+	
 }
 
 void firewall_init(void)

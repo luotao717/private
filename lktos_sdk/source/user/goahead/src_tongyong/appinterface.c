@@ -1499,6 +1499,8 @@ static void AppGetPass(webs_t wp, char_t *path, char_t *query)
             char tmpcmdbuf[256]={0};
             sprintf(tmpcmdbuf,"echo %s %s > /var/tempclientinfo",clientIp,passtime);
             system(tmpcmdbuf);
+             sprintf(tmpcmdbuf,"echo %s %s >> /var/tempclientinfoAll",clientIp,passtime);
+            system(tmpcmdbuf);
 	     FILE *fp1 = fopen("/var/run/passdaemon.pid", "r");
 
 		if (NULL != fp1) 
