@@ -13,7 +13,7 @@
 #elif defined (CONFIG_LKTOS_PRIVATE_OEM_NAME_CDRKING)
 #define Version				"CDRKING_WR-NET-022-ZI_V1.0.0"
 #else
-#define Version				"v1.0.3-orange-20140502"
+#define Version				"v1.0.3-mywifipower-20140506"
 #endif
 
 #define LED_ON				1

@@ -31,7 +31,7 @@
 #define QDNS_MAX_INTERVAL (25*24*3600)
 
 #define ORANGELINK_NAME "orange"
-#define ORANGELINK_DEFAULT_SERVER "www.orangelink.cn"
+#define ORANGELINK_DEFAULT_SERVER "h111608.fa.chinadds.net"
 #define ORANGELINK_DEFAULT_PORT 80
 #define ORANGELINK_REQUEST "/devservice/reg_device.asp"
 #define ORANGELINK_MAX_INTERVAL (25*24*3600)

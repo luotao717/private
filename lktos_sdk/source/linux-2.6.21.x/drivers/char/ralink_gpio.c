@@ -2131,11 +2131,11 @@ int __init ralink_gpio_init(void)
 #if defined (CONFIG_RALINK_MT7620)
 	gpiomode &= ~0x2000;  //clear bit[13] WLAN_LED
 #endif
-	printk("\r\nbefore mofe=%0x");
+	//printk("\r\nbefore mofe=%0x");
 	gpiomode &= ~0x2000;
 	gpiomode |= RALINK_GPIOMODE_DFT;
 	gpiomode |= (1 << 14);
-	printk("\r\nafter mofe=%0x");
+	//printk("\r\nafter mofe=%0x");
 	*(volatile u32 *)(RALINK_REG_GPIOMODE) = cpu_to_le32(gpiomode);
 
 	//enable gpio interrupt
@@ -2304,8 +2304,10 @@ irqreturn_t ralink_gpio_irq_handler(int irq, void *irqaction)
 			continue;
 		ralink_gpio_irqnum = i;
 		if (ralink_gpio_edge & (1 << i)) { //rising edge
-			if (record[i].rising != 0 && time_before_eq(now,
-						record[i].rising + 40L)) {
+			//if (record[i].rising != 0 && time_before_eq(now,record[i].rising + 40L)) 
+			//by luotao for 100ms to delay the button
+                     if (record[i].rising != 0 && time_before_eq(now,record[i].rising + 100L)) 
+                    {
 				/*
 				 * If the interrupt comes in a short period,
 				 * it might be floating. We ignore it.
