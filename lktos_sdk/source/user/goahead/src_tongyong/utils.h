@@ -14,7 +14,7 @@
 #define Version				"CDRKING_WR-NET-022-ZI_V1.0.0"
 #else
 //#define Version				"v4.0-3gnasv1.2-v2.0 -20140721"
-#define Version				"v4.0-3gnasv1.2-lt-v2.8 -20140815"
+#define Version				"v4.0-3gnasv1.2-lt-v3.1 -20140830"
 #endif
 
 #define LED_ON				1

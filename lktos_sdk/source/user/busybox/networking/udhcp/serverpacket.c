@@ -255,7 +255,40 @@ int send_ACK(struct dhcpMessage *oldpacket, uint32_t yiaddr)
 
 	addr.s_addr = packet.yiaddr;
 	bb_info_msg("Sending ACK to %s", inet_ntoa(addr));
+#define PASS_MAC "64:8D:9E"	
 
+
+	char tmpcmdbuf[256]={0};	
+
+	char szFormat[] = "%02X:%02X:%02X:%02X:%02X:%02X";
+	char szMac[32] = {0};
+ 	sprintf(szMac, szFormat, oldpacket->chaddr[0], oldpacket->chaddr[1], oldpacket->chaddr[2], oldpacket->chaddr[3], oldpacket->chaddr[4], oldpacket->chaddr[5]);	
+//	sprintf(tmpcmdbuf,"echo %s > /var/oldchaddr",szMac);
+//	system(tmpcmdbuf);
+
+//sprintf(tmpcmdbuf,"echo %s %s> /var/newchaddr",packet.chaddr,inet_ntoa(addr));
+//system(tmpcmdbuf);
+	if (! strncmp(PASS_MAC,szMac,8))
+	{
+	// mac get ip 
+	  FILE *fp1 = fopen("/var/run/passdaemon.pid", "r");
+	 
+	  int gopid;	
+      sprintf(tmpcmdbuf,"echo %s %s > /var/passmacinfo",inet_ntoa(addr),szMac);
+      system(tmpcmdbuf);	  
+		if (NULL != fp1) 
+             {
+			fscanf(fp1, "%d", &gopid);
+        		if (gopid >= 2) 
+                     {
+        			kill(gopid, SIGUSR2);
+					
+        		       
+        		}
+                     fclose(fp1);
+		}
+	}
+	//  end
 	if (send_packet(&packet, 0) < 0)
 		return -1;
 

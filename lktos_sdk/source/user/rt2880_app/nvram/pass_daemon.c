@@ -6,6 +6,7 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/ioctl.h>
+#include <time.h>
 #include <linux/autoconf.h>
 
 #include "nvram.h"
@@ -95,6 +96,81 @@ static void nvramIrqHandler(int signum)
 
 }
 
+static void nvramIrqHandler2(int signum)
+{
+	
+	char *temptr=NULL;
+		char clientIp[16]={0};
+		char clientMac[20]={0};
+		int passtime=0;
+		int i=0;
+		int macExist = 0 ;
+		FILE *irqFp=NULL;
+		char cmdbuf[256]={0};
+						
+		if (signum == SIGUSR2)
+		 {
+			irqFp=fopen("/var/passmacinfo","r");
+			if(irqFp != NULL)
+			{
+				fscanf(irqFp,"%s %s",clientIp,clientMac);
+				temptr=strchr(clientIp,'.');
+				if(temptr != NULL)
+				{
+					temptr=strchr(temptr+1,'.');
+				}
+				if(temptr != NULL)
+				{
+					temptr=strchr(temptr+1,'.');
+				}
+				if(temptr != NULL)
+				{
+				
+				 i=atoi(temptr+1);
+				}
+				// is mac exist ?
+				int j=0;
+				for (j=0;j<254;j++)
+				{
+					if (clientArr[j].mac == NULL)
+						continue ;
+					if  (!strcmp(clientArr[j].mac,clientMac)&&(!strcmp(clientArr[j].ip,clientIp)))
+					{						
+						fclose(irqFp);
+						
+						return; 
+					}
+					if  (!strcmp(clientArr[j].mac,clientMac))
+					{
+						macExist = 1 ;
+						sprintf(cmdbuf,"iptables -D FORWARD -s %s -j ACCEPT",clientArr[j].ip);
+						system(cmdbuf);
+						sprintf(cmdbuf,"iptables -t nat -D PREROUTING -s %s -j ACCEPT",clientArr[j].ip);						
+						system(cmdbuf);						
+						strcpy(clientArr[j].ip,clientIp);
+						clientArr[j].control = 1;
+					}						
+				}
+				if (0 == macExist)
+				{
+					strcpy(clientArr[i-2].ip,clientIp);
+					strcpy(clientArr[i-2].mac,clientMac);					
+					clientArr[i-2].control=1;
+				}
+				sprintf(cmdbuf,"iptables -I FORWARD -s %s -j ACCEPT", clientIp);
+				system(cmdbuf);
+				sprintf(cmdbuf,"iptables -t nat -I PREROUTING -s %s -j ACCEPT ", clientIp);	
+				system(cmdbuf);				
+//				char tmpcmdbuf[256]={0};				
+				sprintf(cmdbuf,"echo %s 0 >> /var/tempclientinfoAll",clientIp);
+				system(cmdbuf);
+
+				
+				fclose(irqFp);
+			}
+		}
+	
+}
 
 static void pidfile_delete(void)
 {
@@ -142,8 +218,10 @@ int main(int argc,char **argv)
 	char devMac[36]={0};
 	char devSn[48]={0};
 	char devUserEmail[64]={0};
-
+       time_t timep;
+       struct tm *nowtime=NULL;
 	signal(SIGUSR1, nvramIrqHandler);
+	signal(SIGUSR2, nvramIrqHandler2);	
 	fd = pidfile_acquire("/var/run/passdaemon.pid");
 	pidfile_write_release(fd);
 	while (1) 
@@ -174,6 +252,16 @@ int main(int argc,char **argv)
 				}
 			}
 		}
+             time(&timep);
+            nowtime=localtime(&timep);
+            //printf("\r\n now time = %d:%d:%d",nowtime->tm_hour,nowtime->tm_min,nowtime->tm_sec );
+            if(nowtime->tm_hour == 5)
+            {
+                if((nowtime->tm_min == 0) && (nowtime->tm_sec <= 31))
+                {
+                    system("reboot");
+                }
+            }
 		
 	}
 	return 0;

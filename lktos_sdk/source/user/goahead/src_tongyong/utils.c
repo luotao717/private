@@ -9,6 +9,7 @@
 #include	<time.h>
 #include	<signal.h>
 #include	<sys/ioctl.h>
+#include  <sys/sysinfo.h>
 #include	<sys/time.h>
 
 #include	<sys/socket.h>
@@ -1537,8 +1538,28 @@ static int getSysUptime(int eid, webs_t wp, int argc, char_t **argv)
 	struct tm *utime;
 	time_t usecs;
 
+       struct sysinfo info ;
+       unsigned long sec=0;
+       unsigned long hr=0;
+       unsigned long mn=0;
+
+	sysinfo(&info);
+	sec = (unsigned long) info.uptime ;
+//	day = sec / 86400;
+	//day -= 10957; // day counted from 1970-2000
+
+//		sec %= 86400;
+	hr = sec / 3600;
+	sec %= 3600;
+	mn = sec / 60;
+	sec %= 60;
+
+       
 	time(&usecs);
 	utime = localtime(&usecs);
+       utime->tm_hour=hr;
+       utime->tm_min=mn;
+       utime->tm_sec=sec;
 
 	if (utime->tm_hour > 0)
 		return websWrite(wp, T("%d <script>dw(MM_hour)</script>%s, %d <script>dw(MM_min)</script>%s, %d <script>dw(MM_sec)</script>%s"),

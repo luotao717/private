@@ -290,6 +290,7 @@ static void dhcpcHandler(int signum)
 	doSystem("/sbin/config-igmpproxy.sh");
 	doSystem("killall dnsmasq");
 	doSystem("dnsmasq /etc/resolv.conf &");
+       doSystem("/sbin/ntp.sh");
 	//doSystem("/sbin/nat.sh"); //by luot
 #ifdef CONFIG_RALINKAPP_SWQOS
 	QoSInit();
