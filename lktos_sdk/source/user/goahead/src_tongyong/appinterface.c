@@ -574,13 +574,16 @@ static void Appwifipara(webs_t wp, char_t *path, char_t *query)
 	system("echo 1 > /var/fpwifiok");
 	system("gpio l 7 1 1 1 1 1");
 	system("gpio k 7 1");
-	pid=fork();
-	if(0 == pid)
-	{
-    		sleep(2);
-		doSystem("internet.sh");
-		exit(1);
-	}
+	doSystem("echo 1 > /var/renewnow");
+	return;
+
+	//pid=fork();
+//	if(0 == pid)
+	//{
+    		//sleep(8);
+	//	doSystem("echo 1 > /var/renewnow");
+		//exit(1);
+	//}
 
 }
 

@@ -307,6 +307,13 @@ int main(int argc,char **argv)
 	while (1) 
 	{
 		sleep(3);
+		FILE *fpRenew = fopen("/var/renewnow", "r");
+		if (NULL != fpRenew) 
+		{
+			sleep(2);
+			system("rm -f /var/renewnow");
+			system("internet.sh");
+		}
 		if (!strcmp(nvram_bufget(RT2860_NVRAM, "BandUserEmail"),"") && (stat("/var/fpwifiok", &filestat) == -1)) 
 		{
 			printf("\r\n no user so continue!");
