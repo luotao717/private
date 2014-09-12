@@ -308,6 +308,60 @@ static void appWantTry(webs_t wp, char_t *path, char_t *query)
 	
 }
 
+static void appWantWriteMac(webs_t wp, char_t *path, char_t *query)
+{
+	char_t *wlanMacAdd;
+	char str[20]={0};
+	char output[13]={0};
+	unsigned char macBuf[7]={0};
+	char cmdBuf[64]={0};
+	unsigned long burnmacval=0;
+	wlanMacAdd = websGetVar(wp, T("wlanmac"), T("000C433050A0"));
+    #if 1
+      //printf("\r\nvaule=%s",wlanMacAdd);
+      strncpy(str,wlanMacAdd,12);
+	//printf("\r\nstr=%s",str);
+	//printf("\n%s",str+4);	
+	sscanf(str+4,"%08x",&burnmacval);
+	//printf("\nvaltt=%08x--%d",burnmacval,burnmacval);
+	sprintf(output,"%c%c%c%c%08x",str[0],str[1],str[2],str[3],burnmacval);
+	sscanf(output,"%02x%02x%02x%02x%02x%02x",&macBuf[0],&macBuf[1],&macBuf[2],&macBuf[3],&macBuf[4],&macBuf[5]);
+      //printf("\r\nggg--%s\r\n",output);
+	//printf("\r\nhhh%02x-%02x-%02x-%02x-%02x-%02x",macBuf[0],macBuf[1],macBuf[2],macBuf[3],macBuf[4],macBuf[5]);
+	//sscanf("000C433050A0","%02x%02x%02x%02x%02x%02x",&macBuf[0],&macBuf[1],&macBuf[2],&macBuf[3],&macBuf[4],&macBuf[5]);
+       //printf("\r\nvaule11=%02x%02x%02x%02x%02x%02x",macBuf[0],macBuf[1],macBuf[2],macBuf[3],macBuf[4],macBuf[5]);
+	flash_write_wlan_mac(macBuf);
+	burnmacval=burnmacval+1;
+	sprintf(output,"%c%c%c%c%08x",str[0],str[1],str[2],str[3],burnmacval);
+	sscanf(output,"%02x%02x%02x%02x%02x%02x",&macBuf[0],&macBuf[1],&macBuf[2],&macBuf[3],&macBuf[4],&macBuf[5]);
+	flash_write_lan_mac(macBuf);
+	burnmacval++;
+	sprintf(output,"%c%c%c%c%08x",str[0],str[1],str[2],str[3],burnmacval);
+	sscanf(output,"%02x%02x%02x%02x%02x%02x",&macBuf[0],&macBuf[1],&macBuf[2],&macBuf[3],&macBuf[4],&macBuf[5]);
+	flash_write_wan_mac(macBuf);
+	system("ralink_init clear 2860");
+	system("ralink_init renew 2860 /etc_ro/Wireless/RT2860AP/RT2860_default_vlan");
+    #endif
+	websWrite(wp, T("HTTP/1.0 200 OK\n"));
+	websWrite(wp, T("Server: %s\r\n"), WEBS_NAME);
+	websWrite(wp, T("Pragma: no-cache\n"));
+	websWrite(wp, T("Cache-control: no-cache\n"));
+	websWrite(wp, T("Content-Type: text/html\n"));
+	websWrite(wp, T("\n"));
+	websWrite(wp, T("<html>\n<head>\n"));
+	websWrite(wp, T("<title>My Title</title>"));
+	websWrite(wp, T("</head>\n<body>\n"));
+	websWrite(wp, T("Write OK\n"));
+	websFooter(wp);
+	websDone(wp, 200);
+	//websWrite(wp, T("<h2>TRY OK</h2><br>\n"));
+	//websFooter(wp);
+	Sleep(3);
+	system("reboot");
+	
+}
+
+
 /*
  * goform/setSysLang
  */
@@ -1318,6 +1372,7 @@ void formDefineManagement(void)
 	websFormDefine(T("setSysLang"), setSysLang);
 	websFormDefine(T("NTP"), NTP);
 	websFormDefine(T("AppWantTry"), appWantTry); //by luotao for try
+	websFormDefine(T("AppWantWriteMac"), appWantWriteMac); //by luotao for try
 #ifdef CONFIG_DATE
 	websFormDefine(T("NTPSyncWithHost"), NTPSyncWithHost);
 #endif

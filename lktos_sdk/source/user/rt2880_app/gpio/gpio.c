@@ -704,6 +704,44 @@ void gpio_set_usbled(int argc, char *argv[])
 	
 }
 
+void gpio_set_gpio22(int argc, char *argv[])
+{
+	int fd;
+	int ledon=0;
+	int rData=0;
+	fd = open(GPIO_DEV, O_RDONLY);
+	if (fd < 0) {
+		perror(GPIO_DEV);
+		return;
+	}
+	if (ioctl(fd, RALINK_GPIO2722_SET_DIR_OUT, 1<<0) < 0) {
+		perror("ioctl");
+		close(fd);
+		return;
+	}
+	if (ioctl(fd, RALINK_GPIO2722_READ, &rData) < 0) {
+		perror("ioctl");
+		close(fd);
+		return -1;
+	}
+	ledon = atoi(argv[2]);
+	if(ledon)
+	{
+		rData=rData | 1<<0;
+	}
+	else
+	{
+		rData=rData & (~(1<<0));
+	}
+	if (ioctl(fd, RALINK_GPIO2722_WRITE, rData) < 0) {
+		perror("ioctl");
+		close(fd);
+		return -1;
+	}
+	close(fd);
+	
+}
+
 void gpio_set_gpio_out_control(int argc, char *argv[])
 {
 	int fd;
@@ -754,6 +792,50 @@ void gpio_set_gpio_out_control(int argc, char *argv[])
 	
 }
 
+
+void gpio_set_gpio_led_control(int argc, char *argv[])
+{
+	int fd;
+	int ledon=0;
+	int rData=0;
+	int gpioId=7;
+	gpioId = atoi(argv[2]);
+	fd = open(GPIO_DEV, O_RDONLY);
+	if (fd < 0) {
+		perror(GPIO_DEV);
+		return;
+	}
+	if (ioctl(fd, RALINK_GPIO_SET_DIR_OUT, 1<<gpioId) < 0) {
+		perror("ioctl");
+		close(fd);
+		return;
+	}
+	if (ioctl(fd, RALINK_GPIO_READ, &rData) < 0) {
+		perror("ioctl");
+		close(fd);
+		return -1;
+	}
+	printf("\r\nbefore=%0x",rData);
+	ledon = atoi(argv[3]);
+	if(ledon)
+	{
+		rData=rData | 1<<gpioId;
+		
+	}
+	else
+	{
+		rData=rData & (~(1<<gpioId));
+	
+	}
+	printf("\r\nafter=%0x\r\n",rData);
+	if (ioctl(fd, RALINK_GPIO_WRITE, rData) < 0) {
+		perror("ioctl");
+		close(fd);
+		return -1;
+	}
+	close(fd);
+	
+}
 
 void gpio_get_g3switch(int argc, char *argv[])
 {
@@ -817,6 +899,11 @@ int main(int argc, char *argv[])
 			usage(argv[0]);
 		gpio_set_usbled(argc, argv);
 		break;
+	case 't':
+		if (argc != 3)
+			usage(argv[0]);
+		gpio_set_gpio22(argc, argv);
+		break;
 	case 'g':
 		gpio_get_g3switch(argc,argv);
 		break;
@@ -824,6 +911,11 @@ int main(int argc, char *argv[])
 		if (argc != 4)
 			usage(argv[0]);
 		gpio_set_gpio_out_control(argc, argv);
+		break;
+	case 'k'://luo
+		if (argc != 4)
+			usage(argv[0]);
+		gpio_set_gpio_led_control(argc, argv);
 		break;
 	default:
 		usage(argv[0]);
