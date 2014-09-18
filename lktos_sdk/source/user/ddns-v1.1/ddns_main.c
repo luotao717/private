@@ -32,7 +32,7 @@ int main(int argc,char *argv[])
 {
 	struct userInfo_cxy info;
 	int ret;
-	if(argc!=7 && argc!=11)	{
+	if(argc!=6 && argc!=11)	{
 		usage();
 		return -1;
 	}
@@ -46,8 +46,8 @@ int main(int argc,char *argv[])
 	strcpy(info.host, argv[3]);
 	strcpy(info.usrname, argv[4]);
 	strcpy(info.usrpwd, argv[5]);
-	info.ip=inet_addr(argv[6]);
-	SYS_wan_ip=inet_addr(argv[6]);
+	//info.ip=inet_addr(argv[6]);
+	//SYS_wan_ip=inet_addr(argv[6]);
 	//printf("info.ip=%d\n", info.ip);
 	//printf("SYS_wan_ip=%d\n", SYS_wan_ip);
 

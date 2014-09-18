@@ -57,6 +57,17 @@ static struct service_cxy QDNS_service = {
 	QDNS_REQUEST
 };
 
+int IVT_update_entry(struct userInfo_cxy *info);
+
+static struct service_cxy IVT_service = {
+	IVT_NAME,
+	IVT_update_entry,
+	IVT_DEFAULT_SERVER,
+	IVT_DEFAULT_PORT,
+	IVT_REQUEST
+};
+
+
 int ORAY_update_entry(struct userInfo_cxy *info);
 static struct service_cxy ORAY_service = {
 	ORAY_NAME,
@@ -117,6 +128,7 @@ static struct service_cxy CHANGEIP_service = {
 static struct service_cxy *service_list[]={
 	&DYNDNS_service,
 	&QDNS_service,
+	&IVT_service,
 	&ORAY_service,
 #if 0
 	&M88IP_service,
@@ -381,6 +393,160 @@ int DYNDNS_update_entry(struct userInfo_cxy *info)
 	}
 	
 	len = sprintf(bp, "wildcard=%s&", info->wildcard ? "ON" : "OFF");
+	bp += len;
+ 	
+	if(*(info->mx) != '\0')
+	{
+		len = sprintf(bp, "mx=%s&", info->mx);
+		bp += len;
+	}
+
+	len = sprintf(bp,	" HTTP/1.0\r\n"
+ 						"Authorization: Basic %s\r\n"
+ 						"User-Agent: %s\r\n"
+ 						"Host: %s\r\n\r\n",
+ 						auth,
+						DEVICE_NAME,
+						info->service->default_server);
+ 						
+	bp += len;	
+	*bp = '\0';	
+	
+	output(fd, buf);
+	printf("\r\nsendmessage:\r\n%s",buf);
+	bp = buf;
+	bytes = 0;
+	btot = 0;
+	while((bytes=read_input(fd, bp, BUFFER_SIZE-btot)) > 0)
+	{
+		bp += bytes;
+		btot += bytes;
+	}
+	close(fd);
+	buf[btot] = '\0';
+	printf("\r\n%s\r\n",buf);
+	if(sscanf(buf, " HTTP/1.%*c %3d", &ret) != 1)
+	{
+		ret = -1;
+	}
+
+	switch(ret)
+	{
+	case -1:
+		printf("strange server response, are you connecting to the right server?\n");
+		retval = UPDATERES_ERROR;
+		break;
+
+	case 200:
+		if(strstr(buf, "\ngood ") != NULL)
+		{
+			retval = UPDATERES_OK;
+		}
+		else
+		{
+			if(strstr(buf, "\nnohost") != NULL)
+			{
+				printf("invalid hostname\n");
+				retval = UPDATERES_SHUTDOWN;
+			}
+			else if(strstr(buf, "\nnotfqdn") != NULL)
+			{
+				printf("malformed hostname\n");
+				retval = UPDATERES_SHUTDOWN;
+			}
+			else if(strstr(buf, "\n!yours") != NULL)
+			{
+				printf("host is not under your control\n");
+				retval = UPDATERES_SHUTDOWN;
+			}
+			else if(strstr(buf, "\nabuse") != NULL)
+			{
+				printf("host has been blocked for abuse\n");
+				retval = UPDATERES_SHUTDOWN;
+			}
+			else if(strstr(buf, "\nnochg") != NULL)
+			{
+				printf("your IP address has not changed since the last update\n");
+				retval = UPDATERES_OK;
+			}
+			else if(strstr(buf, "\nbadauth") != NULL)
+			{
+				printf("authentication failure\n");
+				retval = UPDATERES_SHUTDOWN;
+			}
+			else if(strstr(buf, "\nbadsys") != NULL)
+			{
+				printf("invalid system parameter\n");
+				retval = UPDATERES_SHUTDOWN;
+			}
+			else if(strstr(buf, "\nbadagent") != NULL)
+			{
+				printf("this useragent has been blocked\n");
+				retval = UPDATERES_SHUTDOWN;
+			}
+			else if(strstr(buf, "\nnumhost") != NULL)
+			{
+				printf("Too many or too few hosts found\n");
+				retval = UPDATERES_SHUTDOWN;
+			}
+			else if(strstr(buf, "\ndnserr") != NULL)
+			{
+				printf("dyndns internal error\n");
+				retval = UPDATERES_ERROR;
+			}
+			else
+			{
+				printf("error processing request\n");
+				retval = UPDATERES_ERROR;
+			}
+		}
+		break;
+
+	case 401:
+		printf("authentication failure\n");
+		retval = UPDATERES_SHUTDOWN;
+		break;
+
+	default:
+		retval = UPDATERES_ERROR;
+		break;
+	}
+	
+error:
+	free(buf);
+	return retval;
+}
+
+int IVT_update_entry(struct userInfo_cxy *info)
+{
+	char *buf, *bp;
+	int bytes, btot, ret, fd, len;
+	int retval = UPDATERES_ERROR;
+	char user[64], auth[64];
+
+	len = sprintf(user,"%s:%s", info->usrname , info->usrpwd);
+	base64_encode(user, len, auth, 64);
+	
+	buf = (char *)malloc(BUFFER_SIZE);
+	if (buf == 0)
+		return UPDATERES_ERROR;
+	
+	bp = buf;
+	
+	if(do_connect(&fd, info->service->default_server, info->service->default_port) != 0)
+	{
+		printf("\r\nerror connecting to %s:%d\n", info->service->default_server, info->service->default_port);
+		retval = UPDATERES_ERROR;
+		goto error;
+	}
+	
+	len = sprintf(bp, "GET %s?weixinNo=%s&", info->service->default_request,info->host);
+	bp += len;
+	
+	len = sprintf(bp, "clientMac=%s&", info->usrname);
+	bp += len;
+	
+	len = sprintf(bp, "xMac=%s&", info->usrpwd);
 	bp += len;
  	
 	if(*(info->mx) != '\0')

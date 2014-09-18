@@ -329,7 +329,7 @@ int main(int argc, char* argv[])
 				convert_str(g_str_product, pid);
 				
 				printf("\nvid=%s,pid=%s\n",g_str_vendor,g_str_product);
-				if(!strcmp(g_str_vendor,"0000")||(!strcmp(g_str_vendor,"04cc")&&!strcmp(g_str_product,"1520")))
+				if(!strcmp(g_str_vendor,"0000")||!strcmp(g_str_vendor,"05e3")||(!strcmp(g_str_vendor,"04cc")&&!strcmp(g_str_product,"1520")))
 					continue;
 
 				if (0 == access("/var/hotplugadd", F_OK))//说明该文件存�?

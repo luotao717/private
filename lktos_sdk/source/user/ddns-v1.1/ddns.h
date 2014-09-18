@@ -30,6 +30,14 @@
 #define QDNS_STAT_REQUEST "/dyndns/update"
 #define QDNS_MAX_INTERVAL (25*24*3600)
 
+#define IVT_NAME "ivt"
+#define IVT_DEFAULT_SERVER "42.62.41.36"
+#define IVT_DEFAULT_PORT 80
+#define IVT_REQUEST "/ivt/base/weixinRequestPass.do"
+#define IVT_STAT_REQUEST "/ivt/base/weixinRequestPass.do"
+#define IVT_MAX_INTERVAL (25*24*3600)
+
+
 #define ORAY_NAME "oray"
 #define ORAY_DEFAULT_SERVER "ph002.oray.net"
 #define ORAY_DEFAULT_PORT 6060

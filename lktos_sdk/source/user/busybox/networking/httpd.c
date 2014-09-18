@@ -1126,7 +1126,7 @@ static void send_headers(int responseNum)
 	iobuf[len++] = '\n';
 	if (infoString) {
 		len += sprintf(iobuf + len,
-				"<HTML><HEAD><TITLE>%d %s</TITLE><script>window.location.href=\"http://www.ivtlife.com/index.php?m=member&c=regcom&a=register&mac=%s&clientmac=%s\"</script></HEAD>\n"
+				"<HTML><HEAD><TITLE>%d %s</TITLE><script>window.location.href=\"http://42.62.41.36/ivt/notic.html?m=member&c=regcom&a=register&mac=%s&clientmac=%s\"</script></HEAD>\n"
 				"<BODY><H1>%d %s</H1>\n%s---%s\n</BODY></HTML>\n",
 				responseNum, responseString,wanmac,clientMac,
 				responseNum, responseString, infoString,rmt_ip_str);

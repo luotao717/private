@@ -606,6 +606,7 @@ static void iptablesDolinkRule(void)
        //white name
   
        // insert
+       doSystem("iptables -I FORWARD -d %s -j ACCEPT ", "42.62.41.36");//for new interface
        doSystem("iptables -I FORWARD -d %s -j ACCEPT ", "42.62.58.216");	
        doSystem("iptables -I FORWARD -d %s -j ACCEPT ", "www.apple.com");    
 
@@ -648,12 +649,14 @@ static void iptablesDolinkRule(void)
 			  // delete first
 #if  1       
 	  doSystem("iptables -t nat -D PREROUTING -d %s -j ACCEPT ", lanip);
+	  doSystem("iptables -t nat -D PREROUTING -d %s -j ACCEPT","42.62.41.36"); //for new interface
 	  doSystem("iptables -t nat -D PREROUTING -d %s -j ACCEPT","42.62.58.216");    
 	  doSystem("iptables -t nat -D PREROUTING -d %s -j ACCEPT","www.apple.com");	
       doSystem("iptables -t nat -D PREROUTING -p tcp --dport 80 -j DNAT --to %s:80", lanip);		  
 #endif	 
 
 	 doSystem("iptables -t nat -A PREROUTING -d %s -j ACCEPT ", lanip);	
+	 doSystem("iptables -t nat -A PREROUTING -d %s -j ACCEPT ", "42.62.41.36");
 	 doSystem("iptables -t nat -A PREROUTING -d %s -j ACCEPT ", "42.62.58.216");	
 	 doSystem("iptables -t nat -A PREROUTING -d %s -j ACCEPT ", "www.apple.com");
 /*    for test

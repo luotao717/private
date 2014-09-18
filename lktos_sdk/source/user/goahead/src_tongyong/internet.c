@@ -64,6 +64,7 @@ static int getL2TPBuilt(int eid, webs_t wp, int argc, char_t **argv);
 
 
 static int getDhcpCliList(int eid, webs_t wp, int argc, char_t **argv);
+static int getWeixinCliList(int eid, webs_t wp, int argc, char_t **argv);
 static int getDns(int eid, webs_t wp, int argc, char_t **argv);
 static int getHostSupp(int eid, webs_t wp, int argc, char_t **argv);
 static int getIfLiveWeb(int eid, webs_t wp, int argc, char_t **argv);
@@ -126,6 +127,7 @@ void ripdRestart(void);
 
 void formDefineInternet(void) {
 	websAspDefine(T("getDhcpCliList"), getDhcpCliList);
+	websAspDefine(T("getWeixinCliList"), getWeixinCliList);
 	websAspDefine(T("getDns"), getDns);
 	websAspDefine(T("getHostSupp"), getHostSupp);
 	websAspDefine(T("getIfLiveWeb"), getIfLiveWeb);
@@ -565,6 +567,35 @@ static int getDhcpCliList(int eid, webs_t wp, int argc, char_t **argv)
 	fclose(fp);
 	return 0;
 }
+
+static int getWeixinCliList(int eid, webs_t wp, int argc, char_t **argv)
+{
+	char weixinNo[64]={0};
+	char clientMac[32]={0};
+	int passtime=0;
+	int i=0;
+	FILE *irqFp=NULL;
+	char buf[1024] = {0};
+	
+	irqFp=fopen("/var/tempclientweixininfoAll","r");
+	if(irqFp != NULL)
+    {
+		while (fgets(buf, sizeof(buf), irqFp) != NULL) 
+		{		
+			sscanf(buf,"%s %s",clientMac,weixinNo);						
+			websWrite(wp, T("<tr align=center><td>%s</td>\n"), weixinNo);
+			websWrite(wp, T("<td>%s</td></tr>\n"), clientMac);	
+		}
+        fclose(irqFp);
+	}
+	else
+	{
+		return websWrite(wp, T(""));
+	}
+
+	return 0;
+}
+
 
 /*
  * arguments: type - 1 = write Primary DNS

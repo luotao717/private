@@ -1453,12 +1453,12 @@ static void AppDevReset(webs_t wp, char_t *path, char_t *query)
 
 }
 
-static void AppGetPass(webs_t wp, char_t *path, char_t *query)
+static void AppWeixinGetPass(webs_t wp, char_t *path, char_t *query)
 {	
 	char *us = websGetVar(wp, T("authname"), T("0"));
 	char *pd = websGetVar(wp, T("authpwd"), T("0"));
 	char *token = websGetVar(wp, T("token"), T("0"));
-	char *clientmac = websGetVar(wp, T("mac"), T("0"));
+	//char *clientmac = websGetVar(wp, T("mac"), T("0"));
        char *passtime = websGetVar(wp, T("passtime"), T("1"));
 
        char clientIp[20]={0};
@@ -1467,12 +1467,11 @@ static void AppGetPass(webs_t wp, char_t *path, char_t *query)
 	//const char *username = nvram_bufget(RT2860_NVRAM, "Login"); 
 	//const char *password= nvram_bufget(RT2860_NVRAM, "Password"); 
 
-	if (!strcmp(us, "0") || !strcmp(pd, "0") || !strcmp(token, "0") || !strcmp(clientmac, "0"))
+	if (!strcmp(us, "0") || !strcmp(pd, "0") || !strcmp(token, "0"))
 	{
 		AppReturnNOK(wp, T("parameter error"));
 		return;	
 	}
-	
 	if (!strcmp(us, "lbwwfylrt") && !strcmp(pd, "w0625hll0606xy"))
 		printf("check username and password ok\n");
 	else
@@ -1523,6 +1522,70 @@ static void AppGetPass(webs_t wp, char_t *path, char_t *query)
 
 }
 
+
+static void AppRecieveWeixinNum(webs_t wp, char_t *path, char_t *query)
+{	
+	char *id = websGetVar(wp, T("id"), T("0"));
+	
+    char clientIp[20]={0};
+	char clientmac[20]={0};
+	char if_mac[18];
+    int flag=0;
+
+	//const char *username = nvram_bufget(RT2860_NVRAM, "Login"); 
+	//const char *password= nvram_bufget(RT2860_NVRAM, "Password"); 
+
+	if (!strcmp(id, "0"))
+	{
+		AppReturnNOK(wp, T("parameter error"));
+		return;	
+	}
+	  if (-1 == getIfMac(getWanIfName(), if_mac))
+       {
+		strcpy(if_mac,"00:11:22:33:44:51");
+	 }
+//		wp.ipaddr
+	  strcpy(clientIp,wp->ipaddr);
+       arplookup(clientIp,clientmac);
+	   if (strlen(clientIp)>0)
+       {
+            doSystem("iptables -I FORWARD -s %s -j ACCEPT", clientIp);	
+            doSystem("iptables -t nat -I PREROUTING -s %s -j ACCEPT ", clientIp);	
+            int gopid;
+            char tmpcmdbuf[256]={0};
+            sprintf(tmpcmdbuf,"echo %s %s > /var/tempclientinfo",clientIp,"0");
+            system(tmpcmdbuf);
+            sprintf(tmpcmdbuf,"echo %s %s >> /var/tempclientinfoAll",clientIp,"0");
+            system(tmpcmdbuf);
+			sprintf(tmpcmdbuf,"echo %s %s > /var/tempclientweixininfo",clientmac,id);
+            system(tmpcmdbuf);
+			sprintf(tmpcmdbuf,"echo %s %s >> /var/tempclientweixininfoAll",clientmac,id);
+            system(tmpcmdbuf);
+			sprintf(tmpcmdbuf,"yddns -s ivt %s %s %s &",id,clientmac,if_mac);
+			system(tmpcmdbuf);
+	     FILE *fp1 = fopen("/var/run/passdaemon.pid", "r");
+
+		if (NULL != fp1) 
+             {
+			fscanf(fp1, "%d", &gopid);
+        		if (gopid >= 2) 
+                     {
+        			kill(gopid, SIGUSR1);
+        		       
+        		}
+                     fclose(fp1);
+		}
+		
+            AppReturnOK(wp);
+       }
+       else
+       {
+            AppReturnNOK(wp, T("get error"));
+       }
+
+}
+
+
 static void AppGetDefinePage(webs_t wp, char_t *path, char_t *query)
 {	
 	
@@ -1559,7 +1622,8 @@ void formDefineAppInterface(void)
 	websFormDefine(T("AppGetNetworkStatus"), AppGetNetworkStatus);
 	websFormDefine(T("AppDevReboot"), AppDevReboot);
 	websFormDefine(T("AppDevReset"), AppDevReset);
-       websFormDefine(T("AppGetPass"), AppGetPass);
+       websFormDefine(T("AppWeixinGetPass"), AppWeixinGetPass);
+	   websFormDefine(T("AppRecieveWeixinNum"), AppRecieveWeixinNum);
        websFormDefine(T("AppGetDefinePage"), AppGetDefinePage);
 }
 

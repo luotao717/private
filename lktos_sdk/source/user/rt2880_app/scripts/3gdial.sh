@@ -32,11 +32,19 @@ check_usb
 dial3gmode=`nvram_get 2860 dial3gchoicetype`
 
 if [ "$dial3gmode" != "MANUAL" ]; then
-	3gdial 0
+	3gdial 0 &
 else
-	3gdial 1
+	3gdial 1 &
 fi
 
 
 rmmod ehci-hcd.ko
+rmohcimod_daemon &
+#rmmod ohci-hcd.ko
+#sleep 3
+#insmod ohci-hcd.ko
+#sleep 8
+#rmmod ohci-hcd.ko
+#sleep 3
+#insmod ohci-hcd.ko
 exit 0
