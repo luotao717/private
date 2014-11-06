@@ -1723,22 +1723,51 @@ static void wirelessAdvanced(webs_t wp, char_t *path, char_t *query)
 
 	nvram_commit(RT2860_NVRAM);
 
-#if defined(CONFIG_RALINK_MT7620)
-	doSystem("lktos_wificonfig mtk7620 init");
-#else
-	doSystem("lktos_wificonfig ra5350 init");
+//#if defined(CONFIG_RALINK_MT7620)
+	//doSystem("lktos_wificonfig mtk7620 init");
+//#else
+	//doSystem("lktos_wificonfig ra5350 init");
 	//initInternet();
-#endif
+//#endif
 
+	const char	*langType = nvram_bufget(RT2860_NVRAM, "LanguageType");
 
-#if defined (RT2860_IGMPSNOOP_SUPPORT)
-	if (!strncmp(m2u_enable, "1", 2))
-		doSystem("iwpriv ra0 set IgmpSnEnable=1");
-	else
-		doSystem("iwpriv ra0 set IgmpSnEnable=0");
-#endif
+	a_assert(websValid(wp));
 
-	websRedirect(wp, submitUrl);
+	websWrite(wp, T("HTTP/1.0 200 OK\n"));
+
+/*
+ *	By license terms the following line of code must not be modified
+ */
+	websWrite(wp, T("Server: %s\r\n"), WEBS_NAME);
+
+	websWrite(wp, T("Pragma: no-cache\n"));
+	websWrite(wp, T("Cache-control: no-cache\n"));
+	websWrite(wp, T("Content-Type: text/html\n"));
+	websWrite(wp, T("\n"));
+	websWrite(wp, T("<html>\n<head>\n"));
+	websWrite(wp, T("<title>My Title</title>\n"));
+	websWrite(wp, T("<link rel=\"stylesheet\" href=\"/style/normal_ws.css\" type=\"text/css\">\n"));
+	websWrite(wp, T("<meta http-equiv=\"content-type\" content=\"text/html;charset=utf-8\">\n"));
+	websWrite(wp, T("<script language=\"javascript\" src=\"../js/language_%s.js\"></script>\n"),langType);
+
+	websWrite(wp, T("<script language=\"javascript\">\n\
+		function refresh_all(){	\n\
+		  top.location.href = \"http://%s/home.asp\"; \n\
+		} \n\
+		function update(){ \n\
+		  self.setTimeout(\"refresh_all()\", 40000);\n\
+		}\n</script>\n"), lan_ipaddr);	
+	websWrite(wp, T("</head>\n<body onload=\"update()\">\n"));
+	websWrite(wp, T("<blockquote>\n"));
+	websWrite(wp, T("<br><b><script>dw(MM_set_wizard_ok)</script></b>\n"));
+	websWrite(wp, T("</blockquote>\n"));
+	websWrite(wp, T("</body>\n</html>\n"));
+
+	sleep(3);
+	doSystem("reboot");
+
+	//websRedirect(wp, submitUrl);
 }
 
 #if	defined (RT2860_WDS_SUPPORT)
