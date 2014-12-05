@@ -56,6 +56,7 @@ if [ "$wanmode" = "STATIC" -o "$opmode" = "0" ]; then
 		ip=`nvram_get 2860 lan_ipaddr`
 		nm=`nvram_get 2860 lan_netmask`
 	fi
+	echo downRx 1 > /proc/ipport_netspy
 	ifconfig $wan_if $ip netmask $nm
 	route del default
 	if [ "$gw" != "" ]; then

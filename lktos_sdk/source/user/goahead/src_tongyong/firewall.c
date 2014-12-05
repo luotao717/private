@@ -327,6 +327,7 @@ static void iptablesAllFilterClear(void)
 	iptablesMaliciousFilterClear();
 
 	doSystem("iptables -P INPUT ACCEPT");
+	//doSystem("iptables -P INPUT DROP");
 	doSystem("iptables -P OUTPUT ACCEPT");
 	doSystem("iptables -P FORWARD ACCEPT");
 }
@@ -2882,8 +2883,8 @@ void firewall_init(void)
 	doSystem("iptables -t filter -N %s 1>/dev/null 2>&1", IPPORT_FILTER_CHAIN);
 	doSystem("iptables -t filter -N %s 1>/dev/null 2>&1", MALICIOUS_FILTER_CHAIN);
 	doSystem("iptables -t filter -N %s 1>/dev/null 2>&1", SYNFLOOD_FILTER_CHAIN);
-	doSystem("iptables -t filter -N %s 1>/dev/null 2>&1", MALICIOUS_INPUT_FILTER_CHAIN);
-	doSystem("iptables -t filter -N %s 1>/dev/null 2>&1", SYNFLOOD_INPUT_FILTER_CHAIN);
+	//doSystem("iptables -t filter -N %s 1>/dev/null 2>&1", MALICIOUS_INPUT_FILTER_CHAIN);
+	//doSystem("iptables -t filter -N %s 1>/dev/null 2>&1", SYNFLOOD_INPUT_FILTER_CHAIN);
 
 	doSystem("iptables -t filter -A FORWARD -j %s 1>/dev/null 2>&1", WEB_FILTER_CHAIN);
 	doSystem("iptables -t filter -A FORWARD -j %s 1>/dev/null 2>&1", IPPORT_FILTER_CHAIN);
@@ -2904,6 +2905,7 @@ void firewall_init(void)
 	iptablesAllNATRun();
 
 	doSystem("vpn-passthru.sh");	//add by chenfei
+	doSystem("echo downRx 0 > /proc/ipport_netspy");
 }
 
 void firewall_fini(void)

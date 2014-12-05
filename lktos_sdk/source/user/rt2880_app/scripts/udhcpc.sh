@@ -17,6 +17,7 @@ case "$1" in
         ;;
 
     renew|bound)
+    		echo downRx 1 > /proc/ipport_netspy
         /sbin/ifconfig $interface $ip $BROADCAST $NETMASK
 
         if [ -n "$router" ] ; then

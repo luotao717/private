@@ -421,6 +421,7 @@ static int ralinkWanInit(T_LKTOS_INITCONFIG_PLATFORM_TYPE_ platform,unsigned wan
 
 	if(!strncmp(wanModeStr,"STATIC",6))
 	{
+		system("echo downRx 1 > /proc/ipport_netspy");
 		sprintf(cmdBuf,"ifconfig %s %s netmask %s",wanIfName,nvram_bufget(ralinkMode, "wan_ipaddr"),nvram_bufget(ralinkMode, "wan_netmask"));
 		system(cmdBuf);
 		system("route del default");

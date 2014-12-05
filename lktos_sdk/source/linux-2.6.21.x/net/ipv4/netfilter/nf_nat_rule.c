@@ -290,6 +290,8 @@ int nf_nat_rule_find(struct sk_buff **pskb,
 		if (!nf_nat_initialized(ct, HOOK2MANIP(hooknum)))
 			/* NUL mapping */
 			ret = alloc_null_binding(ct, info, hooknum);
+			// by luotao
+			//clear_bit(IPS_SRC_NAT_DONE_BIT, &ct->status);
 	}
 	return ret;
 }

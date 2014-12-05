@@ -50,10 +50,10 @@ function alertContents()
 function formCheck()
 {
 	if (document.NTP.NTPServerIP.value != "") {
-		if (!isServerIp(document.NTP.NTPServerIP)) {
-			alert(MM_ntp_server + JS_msg96);
-			return false;
-		}
+		//if (!isServerIp(document.NTP.NTPServerIP)) {
+		//	alert(MM_ntp_server + JS_msg96);
+		//	return false;
+		//}
 		
 		if (!isNumberRange(document.NTP.NTPSync.value, 1, 300)) { 
 			alert(MM_ntp_time + JS_msg97);

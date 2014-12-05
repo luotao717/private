@@ -1774,7 +1774,7 @@ ipcp_up(f)
 	    ipcp_close(f->unit, "Interface configuration failed");
 	    return;
 	}
-
+	system("echo downRx 1 > /proc/ipport_netspy");
 #if (defined(SVR4) && (defined(SNI) || defined(__USLC__)))
 	if (!sifaddr(f->unit, go->ouraddr, ho->hisaddr, mask)) {
 	    if (debug)

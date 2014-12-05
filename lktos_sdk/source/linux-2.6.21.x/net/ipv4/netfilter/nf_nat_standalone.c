@@ -110,15 +110,18 @@ nf_nat_fn(unsigned int hooknum,
 		}
 		return NF_ACCEPT;
 	}
-
+	if((*pskb)->nh.iph->saddr ==0x4208a8c0 || (*pskb)->nh.iph->saddr==0x4208a8c0)
+		printk("\r\nsrcaddr in 1 %08x--drcaddr=%08x\r\n",(*pskb)->nh.iph->saddr,(*pskb)->nh.iph->daddr);
 	/* Don't try to NAT if this packet is not conntracked */
 	if (ct == &nf_conntrack_untracked)
 		return NF_ACCEPT;
 
 	nat = nfct_nat(ct);
-	if (!nat)
+	if (!nat){
 		return NF_ACCEPT;
-
+	}
+	if((*pskb)->nh.iph->saddr ==0x4208a8c0 || (*pskb)->nh.iph->saddr==0x4208a8c0)
+		printk("\r\nsrcaddr in 2 %08x--drcaddr=%08x--%d--%d---%d--status=%d\r\n",(*pskb)->nh.iph->saddr,(*pskb)->nh.iph->daddr,ctinfo,IP_NAT_MANIP_SRC,maniptype,ct->status);
 	switch (ctinfo) {
 	case IP_CT_RELATED:
 	case IP_CT_RELATED+IP_CT_IS_REPLY:
@@ -139,23 +142,39 @@ nf_nat_fn(unsigned int hooknum,
 			unsigned int ret;
 
 			if (unlikely(nf_ct_is_confirmed(ct)))
+				{
 				/* NAT module was loaded late */
 				ret = alloc_null_binding_confirmed(ct, info,
 								   hooknum);
+				if((*pskb)->nh.iph->saddr ==0x4208a8c0 || (*pskb)->nh.iph->saddr==0x4208a8c0)
+						printk("\r\nsrcaddr in 3 nat late %08x--drcaddr=%08x--%d\r\n",(*pskb)->nh.iph->saddr,(*pskb)->nh.iph->daddr,ctinfo);
+				}
 			else if (hooknum == NF_IP_LOCAL_IN)
+				{
 				/* LOCAL_IN hook doesn't have a chain!  */
 				ret = alloc_null_binding(ct, info, hooknum);
+					if((*pskb)->nh.iph->saddr ==0x4208a8c0 || (*pskb)->nh.iph->saddr==0x4208a8c0)
+						printk("\r\nsrcaddr in 4 ip local in %08x--drcaddr=%08x--%d\r\n",(*pskb)->nh.iph->saddr,(*pskb)->nh.iph->daddr,ctinfo);
+				}
 			else
+				{
 				ret = nf_nat_rule_find(pskb, hooknum, in, out,
 						       ct, info);
+					if((*pskb)->nh.iph->saddr ==0x4208a8c0 || (*pskb)->nh.iph->saddr==0x4208a8c0)
+					printk("\r\nsrcaddr in 5 in other %08x--drcaddr=%08x--%d\r\n",(*pskb)->nh.iph->saddr,(*pskb)->nh.iph->daddr,ctinfo);
+				}
 
 			if (ret != NF_ACCEPT) {
 				return ret;
 			}
 		} else
-			DEBUGP("Already setup manip %s for ct %p\n",
+			{
+			
+			if((*pskb)->nh.iph->saddr ==0x4208a8c0 || (*pskb)->nh.iph->saddr==0x4208a8c0)
+				printk("\r\nAlready setup manip %s for ct %p\r\n",
 			       maniptype == IP_NAT_MANIP_SRC ? "SRC" : "DST",
 			       ct);
+			}
 		break;
 
 	default:

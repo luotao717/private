@@ -31,7 +31,7 @@ function deleteClick()
 
 function formCheck()
 {
-	if (rules_num >= 10){
+	if (rules_num >= 30){
 		alert(JS_msg22);
 		return false;
 	}

@@ -148,6 +148,14 @@
  *		86DD	IPv6
  */
 
+#if 1
+//added by luotao for netspy ipport mode
+#include <linux/netspy_proc.h>
+extern T_NETSPY_IPPORT_FCTL_p pNetSpy_data;
+#endif
+
+
+
 static DEFINE_SPINLOCK(ptype_lock);
 static struct list_head ptype_base[16];	/* 16 way hashed list */
 static struct list_head ptype_all;		/* Taps */
@@ -1579,6 +1587,13 @@ int netif_rx(struct sk_buff *skb)
 {
 	struct softnet_data *queue;
 	unsigned long flags;
+
+	
+	/* by luotao for down the switch rx*/
+	if(pNetSpy_data->downSwitchRx)
+	{
+		return NET_RX_DROP;
+	}
 
 	/* if netpoll wants it, pretend we never saw it */
 	if (netpoll_rx(skb))
