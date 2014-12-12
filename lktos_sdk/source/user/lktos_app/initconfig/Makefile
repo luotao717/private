@@ -2,7 +2,7 @@ NVDIR = $(ROOTDIR)/lib/libnvram
 CFLAGS += -I$(NVDIR) 
 LDFLAGS += -lnvram
 LIBNVRAM = $(ROOTDIR)/lib/libnvram/libnvram-0.9.28.so
-EXEC = lktos_networkconfig lktos_wificonfig lktos_initconfig
+EXEC = lktos_networkconfig lktos_wificonfig lktos_initconfig rmohcimod_daemon
 
 
 
@@ -19,6 +19,9 @@ lktos_wificonfig: lktWifiConfig.o wificonfig_main.o
 	
 lktos_initconfig: lktInitConfig.o lktNetworkConfig.o lktWifiConfig.o initconfig_main.o
 
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LDLIBS)
+
+rmohcimod_daemon:rmohcimod_daemon.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LDLIBS)
 
 lktNetworkConfig.o: $(LIBNVRAM)

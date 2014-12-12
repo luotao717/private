@@ -1423,7 +1423,7 @@ static void setFirstPart(void)
 	memset(first_part, 0, sizeof(first_part));
 	while(EOF != fscanf(pp, "%*s %s %*s %*s %*s %*s\n", dir))
 	{
-		if (!memcmp(dir, "/media/sda", 10))
+		if ((!memcmp(dir, "/media/sda", 10)) || (!memcmp(dir, "/media/sdb", 10))|| (!memcmp(dir, "/media/sdc", 10))|| (!memcmp(dir, "/media/sdd", 10)))
 		{
 			fprintf(stderr, "get the first partition: %s\n", dir);
 			getPartitionFlag=1;
