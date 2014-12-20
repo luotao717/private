@@ -141,6 +141,9 @@ dir_$(CONFIG_USER_SNMPD) 		    += snmpd
 dir_$(CONFIG_USER_VMSTAT)		    += procps-3.2.8
 dir_$(CONFIG_LKTOS_INITCONFIG_TOOLS) 		    += lktos_app/initconfig
 dir_y						+= check_ppp_ifr
+dir_y += mini_httpd-1.19
+dir_y   += diyite_downloader
+dir_y   += diyite_updater
 
 #TEST
 dir_$(CONFIG_USER_HELLO_WORLD)		    += hello_world

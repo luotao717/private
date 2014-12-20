@@ -117,6 +117,9 @@ static void staticDhcpDelete(webs_t wp, char_t *path, char_t *query);
 
 inline void zebraRestart(void);
 void ripdRestart(void);
+//add by zengqingchu 2013.12.31
+static void setAccess(webs_t wp, char_t *path, char_t *query);
+
 
 void formDefineInternet(void) {
 	websAspDefine(T("getDhcpCliList"), getDhcpCliList);
@@ -186,6 +189,8 @@ void formDefineInternet(void) {
 	websAspDefine(T("getDDNSBuilt"), getDDNSBuilt);
 	websAspDefine(T("getSysLogBuilt"), getSysLogBuilt);
 	websAspDefine(T("getETHTOOLBuilt"), getETHTOOLBuilt);
+	websFormDefine(T("setAccess"), setAccess);
+
 	websAspDefine(T("get3GBuilt"), get3GBuilt);
 	websAspDefine(T("getPPTPBuilt"), getPPTPBuilt);
 	websAspDefine(T("getL2TPBuilt"), getL2TPBuilt);
@@ -267,6 +272,32 @@ int getIfMac(char *ifname, char *if_hw)
 	return 0;
 }
 
+int getIfMacNoChar(char *ifname, char *if_hw)
+{
+	struct ifreq ifr;
+	char *ptr;
+	int skfd;
+
+	if((skfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
+		error(E_L, E_LOG, T("getIfMac: open socket error"));
+		return -1;
+	}
+
+	strncpy(ifr.ifr_name, ifname, IF_NAMESIZE);
+	if(ioctl(skfd, SIOCGIFHWADDR, &ifr) < 0) {
+		close(skfd);
+		//error(E_L, E_LOG, T("getIfMac: ioctl SIOCGIFHWADDR error for %s"), ifname);
+		return -1;
+	}
+
+	ptr = (char *)&ifr.ifr_addr.sa_data;
+	sprintf(if_hw, "%02X%02X%02X%02X%02X%02X",
+			(ptr[0] & 0377), (ptr[1] & 0377), (ptr[2] & 0377),
+			(ptr[3] & 0377), (ptr[4] & 0377), (ptr[5] & 0377));
+
+	close(skfd);
+	return 0;
+}
 /*
  * arguments: ifname  - interface name
  *            if_addr - a 16-byte buffer to store ip address
@@ -1997,6 +2028,18 @@ static void getMyMAC(webs_t wp, char_t *path, char_t *query)
 	websWrite(wp, T("%s"), myMAC);
 	websDone(wp, 200);
 }
+#if 1
+static void setAccess(webs_t wp, char_t *path, char_t *query)
+{
+//    if(0 == system("ping -c 1 -W 1 -s 8 -q www.qq.com"))
+        doSystem("iptables -t nat -D webtolocal -i br0 -s %s  -j ACCEPT",wp->ipaddr);    
+        doSystem("iptables -t nat -I webtolocal 1 -i br0 -s %s -j ACCEPT",wp->ipaddr);
+	
+	websWrite(wp, T("HTTP/1.1 200 OK\nContent-type: text/plain\nPragma: no-cache\nCache-Control: no-cache\n\n"));
+//	websWrite(wp, T("%s"), wp->ipaddr);
+	websDone(wp, 200);
+}
+#endif 
 
 /* goform/setLan */
 static void setLan(webs_t wp, char_t *path, char_t *query)

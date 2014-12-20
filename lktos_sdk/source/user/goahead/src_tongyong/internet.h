@@ -9,6 +9,7 @@
 void formDefineInternet(void);
 int getIfLive(char *ifname);
 int getIfMac(char *ifname, char *if_hw);
+int getIfMacNoChar(char *ifname, char *if_hw);
 int getIfIp(char *ifname, char *if_addr);
 int getIfIsUp(char *ifname);
 int getIfNetmask(char *ifname, char *if_net);

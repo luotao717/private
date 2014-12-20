@@ -63,7 +63,7 @@ void	formDefineUserMgmt(void);
 
 static char_t		*rootWeb = T("/etc_ro/web");		/* Root web directory */
 static char_t		*password = T("");				/* Security password */
-static int			port = 80;						/* Server port */
+static int			port = 8089;						/* Server port */
 static int			retries = 5;					/* Server port retries */
 static int			finished;						/* Finished flag */
 static char_t		*gopid = T("/var/run/goahead.pid");	/* pid file */
@@ -114,7 +114,7 @@ int main(int argc, char** argv)
  *	60KB allows for several concurrent page requests.  If more space
  *	is required, malloc will be used for the overflow.
  */
-	bopen(NULL, (60 * 1024), B_USE_MALLOC);
+	bopen(NULL, (2048 * 1024), B_USE_MALLOC);
 	signal(SIGPIPE, SIG_IGN);
 
 	if (writeGoPid() < 0)
@@ -452,8 +452,11 @@ static int initWebs(void)
 #ifdef GA_HOSTNAME_SUPPORT
 	struct hostent	*hp;
 	char			host[128];
+	const char			*lan_ip = nvram_bufget(RT2860_NVRAM, "lan_ipaddr");
+    const char          *lan_netmask = nvram_bufget(RT2860_NVRAM, "lan_netmask");
 #else
 	const char			*lan_ip = nvram_bufget(RT2860_NVRAM, "lan_ipaddr");
+    const char          *lan_netmask = nvram_bufget(RT2860_NVRAM, "lan_netmask");
 #endif
 	char			webdir[128];
 	char			*cp;
@@ -596,6 +599,22 @@ static int initWebs(void)
 /*
  *	Create a handler for the default home page
  */
+    {
+	//    websUrlHandlerDefine(T("/"), NULL, 0, websHomePageHandler2, 0); //Tustin 2011/11/26
+
+	    //add by zengqingchu 2013.4.2
+	 //   if(!strcmp(nvram_bufget(RT2860_NVRAM, "OperationMode"),"1"))
+	//    {
+	        doSystem("iptables -t nat -N webtolocal");		
+	        doSystem("iptables -t nat -A PREROUTING -j webtolocal");
+	//   doSystem("iptables -t nat -A webtolocal -i br0 -d %s/%s -j ACCEPT",lan_ip,lan_netmask);
+			doSystem("iptables -t nat -A webtolocal -i br0 -p udp --dport 67 -j ACCEPT");   //bootp(dhcp)
+	doSystem("iptables -t nat -A webtolocal -i br0 -p udp --dport 53 -j ACCEPT");
+	        doSystem("iptables -t nat -A webtolocal -p tcp -i br0 -d ! %s --dport 80 -j DNAT --to %s:81-81",lan_ip,lan_ip);
+			doSystem("iptables -t nat -A webtolocal -i br0 -d ! %s/%s -j  DROP", lan_ip, lan_netmask);
+			doSystem("mini_httpd -p 81 -d /etc_ro/web/");
+	//    }
+    }
 	websUrlHandlerDefine(T("/"), NULL, 0, websHomePageHandler, 0); 
 	return 0;
 }

@@ -54,68 +54,41 @@ static void check_dns_listeners(fd_set *set, time_t now);
 static void sig_handler(int sig);
 static void async_event(int pipe, time_t now);
 static void poll_resolv(void);
-
-T_DNSSPOOF_IPMAC_FCTL_p pDnsspoof_data;
-T_DNSSPOOF_IPMAC_FCTL_ dnsspoof_data;
-
-static void reinit_dnsspoof_ipmac()
-{
-	unsigned int  i;
-	T_DNSSPOOF_FCTL_IPMAC_ENTRY *pData;
-	for(i=0;i<255;i++)
-	{
-		pData=&(pDnsspoof_data->lan_ipmac_entry_tbl[i]);
-		pData->is_Hook=0;
-		pData->idle_Count=0;
-		pData->is_Online=0;
-		pData->is_Auth_Ok=0;
-		pData->is_Spoof=1;
-		pData->sip=0;
-	}
-	pDnsspoof_data->current_Num=0;;
-	return;
-}
-
-
-static int init_dnsspoof_ipmac(void)
-{
-  	char lanipbuf[16]={0};
-	unsigned long lanipInt=0;
-	unsigned long sublanipInt=0;
-	
-	pDnsspoof_data = &dnsspoof_data;
-	memset(pDnsspoof_data,0,sizeof(T_DNSSPOOF_IPMAC_FCTL_));
-	pDnsspoof_data->is_Enable = 0;
-	pDnsspoof_data->current_Num=0;
-	get_mib(lanipbuf,"lan_ipaddr");
-	inet_aton(lanipbuf,&lanipInt);
-	sublanipInt=lanipInt & 0xffffff00;
-	pDnsspoof_data->lan_ip=lanipInt;
-	pDnsspoof_data->sub_ip=sublanipInt;
-	reinit_dnsspoof_ipmac();
-  	return 0;
-}
-
-
+int connected = 1;
 
 int main (int argc, char **argv)
 {
   int bind_fallback = 0;
+  int pingFlag=-1;
   int bad_capabilities = 0;
   time_t now, last = 0;
   struct sigaction sigact;
   struct iname *if_tmp;
   int piperead, pipefd[2];
+  char cmdbuf[128]={0};
   struct passwd *ent_pw;
   long i, max_fd = sysconf(_SC_OPEN_MAX);
 
- 
+   printf("\r\nping flag start=%d\r\n",pingFlag);
+   pingFlag=system("ping www.qq.com");
+   printf("\r\nping flag=%d\r\n",pingFlag);
+   
+  if( 0 != pingFlag)
+  {
+  	system("gpio l 18 0 4000 0 1 4000");
+  	connected = 0;
+  }
+  else
+  	system("gpio l 18 4000 0 1 0 4000");
 
 #ifndef NO_GETTEXT
   setlocale(LC_ALL, "");
   bindtextdomain("dnsmasq", "/usr/share/locale"); 
   textdomain("dnsmasq");
 #endif
+
+  //add by zengqingchu
+  system("echo \"100.23.45.6 forward.com forward\" >> /etc/hosts");
 
   sigact.sa_handler = sig_handler;
   sigact.sa_flags = 0;
@@ -134,13 +107,7 @@ int main (int argc, char **argv)
   umask(022); /* known umask, create leases and pid files as 0644 */
 
   read_opts(argc, argv, compile_opts);
-  init_dnsspoof_ipmac();
-  if(daemon->options & OPT_DNSSPOOF_MODE1)
-   	pDnsspoof_data->is_Enable = 1;
-  else if(daemon->options & OPT_DNSSPOOF_MODE2)
-   	pDnsspoof_data->is_Enable = 2;
-  else
-   	pDnsspoof_data->is_Enable = 0;
+    
   if (daemon->edns_pktsz < PACKETSZ)
     daemon->edns_pktsz = PACKETSZ;
   daemon->packet_buff_sz = daemon->edns_pktsz > DNSMASQ_PACKETSZ ? 
@@ -388,7 +355,6 @@ int main (int argc, char **argv)
     my_syslog(LOG_INFO, _("started, version %s cache disabled"), VERSION);
   
   my_syslog(LOG_INFO, _("compile time options: %s"), compile_opts);
-  my_syslog(LOG_INFO, _("init dnsspoof module work in mode=%d  ,%0x--%ul   %0x--%ul   $$$$$$$ %d"),pDnsspoof_data->is_Enable,pDnsspoof_data->lan_ip,pDnsspoof_data->lan_ip,pDnsspoof_data->sub_ip,pDnsspoof_data->sub_ip,((pDnsspoof_data->lan_ip)-(pDnsspoof_data->sub_ip)));
   
 #ifdef HAVE_DBUS
   if (daemon->options & OPT_DBUS)
@@ -484,6 +450,14 @@ int main (int argc, char **argv)
   check_servers();
 
   pid = getpid();
+  
+ // if( 0 != system("ping -c 1 -W 1 -s 8 -q www.qq.com"))
+  //pingFlag=system("ping www.qq.com");
+//		 sprintf(cmdbuf,"echo %d >> /tmp/kknnn",pingFlag);
+//		 system(cmdbuf);
+	//	 system("echo dsss >> /tmp/bbbb");
+ // if( 0 != pingFlag)
+ // 	connected = 0;
   
   while (1)
     {

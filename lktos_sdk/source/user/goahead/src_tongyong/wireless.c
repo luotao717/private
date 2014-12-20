@@ -77,6 +77,7 @@ static int  getWlan11bChannels(int eid, webs_t wp, int argc, char_t **argv);
 static int  getWlan11gChannels(int eid, webs_t wp, int argc, char_t **argv);
 static int  getWlanChannel(int eid, webs_t wp, int argc, char_t **argv);
 static int  getWlanCurrentMac(int eid, webs_t wp, int argc, char_t **argv);
+static int  getWlanCurrentMacNoChar(int eid, webs_t wp, int argc, char_t **argv);
 static int  getWlanStaInfo(int eid, webs_t wp, int argc, char_t **argv);
 static int	getWAPIASCertList(int eid, webs_t wp, int argc, char_t **argv);
 static int	getWAPIUserCertList(int eid, webs_t wp, int argc, char_t **argv);
@@ -147,6 +148,7 @@ void formDefineWireless(void) {
 	websAspDefine(T("getWlan11gChannels"), getWlan11gChannels);
 	websAspDefine(T("getWlanChannel"), getWlanChannel);
 	websAspDefine(T("getWlanCurrentMac"), getWlanCurrentMac);
+	websAspDefine(T("getWlanCurrentMacNoChar"), getWlanCurrentMacNoChar);
 	websAspDefine(T("getWlanStaInfo"), getWlanStaInfo);
 	websAspDefine(T("getRaxHTStream"), getRaxHTStream);
 	websAspDefine(T("isWPSConfiguredASP"), isWPSConfiguredASP);
@@ -558,6 +560,16 @@ static int getWlanCurrentMac(int eid, webs_t wp, int argc, char_t **argv)
 		return websWrite(wp, T(" "));
 	return websWrite(wp, T("%s"), if_hw);
 }
+
+static int getWlanCurrentMacNoChar(int eid, webs_t wp, int argc, char_t **argv)
+{
+	char if_hw[18] = {0};
+
+	if (-1 == getIfMacNoChar("ra0", if_hw))
+		return websWrite(wp, T(" "));
+	return websWrite(wp, T("%s"), if_hw);
+}
+
 
 typedef struct _RT_802_11_MAC_ENTRY {
 #if 1 //def CONFIG_RT2860V2_AP_V24_DATA_STRUCTURE

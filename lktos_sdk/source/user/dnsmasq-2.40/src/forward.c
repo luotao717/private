@@ -21,7 +21,7 @@ static struct frec *lookup_frec_by_sender(unsigned short id,
 static unsigned short get_id(int force, unsigned short force_id, unsigned int crc);
 
 
-extern T_DNSSPOOF_IPMAC_FCTL_p pDnsspoof_data;
+//extern T_DNSSPOOF_IPMAC_FCTL_p pDnsspoof_data;
 
 /* Send a UDP packet with it's source address set as "source" 
    unless nowild is true, when we just send it with the kernel default */
@@ -654,19 +654,7 @@ void receive_query(struct listener *listen, time_t now)
 #endif
     }
 
- if(pDnsspoof_data->is_Enable == 1)
-{
-	my_syslog(LOG_INFO, _("mode=1 no send"));
-	m = answer_request_dnsspoof (header, ((char *) header) + PACKETSZ, (size_t)n, dst_addr_4, netmask, now);
-	//if(!strcmp(daemon->namebuff,"www.apple.com"))
-		//return;
-	if(m >=1)
-		send_from(listen->fd, daemon->options & OPT_NOWILD, (char *)header, m , &source_addr, &dst_addr, if_index);
-}
-else if(pDnsspoof_data->is_Enable == 2)
-{
-}
-else
+
 {
 	 m = answer_request (header, ((char *) header) + PACKETSZ, (size_t)n, dst_addr_4, netmask, now);
 	  if (m >= 1)

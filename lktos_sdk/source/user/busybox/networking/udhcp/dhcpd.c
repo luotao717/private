@@ -37,7 +37,8 @@ int udhcpd_main(int argc UNUSED_PARAM, char **argv)
 	struct option_set *option;
 	struct dhcpOfferedAddr *lease, static_lease;
 	USE_FEATURE_UDHCP_PORT(char *str_P;)
-
+//add by zengqignchu
+    char cmd[128] = {0};
 #if ENABLE_FEATURE_UDHCP_PORT
 	SERVER_PORT = 67;
 	CLIENT_PORT = 68;
@@ -201,11 +202,28 @@ int udhcpd_main(int argc UNUSED_PARAM, char **argv)
 					 && requested_align == lease->yiaddr
 					) {
 						send_ACK(&packet, lease->yiaddr);
+
+						//add by zengqingchu 2014.3.8
+						//sprintf(cmd,"iptables -t nat -D webtolocal -p tcp -i br0 -s %s -j ACCEPT",inet_ntoa(*((struct in_addr *)&lease->yiaddr)));
+						sprintf(cmd,"iptables -t nat -D webtolocal -i br0 -s %s -j ACCEPT",inet_ntoa(*((struct in_addr *)&lease->yiaddr)));
+						
+						system(cmd);
+						system(cmd);
+
 					}
 				} else if (requested) {
 					/* INIT-REBOOT State */
 					if (lease->yiaddr == requested_align)
-						send_ACK(&packet, lease->yiaddr);
+						{
+							send_ACK(&packet, lease->yiaddr);
+							//add by zengqingchu 2014.3.8
+							//sprintf(cmd,"iptables -t nat -D webtolocal -p tcp -i br0 -s %s -j ACCEPT",inet_ntoa(*((struct in_addr *)&lease->yiaddr)));
+							sprintf(cmd,"iptables -t nat -D webtolocal -i br0 -s %s -j ACCEPT",inet_ntoa(*((struct in_addr *)&lease->yiaddr)));
+
+							system(cmd);
+							system(cmd);
+
+						}
 					else
 						send_NAK(&packet);
 				} else if (lease->yiaddr == packet.ciaddr) {
@@ -224,7 +242,8 @@ int udhcpd_main(int argc UNUSED_PARAM, char **argv)
 				lease = find_lease_by_yiaddr(requested_align);
 				if (lease) {
 					if (lease_expired(lease)) {
-						/* probably best if we drop this lease */
+						/* probably best if we drop this lease we drop it by luot*/
+						send_NAK(&packet);
 						memset(lease->chaddr, 0, 16);
 					/* make some contention for this address */
 					} else
@@ -237,6 +256,11 @@ int udhcpd_main(int argc UNUSED_PARAM, char **argv)
 						send_NAK(&packet);
 					}
 					/* else remain silent */
+					/* we send nack packet in our system  by luot*/
+					else
+					{
+						send_NAK(&packet);
+					}
 				}
 
 			} else {

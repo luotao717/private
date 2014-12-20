@@ -12,7 +12,7 @@
 
 #include "dnsmasq.h"
 
-extern T_DNSSPOOF_IPMAC_FCTL_p pDnsspoof_data;
+extern int connected;
 
 static int add_resource_record(HEADER *header, char *limit, int *truncp, 
 			       unsigned int nameoffset, unsigned char **pp, 
@@ -1038,6 +1038,8 @@ size_t answer_request(HEADER *header, char *limit, size_t qlen,
   char *name = daemon->namebuff;
   unsigned char *p, *ansp, *pheader;
   int qtype, qclass;
+  int pingFlag=-1;
+  char cmdbuf[128]={0};
   struct all_addr addr;
   unsigned int nameoffset;
   unsigned short flag;
@@ -1097,7 +1099,20 @@ size_t answer_request(HEADER *header, char *limit, size_t qlen,
       /* now extract name as .-concatenated string into name */
       if (!extract_name(header, qlen, &p, name, 1))
 	return 0; /* bad packet */
-            
+
+      //add by zengqingchu
+      if(NULL == strstr(name,"admin.ralinktech.com") && 0 == connected)
+      {	  
+      	 // if(0 != system("ping -c 1 -W 1 -s 8 -q www.qq.com"))
+		// pingFlag=system("ping www.qq.com");
+		// sprintf(cmdbuf,"echo %d >> /tmp/kknnn",pingFlag);
+		// system(cmdbuf);
+		 // if(0 != pingFlag)  
+	  	        name = "forward.com";
+	  	   // else
+	  	    	//connected = 1;   
+	    }
+	    
       GETSHORT(qtype, p); 
       GETSHORT(qclass, p);
 
@@ -1504,185 +1519,6 @@ size_t answer_request(HEADER *header, char *limit, size_t qlen,
   return ansp - (unsigned char *)header;
 }
 
-
-
-/* our answer packet by luot */
-size_t answer_request_dnsspoof(HEADER *header, char *limit, size_t qlen,  
-		      struct in_addr local_addr, struct in_addr local_netmask, time_t now) 
-{
-  char *name = daemon->namebuff;
-  unsigned char *p, *ansp, *pheader;
-  int qtype, qclass;
-  struct all_addr addr;
-  unsigned int nameoffset;
-  unsigned short flag;
-  int q, ans, anscount = 0, addncount = 0;
-  int dryrun = 0, sec_reqd = 0;
-  int is_sign;
-  struct crec *crecp;
-  int nxdomain = 0, auth = 1, trunc = 0;
-  struct mx_srv_record *rec;
-  unsigned long testipaddr=0;
- 
-  /* If there is an RFC2671 pseudoheader then it will be overwritten by
-     partial replies, so we have to do a dry run to see if we can answer
-     the query. We check to see if the do bit is set, if so we always
-     forward rather than answering from the cache, which doesn't include
-     security information. */
-  if (find_pseudoheader(header, qlen, NULL, &pheader, &is_sign))
-    { 
-      unsigned short udpsz, ext_rcode, flags;
-      unsigned char *psave = pheader;
-
-      GETSHORT(udpsz, pheader);
-      GETSHORT(ext_rcode, pheader);
-      GETSHORT(flags, pheader);
-      
-      sec_reqd = flags & 0x8000; /* do bit */ 
-
-      /* If our client is advertising a larger UDP packet size
-	 than we allow, trim it so that we don't get an overlarge
-	 response from upstream */
-
-      if (!is_sign && (udpsz > daemon->edns_pktsz))
-	PUTSHORT(daemon->edns_pktsz, psave); 
-
-      dryrun = 1;
-    }
-
-  if (ntohs(header->qdcount) == 0 || header->opcode != QUERY )
-    return 0;
-  
-  for (rec = daemon->mxnames; rec; rec = rec->next)
-    rec->offset = 0;
-  
- rerun:
-  /* determine end of question section (we put answers there) */
-  if (!(ansp = skip_questions(header, qlen)))
-    return 0; /* bad packet */
- my_syslog(LOG_INFO, _("f=%s line=%d--1 %s"), __FUNCTION__,__LINE__,name);  
-  /* now process each question, answers go in RRs after the question */
-  p = (unsigned char *)(header+1);
-
-  for (q = ntohs(header->qdcount); q != 0; q--)
-    {
-      /* save pointer to name for copying into answers */
-      nameoffset = p - (unsigned char *)header;
-
-      /* now extract name as .-concatenated string into name */
-      if (!extract_name(header, qlen, &p, name, 1))
-	return 0; /* bad packet */
-      GETSHORT(qtype, p); 
-      GETSHORT(qclass, p);
-      my_syslog(LOG_INFO, _("recieveyyyy--2---%d--%d--%d-%d---%d-va=%d--%d %s"), T_TXT,T_ANY,C_IN,T_PTR,T_MX,qtype,qclass,name);        
-      ans = 0; /* have we answered this question */
-      
-      if (qclass == C_IN)
-	{
-	    
-	  for (flag = F_IPV4; flag; flag = (flag == F_IPV4) ? F_IPV6 : 0)
-	    {
-	      unsigned short type = T_A;
-	      
-	      if (flag == F_IPV6)
-#ifdef HAVE_IPV6
-		type = T_AAAA;
-#else
-	        break;
-#endif
-	      
-	      if (qtype != type && qtype != T_ANY)
-		continue;
-	      my_syslog(LOG_INFO, _("equal we answer recieveyyyy %s--%d--%d"), name,__LINE__,T_A);
-	      /* Check for "A for A"  queries */
-	      if (qtype == T_A && (addr.addr.addr4.s_addr = inet_addr(name)) != (in_addr_t) -1)
-		{
-		my_syslog(LOG_INFO, _("equal we answer recieveyyyy-2 %s--%d"), name,__LINE__);
-		  ans = 1;
-		  if (!dryrun)
-		    {
-		      log_query(F_FORWARD | F_CONFIG | F_IPV4, name, &addr, 0, NULL, 0);
-		      if (add_resource_record(header, limit, &trunc, nameoffset, &ansp, 
-					      daemon->local_ttl, NULL, type, C_IN, "4", &addr))
-			anscount++;
-		    }
-		  continue;
-		}
-
-	    cname_restart:
-	      if (1)
-		{
-		  int localise = 0;
-		  //strcpy(crecp->name.sname,"www.ttttt.com");
-		   my_syslog(LOG_INFO, _("tt-3 %s--%d"), name,__LINE__);
-		  /* See if a putative address is on the network from which we recieved
-		     the query, is so we'll filter other answers. */
-		      if (!sec_reqd)
-			{
-			  /* If we are returning local answers depending on network,
-			     filter here. */
-       
-			  ans = 1;
-			  if (!dryrun)
-			    {
-			      unsigned long ttl;
-			      
-				ttl = 128 - now;
-			      
-			   //   log_query(crecp->flags & ~F_REVERSE, name, &crecp->addr.addr,0, daemon->addn_hosts, crecp->uid);
-				  
-				
-				testipaddr=pDnsspoof_data->lan_ip;
-				//if (add_resource_record(header, limit, &trunc, nameoffset, &ansp, ttl, NULL, type, C_IN, type == T_A ? "4" : "6", &crecp->addr))
-				 if (add_resource_record(header, limit, &trunc, nameoffset, &ansp, ttl, NULL, type, C_IN, type == T_A ? "4" : "6", &testipaddr))
-			      	{
-					my_syslog(LOG_INFO, _("tt-3--22 %s--%d"), name,__LINE__);
-
-					anscount++;
-			      	}
-			    }
-			}
-		
-		}
-	    }
-	  
-	  
-	  if (qtype == T_MAILB)
-	    ans = 1, nxdomain = 1;
-
-	  if (qtype == T_SOA && (daemon->options & OPT_FILTER))
-	    {
-	      ans = 1; 
-	      if (!dryrun)
-		log_query(F_CONFIG | F_NEG, name, &addr, 0, NULL, 0);
-	    }
-	}
-
-      if (!ans)
-	return 0; /* failed to answer a question */
-    }
-  
-  if (dryrun)
-    {
-      dryrun = 0;
-      goto rerun;
-    }
-  
-  /* create an additional data section, for stuff in SRV and MX record replies. */
-  /* done all questions, set up header and return length of result */
-  header->qr = 1; /* response */
-  header->aa = auth; /* authoritive - only hosts and DHCP derived names. */
-  header->ra = 1; /* recursion if available */
-  header->tc = trunc; /* truncation */
-  if (anscount == 0 && nxdomain)
-    header->rcode = NXDOMAIN;
-  else
-    header->rcode = NOERROR; /* no error */
-  header->ancount = htons(anscount);
-  header->nscount = htons(0);
-  header->arcount = htons(addncount);
-  return ansp - (unsigned char *)header;
-}
 
 
 

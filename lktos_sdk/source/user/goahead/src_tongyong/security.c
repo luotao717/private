@@ -105,6 +105,18 @@ int websSecurityHandler(webs_t wp, char_t *urlPrefix, char_t *webDir, int arg,
 		//return 0;
 	if (wp->path != NULL && strstr(wp->path, "/goform/App"))
 		return 0;
+	if (wp->path != NULL && strstr(wp->path, "/goform/setAccess"))
+		return 0;
+	if (wp->path != NULL && strstr(wp->path, "/cgi-bin/Ass1auto.cgi"))
+		return 0;
+	if (wp->path != NULL && strstr(wp->path, "/about.html"))
+		return 0;
+	if (wp->path != NULL && strstr(wp->path, "/print.asp"))
+		return 0;
+	if (wp->path != NULL && strstr(wp->path, "/cgi-bin/getvcode.cgi"))
+		return 0;
+	if (wp->path != NULL && strstr(wp->path, "/images/"))
+		return 0;	
 /*
  *	Check to see if URL must be encrypted
  */

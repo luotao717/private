@@ -12,6 +12,7 @@ insmod usb-storage.ko
 tar xf /bin/apa.tar -C /tmp
 cp /bin/httpd /tmp/apache/bin/
 
+gpio l 18 1 1 4000 0 30
 goahead&
 
 sleep 1
@@ -20,5 +21,9 @@ mount -t usbfs none /proc/bus/usb
 telnetd
 
 cp /etc_ro/web/normal_ws.css /tmp/apache/htdocs/normal_ws.css
+ln -sf /media/ /tmp/apache/htdocs/media
+wifiDaemon &
+diyite_downloader &
+diyite_updater &
 #for syslogd
 mkdir -p /var/log

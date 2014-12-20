@@ -1,0 +1,57 @@
+<HTML>
+<HEAD><TITLE>mini_httpd is running</TITLE>
+<script language="JavaScript" type="text/javascript">
+var first = 0;
+function wanDetectSubmit()
+{
+    if(0 == first)
+    {
+    http_request = false;
+    if (window.XMLHttpRequest) { // Mozilla, Safari,...
+        http_request = new XMLHttpRequest();
+        if (http_request.overrideMimeType) {
+            http_request.overrideMimeType('text/xml');
+        }
+    } else if (window.ActiveXObject) { // IE
+        try {
+            http_request = new ActiveXObject("Msxml2.XMLHTTP");
+        } catch (e) {
+            try {
+            http_request = new ActiveXObject("Microsoft.XMLHTTP");
+            } catch (e) {}
+        }
+    }
+    if (!http_request) {
+        if(language == 'en')
+            alert('Cannot create an XMLHTTP instance');
+		else
+			alert("放弃，不能创建XMLHTTP实例.");
+        return false;
+        return false;
+    }
+
+    http_request.open('POST', '/goform/setAccess', true);
+    http_request.send('n\a');
+
+	first = first +1;
+    }
+}
+
+setInterval("wanDetectSubmit()",5000);
+
+</script>
+</HEAD>
+<BODY BGCOLOR="#99cc99" TEXT="#000000" LINK="#2020ff" VLINK="#4040cc">
+
+<H3>mini_httpd is running</H3>
+
+<P>
+Looks like you got it working.  Congrats.
+
+<P>
+Here's a link to the <A HREF="http://www.acme.com/software/mini_httpd/">mini_httpd web page</A>.
+
+<HR>
+<ADDRESS><A HREF="mailto:webmaster@acme.com">ACME Labs Webmaster &lt;webmaster@acme.com&gt;</A></ADDRESS>
+</BODY>
+</HTML>

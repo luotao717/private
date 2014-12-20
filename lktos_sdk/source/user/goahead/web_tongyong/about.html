@@ -1,0 +1,77 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" >
+<title>第一特装机工具V13</title>
+</head>
+<body>
+<style>
+/* CSS Document */
+*{ margin:0; padding:0;}
+body{ font-family:"微软雅黑"; max-width:600px; margin:0 auto; }
+.logo-1{ width:100%; margin-top:8%; text-align:center;}
+.logo-1 img{ width:26%;}
+.logo-2{ color:#39aeb1; font-size:22px; text-align:center; margin:3% 0 1% 0;}
+.logo-6{ color:#39aeb1; font-size:15px; text-align:center;  }
+.logo-6.on{ color:#0b9696; text-decoration:underline;}
+.logo-6 img{ width:20px; position:relative; top:4px;}
+.logo-7{ color:#545454; font-size:15px; text-align:center; margin:5% 0 2%;  }
+.text{ border:1px solid #dddddd; border-radius:2px; width:80%; margin-left:10%; font-size:28px; color:#4abe3f; padding:10px 0; text-align:center;}
+.logo-8{  text-align:center; margin:5% 0; }
+.logo-8 img{ width:85px;}
+.logo-9{ color:#545454; font-size:15px; text-align:center;  }
+</style>
+<div id="main_h">
+<div class="logo-1"><img src="images/logo.png" /></div>
+<div class="logo-2">深圳市第一特科技有限公司</div>
+<div class="logo-6">©Copyright 2013</div>
+<div class="logo-7">许可码:</div>
+<div id="text" class="text" onclick="reload_yz(this);" >获取中...</div>
+<div class="logo-8"><img src="images/se.jpg" /></div>
+<div class="logo-9">版本号:v1.3</div>
+</div>
+
+<script>
+window.onload = function(){ 
+	var h = document.documentElement.clientHeight ;
+    var main_h = document.getElementById("main_h").offsetHeight;
+    var hh = (h-main_h)/2;
+    document.getElementById('main_h').style.marginTop = hh+'px';
+	load_yz();
+} 
+
+function load_yz(){
+	var xmlhttp;
+	if (window.XMLHttpRequest){	
+		xmlhttp=new XMLHttpRequest();  
+	}else{	
+		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP"); 
+	}
+	
+	xmlhttp.onreadystatechange=function(){
+		if (xmlhttp.readyState==4 && xmlhttp.status==200){
+			var str = xmlhttp.responseText;
+			if(str.length == 8 ){  //返回1登录成功
+				document.getElementById('text').innerHTML = xmlhttp.responseText;
+			}else{
+				document.getElementById('text').innerHTML = '点击请重新获取';
+			}
+		}
+	}
+	xmlhttp.open("POST","/cgi-bin/getvcode.cgi",true);
+	//xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+	xmlhttp.send("status=yz");
+}
+
+function reload_yz(aa){
+	if(aa.innerHTML == '点击请重新获取'){
+		aa.innerHTML = '获取中...'
+		load_yz();
+	}else{
+		return;	
+	}
+}
+</script>
+</body>
+</html>
