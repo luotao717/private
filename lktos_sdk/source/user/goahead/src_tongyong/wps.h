@@ -1,10 +1,8 @@
 #ifndef __WPS__H__
 #define __WPS__H__
-
 #ifdef CONFIG_RT2860V2_STA_WSC                      // if RT2880 support Wifi - STA
 #include "stapriv.h"
 #endif
-
 #if defined (CONFIG_RALINK_RT2880)
 #define WPS_AP_PBC_LED_GPIO     13   // 0 ~ 24( or disable this feature by undefine it)
 #elif defined (CONFIG_RALINK_RT3883)
@@ -18,7 +16,7 @@
 #elif defined (CONFIG_RALINK_MT7620)
 #define WPS_AP_PBC_LED_GPIO     39	// MT7620 WPS LED
 #else
-#define WPS_AP_PBC_LED_GPIO     14   // 0 ~ 24( or disable this feature by undefine it)
+#define WPS_AP_PBC_LED_GPIO     17   // 0 ~ 24( or disable this feature by undefine it) chi device use gpio 1
 #endif
 
 #ifdef WPS_AP_PBC_LED_GPIO

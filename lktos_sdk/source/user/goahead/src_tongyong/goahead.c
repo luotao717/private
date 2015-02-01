@@ -196,6 +196,8 @@ static void goaSigHandler(int signum)
 	const char *ethCon = nvram_bufget(RT2860_NVRAM, "ethConvert");
 #endif
 
+	printf("\r\nrecivec asigdda\r\n");
+
 	if (signum != SIGUSR1)
 		return;
 
@@ -265,7 +267,7 @@ static void goaInitGpio()
 #elif defined (CONFIG_RALINK_MT7620)
 	info.irq = 2;	// MT7620 WPS PBC
 #else
-	info.irq = 0;
+	info.irq = 10; //for chi device V2
 #endif
 	if (ioctl(fd, RALINK_GPIO_REG_IRQ, &info) < 0)
 		goto ioctl_err;
@@ -273,7 +275,7 @@ static void goaInitGpio()
 
 	//issue a handler to handle SIGUSR1
 	signal(SIGUSR1, goaSigHandler);
-	signal(SIGUSR2, goaSigHandlerLoadDefault);
+	//signal(SIGUSR2, goaSigHandlerLoadDefault);
 	return;
 
 ioctl_err:
@@ -329,6 +331,7 @@ static void switch_3gmode(int signum)
 		return;	
 	
 	File_Set_Modem_Info("mode_insert", "1");
+	system("gpio u 1"); // for chidevice
 		
 	//#ifdef CONFIG_USER_CDRKING
 		//system("gpio c 13 0");
@@ -344,6 +347,8 @@ static void back_mode(int signum)
 	unlink("/var/usbmodem/mode_insert");
 	
 	system("rm -rf /var/usbmodem/*");
+
+	system("gpio u 0"); //for chi device
 
 	//#ifdef CONFIG_USER_CDRKING
 		//system("gpio c 13 1");

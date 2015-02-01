@@ -2131,6 +2131,8 @@ int __init ralink_gpio_init(void)
 #if defined (CONFIG_RALINK_MT7620)
 	gpiomode &= ~0x2000;  //clear bit[13] WLAN_LED
 #endif
+	gpiomode |= (1<<0); //for gpio 2,1 to gpio mode by chi device
+	gpiomode |= (1<<6); //for jtag tp gpio mode by chi device
 	gpiomode |= RALINK_GPIOMODE_DFT;
 	*(volatile u32 *)(RALINK_REG_GPIOMODE) = cpu_to_le32(gpiomode);
 

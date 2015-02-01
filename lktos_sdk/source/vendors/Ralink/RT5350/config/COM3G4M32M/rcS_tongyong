@@ -12,12 +12,15 @@ insmod usb-storage.ko
 tar xf /bin/apa.tar -C /tmp
 cp /bin/httpd /tmp/apache/bin/
 
+gpio R 2
+
 goahead&
 
 sleep 1
 mount -t usbfs none /proc/bus/usb
 #for telnet debugging
 telnetd
+wifiDaemon&
 
 cp /etc_ro/web/normal_ws.css /tmp/apache/htdocs/normal_ws.css
 #for syslogd

@@ -665,7 +665,7 @@ void gpio_set_led(int argc, char *argv[])
 }
 
 
-
+//for chi device use gpio 14 for v2
 void gpio_set_usbled(int argc, char *argv[])
 {
 	int fd;
@@ -676,7 +676,7 @@ void gpio_set_usbled(int argc, char *argv[])
 		perror(GPIO_DEV);
 		return;
 	}
-	if (ioctl(fd, RALINK_GPIO_SET_DIR_OUT, 1<<0) < 0) {
+	if (ioctl(fd, RALINK_GPIO_SET_DIR_OUT, 1<<14) < 0) {
 		perror("ioctl");
 		close(fd);
 		return;
@@ -687,13 +687,13 @@ void gpio_set_usbled(int argc, char *argv[])
 		return -1;
 	}
 	ledon = atoi(argv[2]);
-	if(ledon)
+	if(!ledon)
 	{
-		rData=rData | 1<<0;
+		rData=rData | 1<<14;
 	}
 	else
 	{
-		rData=rData & (~(1<<0));
+		rData=rData & (~(1<<14));
 	}
 	if (ioctl(fd, RALINK_GPIO_WRITE, rData) < 0) {
 		perror("ioctl");
@@ -779,6 +779,34 @@ void gpio_get_g3switch(int argc, char *argv[])
 	
 }
 
+void gpio_get_gpiodata(int argc, char *argv[])
+{
+	int fd;
+	int ledon=0;
+	int rData=0;
+	
+	int gpioId = atoi(argv[2]);
+	fd = open(GPIO_DEV, O_RDONLY);
+	if (fd < 0) {
+		perror(GPIO_DEV);
+		return;
+	}
+	if (ioctl(fd, RALINK_GPIO_SET_DIR_IN, 1<<gpioId) < 0) {
+		perror("ioctl");
+		close(fd);
+		return;
+	}
+	if (ioctl(fd, RALINK_GPIO_READ, &rData) < 0) {
+		perror("ioctl");
+		close(fd);
+		return -1;
+	}
+	printf("\r\ngpiodata=%x\r\n",rData);
+	close(fd);
+	
+}
+
+
 void usage(char *cmd)
 {
 	printf("Usage: %s w - writing test (output)\n", cmd);
@@ -816,6 +844,11 @@ int main(int argc, char *argv[])
 		if (argc != 3)
 			usage(argv[0]);
 		gpio_set_usbled(argc, argv);
+		break;
+	case 'R':
+		if (argc != 3)
+			usage(argv[0]);
+		gpio_get_gpiodata(argc, argv);
 		break;
 	case 'g':
 		gpio_get_g3switch(argc,argv);

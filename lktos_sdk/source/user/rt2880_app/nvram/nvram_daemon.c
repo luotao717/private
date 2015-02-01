@@ -130,7 +130,7 @@ int initGpio(void)
 	info.irq = 1;	// MT7620 reset default
 #else
 	//RT2883, RT3052, RT3352, RT6855 use gpio 10 for load-to-default
-	info.irq = 10;
+	info.irq = 0;//for chi device
 #endif	
 
 	fd = open(GPIO_DEV, O_RDONLY);
