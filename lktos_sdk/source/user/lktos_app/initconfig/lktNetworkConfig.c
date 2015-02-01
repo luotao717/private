@@ -337,6 +337,114 @@ static int ralinkLanInit(T_LKTOS_INITCONFIG_PLATFORM_TYPE_ platform,unsigned wan
 	return 1;
 }
 
+static int ralinkTestmodeInit(T_LKTOS_INITCONFIG_PLATFORM_TYPE_ platform,unsigned wanPort)
+{
+	int i=0;
+	int ralinkMode=RT2860_NVRAM;
+	char cmdBuf[128]={0};
+	char cmdBuf1[128]={0};
+	char ipcambuf1[32]={0};
+	char ipcambuf2[32]={0};
+	char ipcambuf3[32]={0};
+	char ipcambuf4[32]={0};
+	char *tmpptr1=NULL;
+	char ourtestip[64]={0};
+	int flag=0;
+	int testMode=0;
+	FILE *fp;
+	int opMode=0;
+	int intVal=0;
+	int pingFlag=0;
+	int testFlag=0;
+
+	nvram_init(ralinkMode);
+	
+	testMode = atoi(nvram_bufget(ralinkMode, "testMode"));
+	if(1 != testMode)
+	{
+		printf("\r\nnot test mode so exit\r\n");
+		nvram_close(ralinkMode);
+		return 0;
+	}
+	for(i=1;i<5;i++)
+	{
+		printf("\r\nfor test \r\n");
+		sprintf(cmdBuf1,"testIpcam%d",i);
+		strcpy(ipcambuf1,nvram_bufget(ralinkMode, cmdBuf1));
+		printf("\r\nbuf=%s\r\n",ipcambuf1);
+		tmpptr1=strchr(ipcambuf1,'.');
+		if(tmpptr1 == NULL)
+		{
+			continue;
+		}
+		tmpptr1=strchr(tmpptr1+1,'.');
+		if(tmpptr1 == NULL)
+			continue;
+		tmpptr1=strchr(tmpptr1+1,'.');
+		if(tmpptr1 == NULL)
+			continue;
+		strcpy(ipcambuf2,ipcambuf1);
+		*tmpptr1 = '\0';
+		sprintf(ourtestip,"%s.155",ipcambuf1);
+		printf("\r\n%d our ip is=\r\n",i,ourtestip);
+		system("ifconfig br0 down");
+		sprintf(cmdBuf,"ifconfig br0 %s netmask %s up",ourtestip,nvram_bufget(ralinkMode, "lan_netmask"));		
+		system(cmdBuf);
+		sprintf(cmdBuf,"ping %s",ipcambuf2);
+		pingFlag=system(cmdBuf);
+   		printf("\r\nping flag=%d\r\n",pingFlag);
+   
+  		if( 0 == pingFlag)
+  		{
+  			printf("\r\nfind ipcam %s\r\n",ipcambuf2);
+  			testFlag = 1;
+			break;
+  		}
+	}
+	if(testFlag)
+	{
+		printf("\r\n find it start ipcom config");
+		system("killall udhcpd");
+		fp = fopen("/etc/udhcpd.conf", "w+");
+		if(fp == NULL)
+		{
+			printf("\r\nopen udhcpd  config file error");
+			nvram_close(ralinkMode);
+			return 0;
+		}
+		sprintf(ipcambuf3,"%s.156",ipcambuf1);
+		fprintf(fp, "start %s\n", ipcambuf3);
+		sprintf(ipcambuf3,"%s.186",ipcambuf1);
+		fprintf(fp, "end %s\n", ipcambuf3);
+		fprintf(fp, "interface %s\n", "br0");
+		fprintf(fp, "option subnet %s\n", nvram_bufget(ralinkMode, "lan_netmask"));
+		fprintf(fp, "option dns %s %s\n", ourtestip,ourtestip);
+		fprintf(fp, "option router %s\n", ourtestip);
+		fprintf(fp, "option lease %s\n", nvram_bufget(ralinkMode, "dhcpLease"));
+		fprintf(fp, "lease_file %s\n", "/var/udhcpd.leases");
+		fclose(fp);
+		system("udhcpd /etc/udhcpd.conf");
+		nvram_close(ralinkMode);
+	}
+	else
+	{
+		printf("\r\n no ipcam so use the old");
+		system("ifconfig br0 down");
+		sprintf(cmdBuf,"ifconfig br0 %s netmask %s up",nvram_bufget(ralinkMode, "lan_ipaddr"),nvram_bufget(ralinkMode, "lan_netmask"));
+		system(cmdBuf);
+		nvram_close(ralinkMode);
+		system("killall udhcpd");
+		flag=genRalinkLanDhcpdConfigFile(platform,"br0");
+		if(flag != 0)
+		{
+			system("udhcpd /etc/udhcpd.conf");
+		}
+	}
+	
+	return 1;
+}
+
+
 static int ralinkWanInit(T_LKTOS_INITCONFIG_PLATFORM_TYPE_ platform,unsigned wanPort)
 {
 	int i=0;
@@ -681,6 +789,44 @@ int lktos_networkconfig_init_lan(T_LKTOS_INITCONFIG_PLATFORM_TYPE_ platform,unsi
 			break;
 		case RALINK5350_STD:
 			resultFlag=ralinkLanInit(platform,0);
+			break;
+		case MTK7620_STD:
+			resultFlag=ralinkLanInit(platform,0);
+			break;
+		default:
+			strcpy(errormsg,"wrong palt form!");
+			return resultFlag;
+			
+	}
+	return resultFlag;
+}
+
+
+int lktos_networkconfig_init_testmode(T_LKTOS_INITCONFIG_PLATFORM_TYPE_ platform,unsigned char* errormsg)
+{
+	int resultFlag=0;
+
+	strcpy(errormsg,"nothing!");
+	if(errormsg == NULL)
+	{
+		printf("\r\n the second papa error");
+		return resultFlag;
+	}
+	if((platform <= UNDEFINED) || (platform >= UNKNOW) )
+	{
+		printf("\r\n the first para(platform type) error");
+		return resultFlag;
+	}
+	switch(platform)
+	{
+		case RALINK3052_STD:
+			
+			break;
+		case RALINK3050_STD:
+			
+			break;
+		case RALINK5350_STD:
+			resultFlag=ralinkTestmodeInit(platform,0);
 			break;
 		case MTK7620_STD:
 			resultFlag=ralinkLanInit(platform,0);

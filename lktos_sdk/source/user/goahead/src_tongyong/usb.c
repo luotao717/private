@@ -2508,6 +2508,11 @@ static int ShowLeftItem(int eid, webs_t wp, int argc, char_t **argv)
 	char *strptr=NULL; 
 	strptr=nvram_bufget(RT2860_NVRAM, "OperationMode");
 	printf("\r\nddddd=%s----%c--%c",strptr,strptr[0],*strptr );
+	if(strcmp("sup",umGetUserGroup(wp->userName)))
+	{
+		websWrite(wp, T("leftguest.asp"));	
+		return 0;
+	}
 	if( !strcmp(strptr,"0"))
 	{
 		websWrite(wp, T("left2.asp"));	

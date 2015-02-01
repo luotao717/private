@@ -22,6 +22,7 @@ typedef enum lktos_initconfig_platform_type
 
 
 int lktos_networkconfig_init_lan(T_LKTOS_INITCONFIG_PLATFORM_TYPE_ platform,unsigned char* errormsg); //第一个参数为平台类型，成功返回1，失败返回0，错误原因装在
+int lktos_networkconfig_init_testmode(T_LKTOS_INITCONFIG_PLATFORM_TYPE_ platform,unsigned char* errormsg); //第一个参数为平台类型，成功返回1，失败返回0，错误原因装在
 int lktos_networkconfig_init_wan(T_LKTOS_INITCONFIG_PLATFORM_TYPE_ platform,unsigned char* errormsg); //第一个参数为平台类型，成功返回1，失败返回0，错误原因装在
 int lktos_networkconfig_gen_lanDhcpdConfig(T_LKTOS_INITCONFIG_PLATFORM_TYPE_ platform,unsigned char* errormsg); //第一个参数为平台类型，成功返回1，失败返回0，错误原因装在
 int lktos_wificonfig_initall_by_filemode(T_LKTOS_INITCONFIG_PLATFORM_TYPE_ platform,unsigned char* errormsg); //第一个参数为平台类型，成功返回1，失败返回0，错误原因装在

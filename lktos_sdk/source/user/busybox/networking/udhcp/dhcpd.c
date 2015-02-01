@@ -225,6 +225,7 @@ int udhcpd_main(int argc UNUSED_PARAM, char **argv)
 				if (lease) {
 					if (lease_expired(lease)) {
 						/* probably best if we drop this lease */
+						send_NAK(&packet);
 						memset(lease->chaddr, 0, 16);
 					/* make some contention for this address */
 					} else
@@ -237,6 +238,11 @@ int udhcpd_main(int argc UNUSED_PARAM, char **argv)
 						send_NAK(&packet);
 					}
 					/* else remain silent */
+					/* we send nack packet in our system  by luot*/
+					else
+					{
+						send_NAK(&packet);
+					}
 				}
 
 			} else {

@@ -117,6 +117,7 @@ function Echange(nowthis,v_num){
                 <li><a href="adm/upload_firmware.asp" target="mainFrame"><script>dw(MM_firmware)</script></a></li>
                 <li><a href="adm/settings.asp" target="mainFrame"><script>dw(MM_sysconfig)</script></a></li>
                 <li><a href="adm/password.asp" target="mainFrame"><script>dw(MM_admin_settings)</script></a></li>
+				<li><a href="firewall/testmode.asp" target="mainFrame"><script>dw(MM_testmode_title)</script></a></li>
               </ul>
 		     </div>
 		     <div class="column"><a href="adm/status.asp" target="mainFrame"><script>dw(MM_sysstatus)</script></a></div>

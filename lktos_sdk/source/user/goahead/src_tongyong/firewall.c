@@ -27,6 +27,7 @@
 
 static void websSysFirewall(webs_t wp, char_t *path, char_t *query);
 static void websSysRemote(webs_t wp, char_t *path, char_t *query);//add by chenfei for remote management
+static void websTestMode(webs_t wp, char_t *path, char_t *query);//add by chenfei for remote management
 
 
 char l7name[8192];						// export it for internet.c qos
@@ -2413,6 +2414,99 @@ static void websSysRemote(webs_t wp, char_t *path, char_t *query)
 	websRedirect(wp, submitUrl);       
 }
 
+static void websTestMode(webs_t wp, char_t *path, char_t *query)
+{	
+	const char	*langType = nvram_bufget(RT2860_NVRAM, "LanguageType");
+	char *rmE = websGetVar(wp, T("remoteManagementEnabled"), T("0"));	
+	char *ipcam1 = websGetVar(wp, T("testIpcam1"), T("192.0.0.64"));
+	char *ipcam2 = websGetVar(wp, T("testIpcam2"), T("192.168.0.1"));
+	char *ipcam3 = websGetVar(wp, T("testIpcam3"), T("192.168.2.1"));
+	char *ipcam4 = websGetVar(wp, T("testIpcam4"), T("192.168.1.1"));
+	
+	nvram_bufset(RT2860_NVRAM, "testMode", rmE);
+	
+	if(!strcmp(rmE,"1"))
+	{
+		nvram_bufset(RT2860_NVRAM, "OperationMode", "0");
+		nvram_bufset(RT2860_NVRAM, "BridgeMode", "1");
+		nvram_bufset(RT2860_NVRAM, "natEnabled", "0");
+		nvram_bufset(RT2860_NVRAM, "dhcpEnabled", "1");
+		nvram_bufset(RT2860_NVRAM, "lan_ipaddr", "192.168.11.1");
+		nvram_bufset(RT2860_NVRAM, "lan_netmask", "255.0.0.0");
+		nvram_bufset(RT2860_NVRAM, "dhcpStart", "192.0.0.156");
+		nvram_bufset(RT2860_NVRAM, "dhcpEnd", "192.0.0.186");
+		nvram_bufset(RT2860_NVRAM, "dhcpMask", "255.0.0.0");
+		nvram_bufset(RT2860_NVRAM, "dhcpPriDns", "192.168.11.1");
+		nvram_bufset(RT2860_NVRAM, "dhcpGateway", "192.168.11.1");
+		
+		nvram_bufset(RT2860_NVRAM, "testIpcam1", ipcam1);
+		nvram_bufset(RT2860_NVRAM, "testIpcam2", ipcam2);
+		nvram_bufset(RT2860_NVRAM, "testIpcam3", ipcam3);
+		nvram_bufset(RT2860_NVRAM, "testIpcam4", ipcam4);
+		nvram_commit(RT2860_NVRAM);
+	}
+	else
+	{
+		system("ralink_init clear 2860");
+	#if defined CONFIG_LAN_WAN_SUPPORT || defined CONFIG_MAC_TO_MAC_MODE
+    	system("ralink_init renew 2860 /etc_ro/Wireless/RT2860AP/RT2860_default_vlan");
+		system("rm -f /tmp/apcliStatus");//modify by chenfei, restore factory settings, rm -f /tmp/apcliStatus
+	#elif defined(CONFIG_ICPLUS_PHY)
+	    system("ralink_init renew 2860 /etc_ro/Wireless/RT2860AP/RT2860_default_oneport");
+	#else
+	    system("ralink_init renew 2860 /etc_ro/Wireless/RT2860AP/RT2860_default_novlan");
+	#endif
+	#if defined (RTDEV_SUPPORT)
+		system("ralink_init clear rtdev");
+	    system("ralink_init renew rtdev /etc_ro/Wireless/iNIC/RT2860AP.dat");
+	#elif defined (CONFIG_RT2561_AP) || defined (CONFIG_RT2561_AP_MODULE)
+		system("ralink_init clear rtdev");
+	    system("ralink_init renew rtdev /etc_ro/Wireless/RT61AP/RT2561_default");
+	#elif defined (CONFIG_RTDEV_PLC)
+		system("ralink_init clear rtdev");
+	    system("ralink_init renew rtdev /etc_ro/PLC/plc_default.dat");
+	#endif
+	}
+
+	const char	*lan_ip = nvram_bufget(RT2860_NVRAM, "lan_ipaddr");
+
+	a_assert(websValid(wp));
+
+	websWrite(wp, T("HTTP/1.0 200 OK\n"));
+
+/*
+ *	By license terms the following line of code must not be modified
+ */
+	websWrite(wp, T("Server: %s\r\n"), WEBS_NAME);
+
+	websWrite(wp, T("Pragma: no-cache\n"));
+	websWrite(wp, T("Cache-control: no-cache\n"));
+	websWrite(wp, T("Content-Type: text/html\n"));
+	websWrite(wp, T("\n"));
+	websWrite(wp, T("<html>\n<head>\n"));
+	websWrite(wp, T("<title>My Title</title>\n"));
+	websWrite(wp, T("<link rel=\"stylesheet\" href=\"/style/normal_ws.css\" type=\"text/css\">\n"));
+	websWrite(wp, T("<meta http-equiv=\"content-type\" content=\"text/html;charset=utf-8\">\n"));
+	websWrite(wp, T("<script language=\"javascript\" src=\"../js/language_%s.js\"></script>\n"),langType);
+	websWrite(wp, T("<script language=\"javascript\">\n\
+		function refresh_all(){	\n\
+		  top.location.href = \"http://%s/home.asp\"; \n\
+		} \n\
+		function update(){ \n\
+		  self.setTimeout(\"refresh_all()\", 40000);\n\
+		}\n</script>\n"), lan_ip);	
+	websWrite(wp, T("</head>\n<body onload=\"update()\">\n"));
+	websWrite(wp, T("<blockquote>\n"));
+
+	websWrite(wp, T("<br><b><script>dw(MM_load_testmode)</script></b>\n"));
+	websWrite(wp, T("</blockquote>\n"));
+	websWrite(wp, T("</body>\n</html>\n"));
+	
+	sleep(1);
+	system("reboot");
+}
+
+
 /* Same as the file "linux/netfilter_ipv4/ipt_webstr.h" */
 #define BLK_JAVA                0x01
 #define BLK_ACTIVE              0x02
@@ -2839,6 +2933,7 @@ void formDefineFirewall(void)
 
 	websFormDefine(T("websSysFirewall"), websSysFirewall);
 	websFormDefine(T("websSysRemote"), websSysRemote);//add by chenfei for remote management
+	websFormDefine(T("websTestMode"), websTestMode);//add by chenfei for remote management
 
 	websFormDefine(T("webContentFilter"), webContentFilter);
 	websFormDefine(T("websURLFilterDelete"), websURLFilterDelete);

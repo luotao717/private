@@ -1984,7 +1984,7 @@ int initInternet(void)
 #if defined (CONFIG_IPV6)
 	ipv6Config(strtol(nvram_bufget(RT2860_NVRAM, "IPv6OpMode"), NULL, 10));
 #endif
-
+	system("lktos_networkconfig ra5350 inittestmode &");
 	return 0;
 }
 

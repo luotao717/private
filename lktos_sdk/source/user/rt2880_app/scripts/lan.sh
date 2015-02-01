@@ -69,6 +69,10 @@ echo "$ip u.com luo" >> /etc/hosts
 
 # dhcp server
 dhcp=`nvram_get 2860 dhcpEnabled`
+testMode=`nvram_get 2860 testMode`
+if [ "$testMode" = "1" ]; then
+	dhcp=0
+fi
 if [ "$dhcp" = "1" ]; then
 	start=`nvram_get 2860 dhcpStart`
 	end=`nvram_get 2860 dhcpEnd`

@@ -62,6 +62,15 @@ int main(int argc, char* argv[])
 			printf("\r\n error msg=%s",errBuf);
 		}
 	}
+	if(!strncmp("inittestmode",argv[2],7))
+	{
+		sleep(1);
+		result=lktos_networkconfig_init_testmode(plattype,errBuf);
+		if(!result)
+		{
+			printf("\r\n error msg=%s",errBuf);
+		}
+	}
 	else if(!strncmp("initwan",argv[2],7))
 	{
 		result=lktos_networkconfig_init_wan(plattype,errBuf);

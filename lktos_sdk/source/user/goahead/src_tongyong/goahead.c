@@ -470,13 +470,19 @@ static int initWebs(void)
  */
 	char *admu = (char *) nvram_bufget(RT2860_NVRAM, "Login");
 	char *admp = (char *) nvram_bufget(RT2860_NVRAM, "Password");
+	char *superu = (char *) nvram_bufget(RT2860_NVRAM, "SuperName");
+	char *superp = (char *) nvram_bufget(RT2860_NVRAM, "SuperPwd");
 	umOpen();
 	//umRestore(T("umconfig.txt"));
 	//winfred: instead of using umconfig.txt, we create 'the one' adm defined in nvram
 	umAddGroup(T("adm"), 0x07, AM_DIGEST, FALSE, FALSE);
+	umAddGroup(T("sup"), 0x07, AM_DIGEST, FALSE, FALSE);
+	umAddAccessLimit(T("/"), AM_DIGEST, FALSE, 0);
+	if (superu && strcmp(superu, "") && superp && strcmp(superp, "")) {
+		umAddUser(superu, superp, T("sup"), FALSE, FALSE);
+	}
 	if (admu && strcmp(admu, "") && admp && strcmp(admp, "")) {
 		umAddUser(admu, admp, T("adm"), FALSE, FALSE);
-		umAddAccessLimit(T("/"), AM_DIGEST, FALSE, T("adm"));
 	}
 	else
 		error(E_L, E_LOG, T("gohead.c: Warning: empty administrator account or password"));
