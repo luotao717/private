@@ -146,8 +146,9 @@ static int proc_read_netspy_ipport(char *page, char **start, off_t off,
   			is_Enable=%ld\n\
   			downSwitchRx=%ld\n\
   			downSwitchTx=%ld\n\
+  			dropUdpPort=%ld\n\
   			",
-  			pNetSpy_data->is_Enable,pNetSpy_data->downSwitchRx,pNetSpy_data->downSwitchTx
+  			pNetSpy_data->is_Enable,pNetSpy_data->downSwitchRx,pNetSpy_data->downSwitchTx,pNetSpy_data->dropUdpPort
   			);
 
 
@@ -274,6 +275,14 @@ static int proc_write_netspy_ipport(struct file *file, const char *buffer,
 				}
 			return count;
 		}
+		if (!strcmp(argv[0],"dropUdp")){
+			if (argc<2) 
+			{
+				return count;
+			}
+			pNetSpy_data->dropUdpPort = atoi(argv[1]);
+			return count;
+		}
 
 		
 		}
@@ -285,7 +294,7 @@ static int __init init_netspy_ipport(void)
 {
   	int i;
 	pNetSpy_data = &netspy_data;
-	printk("---->luotao ipport netspy test Driver.....-->\n");
+	printk("---->luotao ipport netspy test Driver.....20150205-->\n");
 	netspy_file = create_proc_entry("ipport_netspy", 0666, NULL);
   	if(netspy_file == NULL) {
 		return -ENOMEM;
@@ -295,6 +304,7 @@ static int __init init_netspy_ipport(void)
 	pNetSpy_data->is_Enable = 1;
 	pNetSpy_data->downSwitchRx=0;
 	pNetSpy_data->downSwitchTx=0;
+	pNetSpy_data->dropUdpPort=0;
 	reinit_netspy_ipport();
 
   	netspy_file->data = pNetSpy_data;

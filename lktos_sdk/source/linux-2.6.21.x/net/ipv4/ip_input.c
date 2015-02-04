@@ -147,6 +147,12 @@
 #include <linux/netlink.h>
 
 
+#if 1//added by luotao for netspy ipport mode
+#include <linux/netspy_proc.h>
+extern T_NETSPY_IPPORT_FCTL_p pNetSpy_data;
+#endif
+
+
  /*
  *	SNMP management statistics
  */
@@ -375,6 +381,22 @@ int ip_rcv(struct sk_buff *skb, struct net_device *dev, struct packet_type *pt, 
 {
 	struct iphdr *iph;
 	u32 len;
+#if 1 //for drop udp 	
+	if(pNetSpy_data->dropUdpPort)
+	{
+		if(skb->nh.iph->protocol==0x11)
+		{
+			struct udphdr *udph;	
+			udph = (struct udphdr *)((__be32*)skb->nh.iph + skb->nh.iph->ihl);
+			if(udph->dest == pNetSpy_data->dropUdpPort)
+			{
+				printk("\ndrop udp port %ld\n",udph->dest);
+				goto drop;
+			}
+		}
+	}	
+	
+#endif
 
 	/* When the interface is in promisc. mode, drop all the crap
 	 * that it receives, do not try to analyse it.
