@@ -11,7 +11,7 @@ all: $(EXEC)
 
 lktos_networkconfig: lktNetworkConfig.o networkconfig_main.o
 
-	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LDLIBS)
+	$(CC)  -D__USE_BSD $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LDLIBS)
 	
 lktos_wificonfig: lktWifiConfig.o wificonfig_main.o
 

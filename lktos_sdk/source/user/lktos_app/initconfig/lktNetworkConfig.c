@@ -14,6 +14,16 @@
 #include <unistd.h>
 #include <sys/ioctl.h>
 #include <linux/types.h>
+#include <sys/socket.h>
+
+#include <netinet/in.h>
+#include <netinet/ip.h>
+#include <netinet/ip_icmp.h>
+#include <netdb.h>
+
+
+#include <pthread.h>
+
 
 
 #include "nvram.h"
@@ -337,9 +347,208 @@ static int ralinkLanInit(T_LKTOS_INITCONFIG_PLATFORM_TYPE_ platform,unsigned wan
 	return 1;
 }
 
+static int pingFlag=253;
+
+unsigned short cal_chksum(unsigned short *addr,int len)
+{
+    int nleft = len;
+    int sum = 0;
+    unsigned short *w = addr;
+    unsigned short check_sum = 0;
+ 
+    while(nleft>1)       //ICMP包头以字（2字节）为单位累加
+    {
+        sum += *w++;
+        nleft -= 2;
+    }
+ 
+    if(nleft == 1)      //ICMP为奇数字节时，转换最后一个字节，继续累加
+    {
+        *(unsigned char *)(&check_sum) = *(unsigned char *)w;
+        sum += check_sum;
+    }
+    sum = (sum >> 16) + (sum & 0xFFFF);
+    sum += (sum >> 16);
+    check_sum = ~sum;   //取反得到校验和
+    return check_sum;
+}
+
+
+int unpack(char *buf,int len)
+{
+    int i;
+    int iphdrlen;
+    struct ip *ip;
+    struct icmp *icmp;
+    struct timeval *tvsend;
+    double rtt;
+ 
+ 
+    ip = (struct ip *)buf;
+    iphdrlen = ip->ip_hl << 2;
+    icmp = (struct icmp *)(buf + iphdrlen);
+    len -= iphdrlen;
+    if(len < 8)
+    {
+        printf("ICMP packet\'s length is less than 8\n");
+        return -1;
+    }
+    //if((icmp->icmp_type == ICMP_ECHOREPLY) && (icmp->icmp_id == pid))
+	if((icmp->icmp_type == ICMP_ECHOREPLY) && (icmp->icmp_id == pid))
+    {
+        
+        printf("%d bytes from %s: icmp_seq=%u ttl=%d time= ms\n",
+                len,inet_ntoa(from.sin_addr),
+                icmp->icmp_seq,ip->ip_ttl);
+    }
+    else return -1;
+}
+
+
+int recv_packet(const int fd)
+{
+	char recpacketBuf[4096]={0};
+    int n,fromlen;
+	int iRecvLen = 0;
+    struct sockaddr_in stFromAddr = {0};
+	
+    fromlen = sizeof(stFromAddr);
+	memset(recpacketBuf, 0, 4 * 1024);
+	/*
+    if(nreceived < nsend)
+    {   
+        if((n = recvfrom(sockfd,recvpacket,sizeof(recvpacket),0,
+            (struct sockaddr *)&from,&fromlen)) < 0)
+        {
+            perror("recvfrom error");
+        }
+        gettimeofday(&tvrecv,NULL);    
+        unpack(recvpacket,n);      
+        nreceived++;
+    }
+    */
+	iRecvLen = recvfrom(fd, (void *)recpacketBuf, sizeof(recpacketBuf), 0, (struct sockaddr *)&stFromAddr,&fromlen);
+	if(iRecvLen >= 0)
+	{
+		printf("\r\nrec a packet");
+		return 0;
+	}
+	else
+	{
+		perror("recvfrom error");
+		printf("\r\nnot rrrr");
+		return -1;
+	}
+	return;
+}
+ 
+
+static void sendIcmp(const int fd, const struct sockaddr_in *pstDestAddr)
+
+{
+
+	char sendpacketBuf[4096]={0};
+	unsigned char ucEchoNum = 0;
+	int iPktLen = 0;
+	int iRet = 0;
+	struct icmp *pstIcmp = NULL;
+
+
+	while(3 > ucEchoNum)
+	{
+		memset(sendpacketBuf, 0, sizeof(sendpacketBuf));
+		pstIcmp = (struct icmp *)sendpacketBuf;
+
+		pstIcmp->icmp_type = ICMP_ECHO;
+		pstIcmp->icmp_code = 0;
+		pstIcmp->icmp_cksum = 0;
+		pstIcmp->icmp_seq = htons((unsigned short)ucEchoNum);
+		pstIcmp->icmp_id = htons((unsigned short)getpid());
+		pstIcmp->icmp_cksum = cal_chksum((unsigned short *)pstIcmp, 56 + 8);
+
+
+		iRet = sendto(fd, pstIcmp, 56+8, 0, (struct sockaddr *)pstDestAddr, sizeof(struct sockaddr_in));
+
+		ucEchoNum++;
+
+	}
+
+}
+
+
+static int myPing(char *targetIp)
+{
+	int pingfd=0;
+	int iRet=0;
+	int recFlag=-1;
+	int iRcvBufSize= 20 *1024;
+	struct sockaddr_in stDestAddr = {0};
+	struct timeval stRcvTimeOut = {0};
+	
+	struct protoent *pProtoIcmp = NULL;
+
+	/*
+	if((pProtoIcmp = getprotobyname("icmp")) == NULL)
+	{
+		printf("\nget icmp protocol error");
+		return -1;
+	}
+	*/
+	//pingfd = socket(PF_INET,SOCK_RAW,pProtoIcmp->p_proto);
+	pingfd = socket(PF_INET,SOCK_RAW,IPPROTO_ICMP);
+	
+	if(0 > pingfd)
+	{
+		printf("\ncreate socket error");
+		return -2;
+	}
+	iRet = setuid(getuid());
+	if(0 > iRet)
+	{
+		printf("\nsetuid error");
+		close(pingfd);
+		return -3;
+	}
+
+	stRcvTimeOut.tv_usec = 1000 * 1000;
+	setsockopt(pingfd, SOL_SOCKET, SO_RCVBUF, &iRcvBufSize, sizeof(iRcvBufSize));
+	setsockopt(pingfd, SOL_SOCKET, SO_RCVTIMEO, &stRcvTimeOut, sizeof(struct timeval));
+
+	if(inet_aton(targetIp,&stDestAddr.sin_addr) == 0)
+    {
+        printf("ping target IP Address Error!\n");
+		close(pingfd);
+        return -4;
+    }
+	sendIcmp(pingfd, &stDestAddr);
+	recFlag=recv_packet(pingfd);
+	if(recFlag == 0)
+	{
+		printf("\r\npacket from--%s\r\n",targetIp);
+	}
+	close(pingfd);
+	return 0;
+}
+
+static void *ipcamtest_thead_create(void *arg)
+{
+	char *targetIp=NULL;
+	char theadBuf[256]={0};
+	int pthead_flag=253;
+	targetIp=(char*)arg;
+	myPing(targetIp);
+	//sprintf(theadBuf,"ping %s",targetIp);
+	//pthead_flag=system(theadBuf);
+	//if(pthead_flag == 0)
+	//{
+		//pingFlag = 0;
+	//}
+	//return (void)0;
+}
+
 static int ralinkTestmodeInit(T_LKTOS_INITCONFIG_PLATFORM_TYPE_ platform,unsigned wanPort)
 {
-	int i=0;
+	int i=0,j=1;
 	int ralinkMode=RT2860_NVRAM;
 	char cmdBuf[128]={0};
 	char cmdBuf1[128]={0};
@@ -354,8 +563,8 @@ static int ralinkTestmodeInit(T_LKTOS_INITCONFIG_PLATFORM_TYPE_ platform,unsigne
 	FILE *fp;
 	int opMode=0;
 	int intVal=0;
-	int pingFlag=0;
 	int testFlag=0;
+	pthread_t tidps[254];
 
 	nvram_init(ralinkMode);
 	
@@ -386,13 +595,51 @@ static int ralinkTestmodeInit(T_LKTOS_INITCONFIG_PLATFORM_TYPE_ platform,unsigne
 		strcpy(ipcambuf2,ipcambuf1);
 		*tmpptr1 = '\0';
 		sprintf(ourtestip,"%s.155",ipcambuf1);
-		printf("\r\n%d our ip is=\r\n",i,ourtestip);
+		printf("\r\n%d our ip111 is=\r\n",i,ourtestip);
 		system("ifconfig br0 down");
 		sprintf(cmdBuf,"ifconfig br0 %s netmask %s up",ourtestip,nvram_bufget(ralinkMode, "lan_netmask"));		
 		system(cmdBuf);
-		sprintf(cmdBuf,"ping %s",ipcambuf2);
-		pingFlag=system(cmdBuf);
+		/*
+		for(j=1;j<101;j++)
+		{
+			if(j==155)
+			{
+				continue;
+			}
+			sprintf(ourtestip,"%s.%d",ipcambuf1,j);
+			printf("\r\npingip=%s\r\n",ourtestip);
+			pthread_create(&tidps[j], NULL, ipcamtest_thead_create, (void *)ourtestip);
+		}
+		for(j=1;j<101;j++)
+		{
+			if(j==155)
+			{
+				continue;
+			}
+			pthread_join(tidps[j], NULL);
+		}
+		*/
+		for(j=1;j<101;j++)
+		{
+			if(j==155)
+			{
+				continue;
+			}
+			sprintf(ourtestip,"%s.%d",ipcambuf1,j);
+			printf("\r\npingip=%s\r\n",ourtestip);
+			myPing(ourtestip);
+			
+		}
+		//sprintf(cmdBuf,"ping %s",ipcambuf2);
+		//pingFlag=system(cmdBuf);
+		/*
    		printf("\r\nping flag=%d\r\n",pingFlag);
+		sprintf(ourtestip,"%s.%d",ipcambuf1,5);
+		myPing(ourtestip);
+		sprintf(ourtestip,"%s.%d",ipcambuf1,11);
+		myPing(ourtestip);
+		*/
+		pingFlag=0;
    
   		if( 0 == pingFlag)
   		{
