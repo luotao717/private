@@ -394,14 +394,19 @@ int unpack(char *buf,int len)
         return -1;
     }
     //if((icmp->icmp_type == ICMP_ECHOREPLY) && (icmp->icmp_id == pid))
-	if((icmp->icmp_type == ICMP_ECHOREPLY) && (icmp->icmp_id == pid))
+	if((icmp->icmp_type == ICMP_ECHOREPLY))
     {
         
-        printf("%d bytes from %s: icmp_seq=%u ttl=%d time= ms\n",
-                len,inet_ntoa(from.sin_addr),
-                icmp->icmp_seq,ip->ip_ttl);
+        printf("%d bytes from : icmp_seq=%u ttl=%d time= %dms\n",
+                len,
+                icmp->icmp_seq,ip->ip_ttl,icmp->icmp_id );
+		pingFlag=0;
+		return 0;
     }
-    else return -1;
+    else 
+	{
+		return -1;
+    }
 }
 
 
@@ -431,6 +436,7 @@ int recv_packet(const int fd)
 	if(iRecvLen >= 0)
 	{
 		printf("\r\nrec a packet");
+		unpack(recpacketBuf,iRecvLen);
 		return 0;
 	}
 	else
@@ -510,7 +516,8 @@ static int myPing(char *targetIp)
 		return -3;
 	}
 
-	stRcvTimeOut.tv_usec = 1000 * 1000;
+	//stRcvTimeOut.tv_usec = 1000 * 1000;
+	stRcvTimeOut.tv_sec = 1;
 	setsockopt(pingfd, SOL_SOCKET, SO_RCVBUF, &iRcvBufSize, sizeof(iRcvBufSize));
 	setsockopt(pingfd, SOL_SOCKET, SO_RCVTIMEO, &stRcvTimeOut, sizeof(struct timeval));
 
@@ -521,14 +528,71 @@ static int myPing(char *targetIp)
         return -4;
     }
 	sendIcmp(pingfd, &stDestAddr);
-	recFlag=recv_packet(pingfd);
-	if(recFlag == 0)
-	{
-		printf("\r\npacket from--%s\r\n",targetIp);
-	}
+	//recFlag=recv_packet(pingfd);
+	//if(recFlag == 0)
+	//{
+		//printf("\r\npacket from--%s\r\n",targetIp);
+	//}
+//	sleep(6000);
 	close(pingfd);
 	return 0;
 }
+
+static int recieve_ping_thread()
+{
+	int recfd=0;
+	int iRet=0;
+	int recFlag=-1;
+	int iRecvLen=-1;
+	int fromlen=0;
+	int iRcvBufSize= 20 *1024;
+	
+	char pingrecpacketBuf[20 * 1024]={0};
+	
+	struct sockaddr_in stFromAddr = {0};
+	struct timeval stRcvTimeOut = {0};
+	
+	recfd = socket(PF_INET,SOCK_RAW,IPPROTO_ICMP);
+	
+	if(0 > recfd)
+	{
+		printf("\ncreate socket error");
+		return -2;
+	}
+	iRet = setuid(getuid());
+	if(0 > iRet)
+	{
+		printf("\nsetuid error");
+		close(recfd);
+		return -3;
+	}
+
+	stRcvTimeOut.tv_sec = 20;
+	setsockopt(recfd, SOL_SOCKET, SO_RCVBUF, &iRcvBufSize, sizeof(iRcvBufSize));
+	setsockopt(recfd, SOL_SOCKET, SO_RCVTIMEO, &stRcvTimeOut, sizeof(struct timeval));
+	
+	fromlen=sizeof(stFromAddr);
+	while(1)
+	{
+		memset(pingrecpacketBuf, 0, sizeof(pingrecpacketBuf));
+		iRecvLen = recvfrom(recfd, (void *)pingrecpacketBuf, sizeof(pingrecpacketBuf), 0, (struct sockaddr *)&stFromAddr,&fromlen);
+		if(iRecvLen >= 0)
+		{
+			printf("\r\nrec a packet1111cccc");
+			recFlag=unpack(pingrecpacketBuf,iRecvLen);
+			if(recFlag == 0)
+				break;
+		}
+		else
+		{
+			perror("recvfrom error33333333");
+			printf("\r\nnot rrrr");
+		}
+	}
+	close(recfd);
+	return 0;
+}
+
 
 static void *ipcamtest_thead_create(void *arg)
 {
@@ -565,6 +629,7 @@ static int ralinkTestmodeInit(T_LKTOS_INITCONFIG_PLATFORM_TYPE_ platform,unsigne
 	int intVal=0;
 	int testFlag=0;
 	pthread_t tidps[254];
+	pthread_t recthd;
 
 	nvram_init(ralinkMode);
 	
@@ -575,6 +640,7 @@ static int ralinkTestmodeInit(T_LKTOS_INITCONFIG_PLATFORM_TYPE_ platform,unsigne
 		nvram_close(ralinkMode);
 		return 0;
 	}
+	pthread_create(&recthd, NULL, recieve_ping_thread, NULL);
 	for(i=1;i<5;i++)
 	{
 		printf("\r\nfor test \r\n");
@@ -599,8 +665,10 @@ static int ralinkTestmodeInit(T_LKTOS_INITCONFIG_PLATFORM_TYPE_ platform,unsigne
 		system("ifconfig br0 down");
 		sprintf(cmdBuf,"ifconfig br0 %s netmask %s up",ourtestip,nvram_bufget(ralinkMode, "lan_netmask"));		
 		system(cmdBuf);
-		/*
-		for(j=1;j<101;j++)
+
+		
+#if 0		
+		for(j=1;j<41;j++)
 		{
 			if(j==155)
 			{
@@ -610,7 +678,7 @@ static int ralinkTestmodeInit(T_LKTOS_INITCONFIG_PLATFORM_TYPE_ platform,unsigne
 			printf("\r\npingip=%s\r\n",ourtestip);
 			pthread_create(&tidps[j], NULL, ipcamtest_thead_create, (void *)ourtestip);
 		}
-		for(j=1;j<101;j++)
+		for(j=1;j<41;j++)
 		{
 			if(j==155)
 			{
@@ -618,8 +686,9 @@ static int ralinkTestmodeInit(T_LKTOS_INITCONFIG_PLATFORM_TYPE_ platform,unsigne
 			}
 			pthread_join(tidps[j], NULL);
 		}
-		*/
-		for(j=1;j<101;j++)
+#endif
+	#if 1
+		for(j=1;j<255;j++)
 		{
 			if(j==155)
 			{
@@ -630,6 +699,9 @@ static int ralinkTestmodeInit(T_LKTOS_INITCONFIG_PLATFORM_TYPE_ platform,unsigne
 			myPing(ourtestip);
 			
 		}
+		
+		//pthread_join(recthd, NULL);
+	#endif
 		//sprintf(cmdBuf,"ping %s",ipcambuf2);
 		//pingFlag=system(cmdBuf);
 		/*
@@ -639,8 +711,9 @@ static int ralinkTestmodeInit(T_LKTOS_INITCONFIG_PLATFORM_TYPE_ platform,unsigne
 		sprintf(ourtestip,"%s.%d",ipcambuf1,11);
 		myPing(ourtestip);
 		*/
-		pingFlag=0;
-   
+		//pingFlag=0;
+
+		sleep(4);
   		if( 0 == pingFlag)
   		{
   			printf("\r\nfind ipcam %s\r\n",ipcambuf2);
