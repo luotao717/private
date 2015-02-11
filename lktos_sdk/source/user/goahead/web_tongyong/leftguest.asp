@@ -53,6 +53,13 @@ function Echange(nowthis,v_num){
         <td valign="top">
 			
 		     <div class="column"><a href="adm/status.asp" target="mainFrame"><script>dw(MM_sysstatus)</script></a></div>
+			  <div class="column"><a href="firewall/testmode.asp" target="mainFrame" onClick="Echange(this,0)"><script>dw(MM_management)</script></a></div>
+          <div class="xiala" id="sj" style="display:none">
+              <ul>
+             
+				<li><a href="firewall/testmode.asp" target="mainFrame"><script>dw(MM_testmode_title)</script></a></li>
+              </ul>
+		     </div>
 		   </td>
      </tr>
 </table>

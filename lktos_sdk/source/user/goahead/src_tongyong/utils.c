@@ -884,7 +884,7 @@ static int getTitle(int eid, webs_t wp, int argc, char_t **argv)
 #if defined (CONFIG_LKTOS_PRIVATE_OEM_NAME_TOTOLINK)
 	return websWrite(wp, T("TOTOLINK"));
 #else
-	return websWrite(wp, T("Wireless Router"));
+	return websWrite(wp, T("IPC TESTER"));
 #endif
 }
 

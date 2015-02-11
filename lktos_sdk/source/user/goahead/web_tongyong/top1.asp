@@ -73,8 +73,8 @@ function Load_Setting()
 <table class="header" width="100%" border="0" cellpadding="0" cellspacing="0">
   <tr>
     <td width="759" ><img src="images/kingnet_logo.gif" border="0" /></td>
-	<td width="299" class="title_down_center"><span class="headtxt">802.11N WIFI DEV &nbsp;&nbsp;ES-2&nbsp;</span></p></td>
-	<td width="353" align="left" class="title_down_right"><p class="headname"> &nbsp;<span id="lang"><b><script>dw(MM_language)</script>:</b>&nbsp;&nbsp;<a href="javascript:updateLanguage('cn')" id="cn" class="title_link"><script>dw(MM_chinese)</script></a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="javascript:updateLanguage('en')" id="en" class="title_link"><script>dw(MM_english)</script></a></span>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+	<td width="299" class="title_down_center"><span class="headtxt">IPC-TEST&nbsp;</span></p></td>
+	<td width="353" align="left" class="title_down_right"><p class="headname"> &nbsp;<span id="lang"><b><script>dw(MM_language)</script>:</b>&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;<a href="javascript:updateLanguage('en')" id="en" class="title_link"><script>dw(MM_english)</script></a></span>&nbsp;&nbsp;&nbsp;&nbsp;</td>
   </tr>
 </table>
 </form>
