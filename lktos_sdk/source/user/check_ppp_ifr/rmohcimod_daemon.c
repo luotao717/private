@@ -10,7 +10,7 @@ int main(int argc, char **argv)
 	
 	while(1)
 	{	
-		sleep(5);
+		sleep(15);
 		if ( stat("/var/usbmodem/simcimi", &stat_buf) < 0 )
 		{
 			totalCount++;

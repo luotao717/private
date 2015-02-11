@@ -248,5 +248,5 @@ RADIUS_Acct_Port=1813
 RADIUS_Acct_Key=
 session_timeout_interval=0
 idle_timeout_interval=0
-SmbEnabled=1
+SmbEnabled=0
 SmbNetBIOS=Netbios
