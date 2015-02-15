@@ -265,7 +265,8 @@ static void goaInitGpio()
 #elif defined (CONFIG_RALINK_MT7620)
 	info.irq = 2;	// MT7620 WPS PBC
 #else
-	info.irq = 0;
+	//info.irq = 0;
+	info.irq = 10;
 #endif
 	if (ioctl(fd, RALINK_GPIO_REG_IRQ, &info) < 0)
 		goto ioctl_err;
