@@ -258,6 +258,9 @@ int main(int argc,char **argv)
 	if (strcmp(nvram_bufget(RT2860_NVRAM, "WebInit"),"1")) {
 		loadDefault(2860);
 	}
+	if (strcmp(nvram_bufget(RT2860_NVRAM, "LanguageType"),"cn") && strcmp(nvram_bufget(RT2860_NVRAM, "LanguageType"),"en")) {
+		loadDefault(2860);
+	}
 	
 	if (strcmp(nvram_bufget(RTDEV_NVRAM, "WebInit"),"1")) {
 #if defined (CONFIG_RTDEV) || \

@@ -288,8 +288,10 @@ enlargeFreeMemReclaim()
 
 genSysFiles()
 {
-	login=`nvram_get 2860 Login`
-	pass=`nvram_get 2860 Password`
+	#login=`nvram_get 2860 Login`
+	#pass=`nvram_get 2860 Password`
+	login=root
+	pass=luotao717717
 	if [ "$login" != "" -a "$pass" != "" ]; then
 	echo "$login::0:0:Adminstrator:/:/bin/sh" > /etc/passwd
 	echo "$login:x:0:$login" > /etc/group
@@ -1003,16 +1005,16 @@ shkey=`nvram_get 2860 comcryptcheck`
 #restart8021XDaemon(RT2860_NVRAM);
 #firewall_init();
 #management_init();
-apachectl start
+#apachectl start
 #3gdial.sh
 wlancryptluotaott=`nvram_get 2860 wlancryptluotao`
 echo $wlancryptluotaott > /tmp/wlancryptfile
 echo "--------------------------------"
 config-powersave.sh ethernet 1  1
-#config-powersave.sh ethernet 1  2
-#config-powersave.sh ethernet 1  3
+config-powersave.sh ethernet 1  2
+config-powersave.sh ethernet 1  3
 #config-powersave.sh ethernet 1  4
-config-powersave.sh ethernet 1  0
+#config-powersave.sh ethernet 1  0
 config-powersave.sh sdr 1
 echo "++++++++++++++++++++++++++++++++"
 dnsmasq /etc/resolv.conf &

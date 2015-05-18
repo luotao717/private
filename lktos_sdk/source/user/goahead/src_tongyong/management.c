@@ -768,6 +768,24 @@ int getWANTxPacketASP(int eid, webs_t wp, int argc, char_t **argv)
 	return 0;
 }
 
+static int ShowLeftItem(int eid, webs_t wp, int argc, char_t **argv)
+{
+	char *strptr=NULL; 
+	strptr=nvram_bufget(RT2860_NVRAM, "OperationMode");
+	printf("\r\nddddd=%s----%c--%c",strptr,strptr[0],*strptr );
+	if( !strcmp(strptr,"0"))
+	{
+		websWrite(wp, T("left2.asp"));	
+	}
+	else
+	{
+		websWrite(wp, T("left1.asp"));	
+	}
+
+	return 0;
+}
+
+
 int getLANRxByteASP(int eid, webs_t wp, int argc, char_t **argv)
 {
 	char_t buf[32];
@@ -1271,6 +1289,7 @@ void formDefineManagement(void)
 	websAspDefine(T("getPPPOECDBuilt"), getPPPOECDBuilt);
 	websAspDefine(T("getWizardBuilt"), getWizardBuilt);
 	websAspDefine(T("getWatchDogBuilt"), getWatchDogBuilt);
+	websAspDefine(T("ShowLeftItem"), ShowLeftItem);//by luotao
 #ifdef CONFIG_USER_WIZARD
 	websFormDefine(T("setWizard"), setWizard);
 #endif

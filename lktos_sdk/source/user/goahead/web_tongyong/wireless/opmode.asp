@@ -25,8 +25,11 @@ function Load_Setting()
 	else if (bridge_mode == 3)//wds
 		document.getElementById("div_wds_setting").style.display = "";
 
-	if (mac_pt == 0)
-		document.opMode.bridgeMode.options[4] = null;
+	//if (mac_pt == 0)
+	//{
+		//document.opMode.bridgeMode.options[3] = null;
+		//document.opMode.bridgeMode.options[4] = null;
+	//}
 }
 
 function updateBridge()
@@ -46,7 +49,7 @@ function resetForm()
 <blockquote>
 <table width=700><tr><td>
 <table width=100% border=0 cellpadding=3 cellspacing=1> 
-<tr><td class="title"><script>dw(MM_bridge_settings)</script></td></tr>
+<tr><td class="title"><script>dw(MM_opmode)</script></td></tr>
 <tr><td><script>dw(JS_msg_wlopmode)</script></td></tr>
 <tr><td><hr></td></tr>
 </table>
@@ -57,11 +60,13 @@ function resetForm()
   <tr>
     <td class="thead"><script>dw(MM_mode)</script>:</td>
     <td><select name="bridgeMode" onChange="updateBridge()">
-        <option value="0"><script>dw(MM_disable)</script>(<script>dw(MM_gateway_mode)</script>)</option>
+        <option value="0"><script>dw(MM_gateway_mode)</script></option>
         <option value="1"><script>dw(MM_bridge_mode)</script></option>
         <option value="2"><script>dw(MM_apclient_mode)</script></option>
+		<!--
         <option value="3"><script>dw(MM_wds_mode)</script></option>
         <option value="4"><script>dw(MM_bridge_mode)</script>(<script>dw(MM_mac_passthrough)</script>)</option>
+		-->
       </select></td>
   </tr>  
 </table>

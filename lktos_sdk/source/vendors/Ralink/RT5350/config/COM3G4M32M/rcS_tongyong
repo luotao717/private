@@ -9,8 +9,8 @@ insmod ohci-hcd.ko
 insmod usb-storage.ko
 
 #for usb
-tar xf /bin/apa.tar -C /tmp
-cp /bin/httpd /tmp/apache/bin/
+#tar xf /bin/apa.tar -C /tmp
+#cp /bin/httpd /tmp/apache/bin/
 
 goahead&
 
@@ -19,6 +19,6 @@ mount -t usbfs none /proc/bus/usb
 #for telnet debugging
 telnetd
 
-cp /etc_ro/web/normal_ws.css /tmp/apache/htdocs/normal_ws.css
+#cp /etc_ro/web/normal_ws.css /tmp/apache/htdocs/normal_ws.css
 #for syslogd
 mkdir -p /var/log

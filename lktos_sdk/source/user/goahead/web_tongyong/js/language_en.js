@@ -283,7 +283,7 @@ var MM_address_mode = "Address Mode";
 var MM_qos = "Quality of Service";
 var MM_qos_settings = "QoS Settings";
 var MM_gateway_mode = "Gateway Mode";
-var MM_apclient_mode = "AP Client Mode";
+var MM_apclient_mode = "wifi Reapeter Mode";
 var MM_wisp_mode = "Wireless ISP Mode";
 var MM_tcp_timeout = "TCP Timeout";
 var MM_udp_timeout = "UDP Timeout";
@@ -598,7 +598,7 @@ var JS_msg_sitesurvey = "Site survey page shows information of APs nearby. You m
 var JS_msg_remote = "You may configure the system remote management.";
 var JS_msg_upnp = "You may configure the UPnP function.";
 var JS_msg_wlmacf = "If you choose 'Allowed Listed', only those clients whose wireless MAC addresses are in the MAC Authentication list will be able to connect to your Access Point. When 'Deny Listed' is selected, these wireless clients on the list will not be able to connect the Access Point.";
-var JS_msg_wlopmode = "This page is used to select the bridge mode of Access Point. Default mode is gateway mode.";
+var JS_msg_wlopmode = "This page is used to select the work mode of Access Point. Default mode is Route mode.";
 var JS_msg_usb = "USB device is not detected, please insert the USB device and then retry.";
 var JS_msg_qos = "Entries in this table improve your online gaming experience by ensuring that your game traffic is prioritized over other network traffic, such as FTP or Web.";
 //----------------------------------
